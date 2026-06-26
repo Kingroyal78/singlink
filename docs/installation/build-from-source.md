@@ -6,15 +6,15 @@ icon: material/file-code
 
 ## :material-graph: Requirements
 
-### sing-box 1.11
+### singlink 1.11
 
 * Go 1.23.1 - ~
 
-### sing-box 1.10
+### singlink 1.10
 
 * Go 1.20.0 - ~
 
-### sing-box 1.9
+### singlink 1.9
 
 * Go 1.18.5 - 1.22.x
 * Go 1.20.0 - 1.22.x with tag `with_quic`, or `with_utls` enabled
@@ -40,7 +40,7 @@ TAGS="tag_a tag_b" make
 or
 
 ```bash
-go build -tags "tag_a tag_b" ./cmd/sing-box
+go build -tags "tag_a tag_b" ./cmd/singlink
 ```
 
 ## :material-folder-settings: Build Tags
@@ -73,7 +73,7 @@ The following `-ldflags` are used in official builds:
 
 | Flag                                                        | Description                                                                                                                                                                                                             |
 |-------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `-X 'internal/godebug.defaultGODEBUG=multipathtcp=0'`      | Go 1.24 enabled Multipath TCP for listeners by default (`multipathtcp=2`). This may cause errors on low-level sockets, and sing-box has its own MPTCP control (`tcp_multi_path` option). This flag disables the Go default. |
+| `-X 'internal/godebug.defaultGODEBUG=multipathtcp=0'`      | Go 1.24 enabled Multipath TCP for listeners by default (`multipathtcp=2`). This may cause errors on low-level sockets, and singlink has its own MPTCP control (`tcp_multi_path` option). This flag disables the Go default. |
 | `-checklinkname=0`                                          | Go 1.23+ linker rejects unauthorized `go:linkname` usage. This flag disables the check, required together with the `badlinkname` build tag.                                                                            |
 
 ## :material-package-variant: For Downstream Packagers
@@ -106,13 +106,13 @@ NaiveProxy outbound requires special build configurations depending on your targ
 
 Use `with_purego` tag.
 
-For official releases, `libcronet.dll` is included in the archive. For self-built binaries, download from [cronet-go releases](https://github.com/sagernet/cronet-go/releases) and place in the same directory as `sing-box.exe` or in a directory listed in `PATH`.
+For official releases, `libcronet.dll` is included in the archive. For self-built binaries, download from [cronet-go releases](https://github.com/sagernet/cronet-go/releases) and place in the same directory as `singlink.exe` or in a directory listed in `PATH`.
 
 ### Linux (purego, amd64/arm64 only)
 
 Use `with_purego` tag.
 
-For official releases, `libcronet.so` is included in the archive. For self-built binaries, download from [cronet-go releases](https://github.com/sagernet/cronet-go/releases) and place in the same directory as sing-box binary or in system library path.
+For official releases, `libcronet.so` is included in the archive. For self-built binaries, download from [cronet-go releases](https://github.com/sagernet/cronet-go/releases) and place in the same directory as singlink binary or in system library path.
 
 ### Linux (CGO)
 

@@ -11,10 +11,10 @@ import (
 	"syscall"
 	"time"
 
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/include"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/include"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/json"
@@ -46,9 +46,9 @@ func main0() error {
 
 func runTests() ([]TestResult, error) {
 	boxPaths := []string{
-		os.ExpandEnv("$HOME/Downloads/sing-box-1.11.15-darwin-arm64/sing-box"),
-		//"/Users/sekai/Downloads/sing-box-1.11.15-linux-arm64/sing-box",
-		"./sing-box",
+		os.ExpandEnv("$HOME/Downloads/singlink-1.11.15-darwin-arm64/singlink"),
+		//"/Users/sekai/Downloads/singlink-1.11.15-linux-arm64/singlink",
+		"./singlink",
 	}
 	stacks := []string{
 		"gvisor",

@@ -2,19 +2,19 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [disable_tcp_keep_alive](#disable_tcp_keep_alive)  
     :material-alert: [tcp_keep_alive](#tcp_keep_alive)
 
-!!! quote "sing-box 1.12.0 中的更改"
+!!! quote "singlink 1.12.0 中的更改"
 
     :material-plus: [netns](#netns)  
     :material-plus: [bind_interface](#bind_interface)  
     :material-plus: [routing_mark](#routing_mark)  
     :material-plus: [reuse_addr](#reuse_addr)
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-delete-clock: [sniff](#sniff)  
     :material-delete-clock: [sniff_override_destination](#sniff_override_destination)  
@@ -65,13 +65,13 @@ icon: material/new-box
 
 #### bind_interface
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 要绑定到的网络接口。
 
 #### routing_mark
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 !!! quote ""
 
@@ -83,13 +83,13 @@ icon: material/new-box
 
 #### reuse_addr
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 重用监听地址。
 
 #### netns
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 !!! quote ""
 
@@ -111,13 +111,13 @@ icon: material/new-box
 
 #### disable_tcp_keep_alive
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 禁用 TCP keep alive。
 
 #### tcp_keep_alive
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
     默认值从 `10m` 更改为 `5m`。
 
@@ -149,9 +149,9 @@ UDP NAT 过期时间。
 
 #### sniff
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
-    入站字段已废弃且将在 sing-box 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移旧的入站字段到规则动作).
+    入站字段已废弃且将在 singlink 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移旧的入站字段到规则动作).
 
 启用协议探测。
 
@@ -159,9 +159,9 @@ UDP NAT 过期时间。
 
 #### sniff_override_destination
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
-    入站字段已废弃且将在 sing-box 1.12.0 中被移除。
+    入站字段已废弃且将在 singlink 1.12.0 中被移除。
 
 用探测出的域名覆盖连接目标地址。
 
@@ -169,9 +169,9 @@ UDP NAT 过期时间。
 
 #### sniff_timeout
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
-    入站字段已废弃且将在 sing-box 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移旧的入站字段到规则动作).
+    入站字段已废弃且将在 singlink 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移旧的入站字段到规则动作).
 
 探测超时时间。
 
@@ -179,9 +179,9 @@ UDP NAT 过期时间。
 
 #### domain_strategy
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
-    入站字段已废弃且将在 sing-box 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移旧的入站字段到规则动作).
+    入站字段已废弃且将在 singlink 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移旧的入站字段到规则动作).
 
 可选值： `prefer_ipv4` `prefer_ipv6` `ipv4_only` `ipv6_only`。
 
@@ -191,9 +191,9 @@ UDP NAT 过期时间。
 
 #### udp_disable_domain_unmapping
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
-    入站字段已废弃且将在 sing-box 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移旧的入站字段到规则动作).
+    入站字段已废弃且将在 singlink 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移旧的入站字段到规则动作).
 
 如果启用，对于地址为域的 UDP 代理请求，将在响应中发送原始包地址而不是映射的域。
 

@@ -1,4 +1,4 @@
-!!! quote "sing-box 1.10.0 中的更改"
+!!! quote "singlink 1.10.0 中的更改"
 
     :material-plus: QUIC 的 客户端类型探测支持  
     :material-plus: QUIC 的 Chromium 支持  

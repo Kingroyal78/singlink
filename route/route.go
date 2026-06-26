@@ -8,10 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/sniff"
-	C "github.com/sagernet/sing-box/constant"
-	R "github.com/sagernet/sing-box/route/rule"
 	"github.com/sagernet/sing-mux"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing-tun/ping"
@@ -25,6 +21,10 @@ import (
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/uot"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/sniff"
+	C "github.com/singlink/singlink/constant"
+	R "github.com/singlink/singlink/route/rule"
 
 	"golang.org/x/exp/slices"
 )
@@ -153,8 +153,12 @@ func (r *Router) routeConnection(ctx context.Context, conn net.Conn, metadata ad
 	for _, buffer := range buffers {
 		conn = bufio.NewCachedConn(conn, buffer)
 	}
-	for _, tracker := range r.trackers {
-		conn = tracker.RoutedConnection(ctx, conn, metadata, selectedRule, selectedOutbound)
+	for _, tracker := range r.trackerSnapshot() {
+		trackedConn := tracker.RoutedConnection(ctx, conn, metadata, selectedRule, selectedOutbound)
+		if trackedConn == nil {
+			return &R.RejectedError{Cause: tun.ErrDrop}
+		}
+		conn = trackedConn
 	}
 	if outboundHandler, isHandler := selectedOutbound.(adapter.ConnectionHandler); isHandler {
 		outboundHandler.NewConnection(ctx, conn, metadata, onClose)
@@ -281,8 +285,12 @@ func (r *Router) routePacketConnection(ctx context.Context, conn N.PacketConn, m
 		conn = bufio.NewCachedPacketConn(conn, buffer.Buffer, buffer.Destination)
 		N.PutPacketBuffer(buffer)
 	}
-	for _, tracker := range r.trackers {
-		conn = tracker.RoutedPacketConnection(ctx, conn, metadata, selectedRule, selectedOutbound)
+	for _, tracker := range r.trackerSnapshot() {
+		trackedConn := tracker.RoutedPacketConnection(ctx, conn, metadata, selectedRule, selectedOutbound)
+		if trackedConn == nil {
+			return &R.RejectedError{Cause: tun.ErrDrop}
+		}
+		conn = trackedConn
 	}
 	if metadata.FakeIP {
 		conn = bufio.NewNATPacketConn(bufio.NewNetPacketConn(conn), metadata.OriginDestination, metadata.Destination)

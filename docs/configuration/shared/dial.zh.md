@@ -2,24 +2,24 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-alert: [domain_resolver](#domain_resolver)
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [disable_tcp_keep_alive](#disable_tcp_keep_alive)  
     :material-plus: [tcp_keep_alive](#tcp_keep_alive)  
     :material-plus: [tcp_keep_alive_interval](#tcp_keep_alive_interval)  
     :material-plus: [bind_address_no_port](#bind_address_no_port)
 
-!!! quote "sing-box 1.12.0 中的更改"
+!!! quote "singlink 1.12.0 中的更改"
 
     :material-plus: [domain_resolver](#domain_resolver)  
     :material-delete-clock: [domain_strategy](#domain_strategy)  
     :material-plus: [netns](#netns)
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-plus: [network_strategy](#network_strategy)  
     :material-alert: [fallback_delay](#fallback_delay)  
@@ -84,7 +84,7 @@ icon: material/new-box
 
 #### bind_address_no_port
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -110,7 +110,7 @@ icon: material/new-box
 
 #### netns
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 !!! quote ""
 
@@ -139,13 +139,13 @@ icon: material/new-box
 
 #### disable_tcp_keep_alive
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 禁用 TCP keep alive。
 
 #### tcp_keep_alive
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
     默认值从 `10m` 更改为 `5m`。
 
@@ -155,7 +155,7 @@ TCP keep alive 初始周期。
 
 #### tcp_keep_alive_interval
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 TCP keep alive 间隔。
 
@@ -169,7 +169,7 @@ TCP keep alive 间隔。
 
 !!! warning ""
 
-    `outbound` DNS 规则项已弃用，且将在 sing-box 1.14.0 中被移除。因此，从 sing-box 1.14.0 版本开始，所有在服务器地址中使用域名的出站/端点均需配置此项。
+    `outbound` DNS 规则项已弃用，且将在 singlink 1.14.0 中被移除。因此，从 singlink 1.14.0 版本开始，所有在服务器地址中使用域名的出站/端点均需配置此项。
 
 !!! info ""
 
@@ -188,7 +188,7 @@ TCP keep alive 间隔。
 
 #### network_strategy
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -210,7 +210,7 @@ TCP keep alive 间隔。
 
 #### network_type
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -224,7 +224,7 @@ TCP keep alive 间隔。
 
 #### fallback_network_type
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -248,9 +248,9 @@ TCP keep alive 间隔。
 
 #### domain_strategy
 
-!!! failure "已在 sing-box 1.12.0 废弃"
+!!! failure "已在 singlink 1.12.0 废弃"
 
-    `domain_strategy` 已废弃且将在 sing-box 1.14.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移出站域名策略选项到域名解析器)。
+    `domain_strategy` 已废弃且将在 singlink 1.14.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移出站域名策略选项到域名解析器)。
 
 可选值：`prefer_ipv4` `prefer_ipv6` `ipv4_only` `ipv6_only`。
 

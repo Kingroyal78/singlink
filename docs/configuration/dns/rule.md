@@ -2,7 +2,7 @@
 icon: material/alert-decagram
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [source_mac_address](#source_mac_address)  
     :material-plus: [source_hostname](#source_hostname)  
@@ -17,18 +17,18 @@ icon: material/alert-decagram
     :material-alert: [ip_version](#ip_version)  
     :material-alert: [query_type](#query_type)
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: [interface_address](#interface_address)  
     :material-plus: [network_interface_address](#network_interface_address)  
     :material-plus: [default_interface_address](#default_interface_address)
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [ip_accept_any](#ip_accept_any)  
     :material-delete-clock: [outbound](#outbound)
 
-!!! quote "Changes in sing-box 1.11.0"
+!!! quote "Changes in singlink 1.11.0"
 
     :material-plus: [action](#action)  
     :material-alert: [server](#server)  
@@ -39,14 +39,14 @@ icon: material/alert-decagram
     :material-plus: [network_is_expensive](#network_is_expensive)  
     :material-plus: [network_is_constrained](#network_is_constrained)
 
-!!! quote "Changes in sing-box 1.10.0"
+!!! quote "Changes in singlink 1.10.0"
 
     :material-delete-clock: [rule_set_ipcidr_match_source](#rule_set_ipcidr_match_source)  
     :material-plus: [rule_set_ip_cidr_match_source](#rule_set_ip_cidr_match_source)  
     :material-plus: [rule_set_ip_cidr_accept_empty](#rule_set_ip_cidr_accept_empty)  
     :material-plus: [process_path_regex](#process_path_regex)
 
-!!! quote "Changes in sing-box 1.9.0"
+!!! quote "Changes in singlink 1.9.0"
 
     :material-plus: [geoip](#geoip)  
     :material-plus: [ip_cidr](#ip_cidr)  
@@ -54,7 +54,7 @@ icon: material/alert-decagram
     :material-plus: [client_subnet](#client_subnet)  
     :material-plus: [rule_set_ipcidr_match_source](#rule_set_ipcidr_match_source)
 
-!!! quote "Changes in sing-box 1.8.0"
+!!! quote "Changes in singlink 1.8.0"
 
     :material-plus: [rule_set](#rule_set)  
     :material-plus: [source_ip_is_private](#source_ip_is_private)  
@@ -250,7 +250,7 @@ Tags of [Inbound](/configuration/inbound/).
 
 #### ip_version
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     This field now also applies when a DNS rule is matched from an internal
     domain resolution that does not target a specific DNS server, such as a
@@ -273,7 +273,7 @@ Not limited if empty.
 
 #### query_type
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     This field now also applies when a DNS rule is matched from an internal
     domain resolution that does not target a specific DNS server, such as a
@@ -322,17 +322,17 @@ Match domain using regular expression.
 
 #### geosite
 
-!!! failure "Deprecated in sing-box 1.8.0"
+!!! failure "Deprecated in singlink 1.8.0"
 
-    Geosite is deprecated and will be removed in sing-box 1.12.0, check [Migration](/migration/#migrate-geosite-to-rule-sets).
+    Geosite is deprecated and will be removed in singlink 1.12.0, check [Migration](/migration/#migrate-geosite-to-rule-sets).
 
 Match geosite.
 
 #### source_geoip
 
-!!! failure "Deprecated in sing-box 1.8.0"
+!!! failure "Deprecated in singlink 1.8.0"
 
-    GeoIP is deprecated and will be removed in sing-box 1.12.0, check [Migration](/migration/#migrate-geoip-to-rule-sets).
+    GeoIP is deprecated and will be removed in singlink 1.12.0, check [Migration](/migration/#migrate-geoip-to-rule-sets).
 
 Match source geoip.
 
@@ -342,7 +342,7 @@ Match source IP CIDR.
 
 #### source_ip_is_private
 
-!!! question "Since sing-box 1.8.0"
+!!! question "Since singlink 1.8.0"
 
 Match non-public source IP.
 
@@ -380,7 +380,7 @@ Match process path.
 
 #### process_path_regex
 
-!!! question "Since sing-box 1.10.0"
+!!! question "Since singlink 1.10.0"
 
 !!! quote ""
 
@@ -394,7 +394,7 @@ Match android package name.
 
 #### package_name_regex
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Match android package name using regular expression.
 
@@ -420,7 +420,7 @@ Match Clash mode.
 
 #### network_type
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -432,7 +432,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### network_is_expensive
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -443,7 +443,7 @@ such as Cellular or a Personal Hotspot (on Apple platforms).
 
 #### network_is_constrained
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -453,7 +453,7 @@ Match if network is in Low Data Mode.
 
 #### interface_address
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 !!! quote ""
 
@@ -463,7 +463,7 @@ Match interface address.
 
 #### network_interface_address
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 !!! quote ""
 
@@ -473,7 +473,7 @@ Matches network interface (same values as `network_type`) address.
 
 #### default_interface_address
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 !!! quote ""
 
@@ -483,7 +483,7 @@ Match default interface address.
 
 #### source_mac_address
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 !!! quote ""
 
@@ -493,7 +493,7 @@ Match source device MAC address.
 
 #### source_hostname
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 !!! quote ""
 
@@ -503,7 +503,7 @@ Match source device hostname from DHCP leases.
 
 #### preferred_by
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Match specified DNS servers' preferred domains.
 
@@ -533,29 +533,29 @@ Match WiFi BSSID.
 
 #### rule_set
 
-!!! question "Since sing-box 1.8.0"
+!!! question "Since singlink 1.8.0"
 
 Match [rule-set](/configuration/route/#rule_set).
 
 #### rule_set_ipcidr_match_source
 
-!!! question "Since sing-box 1.9.0"
+!!! question "Since singlink 1.9.0"
 
-!!! failure "Deprecated in sing-box 1.10.0"
+!!! failure "Deprecated in singlink 1.10.0"
     
-    `rule_set_ipcidr_match_source` is renamed to `rule_set_ip_cidr_match_source` and will be remove in sing-box 1.11.0.
+    `rule_set_ipcidr_match_source` is renamed to `rule_set_ip_cidr_match_source` and will be remove in singlink 1.11.0.
 
 Make `ip_cidr` rule items in rule-sets match the source IP.
 
 #### rule_set_ip_cidr_match_source
 
-!!! question "Since sing-box 1.10.0"
+!!! question "Since singlink 1.10.0"
 
 Make `ip_cidr` rule items in rule-sets match the source IP.
 
 #### match_response
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Enable response-based matching. When enabled, this rule matches against the evaluated response
 (set by a preceding [`evaluate`](/configuration/dns/rule_action/#evaluate) action)
@@ -568,7 +568,7 @@ Also required for `ip_cidr`, `ip_is_private`, and `ip_accept_any` when used with
 
 #### ip_accept_any
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 Match when the DNS query response contains at least one address.
 
@@ -578,9 +578,9 @@ Invert match result.
 
 #### outbound
 
-!!! failure "Deprecated in sing-box 1.12.0"
+!!! failure "Deprecated in singlink 1.12.0"
 
-    `outbound` rule items are deprecated and will be removed in sing-box 1.14.0, check [Migration](/migration/#migrate-outbound-dns-rule-items-to-domain-resolver). 
+    `outbound` rule items are deprecated and will be removed in singlink 1.14.0, check [Migration](/migration/#migrate-outbound-dns-rule-items-to-domain-resolver).
 
 Match outbound.
 
@@ -594,33 +594,33 @@ See [DNS Rule Actions](../rule_action/) for details.
 
 #### server
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
     Moved to [DNS Rule Action](../rule_action#route).
 
 #### disable_cache
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
     Moved to [DNS Rule Action](../rule_action#route).
 
 #### rewrite_ttl
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
     Moved to [DNS Rule Action](../rule_action#route).
 
 #### client_subnet
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
     Moved to [DNS Rule Action](../rule_action#route).
 
 ### Legacy Address Filter Fields
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
-    Legacy Address Filter Fields are deprecated and will be removed in sing-box 1.16.0,
+    Legacy Address Filter Fields are deprecated and will be removed in singlink 1.16.0,
     check [Migration](/migration/#migrate-address-filter-fields-to-response-matching).
 
 Only takes effect for address requests (A/AAAA/HTTPS). When the query results do not match the address filtering rule items, the current rule will be skipped.
@@ -635,15 +635,15 @@ Only takes effect for address requests (A/AAAA/HTTPS). When the query results do
 
 #### geoip
 
-!!! failure "Removed in sing-box 1.12.0"
+!!! failure "Removed in singlink 1.12.0"
 
-    GeoIP is deprecated in sing-box 1.8.0 and removed in sing-box 1.12.0, check [Migration](/migration/#migrate-geoip-to-rule-sets).
+    GeoIP is deprecated in singlink 1.8.0 and removed in singlink 1.12.0, check [Migration](/migration/#migrate-geoip-to-rule-sets).
 
 Match GeoIP with query response.
 
 #### ip_cidr
 
-!!! question "Since sing-box 1.9.0"
+!!! question "Since singlink 1.9.0"
 
 Match IP CIDR with query response.
 
@@ -652,7 +652,7 @@ check [Migration](/migration/#migrate-address-filter-fields-to-response-matching
 
 #### ip_is_private
 
-!!! question "Since sing-box 1.9.0"
+!!! question "Since singlink 1.9.0"
 
 Match private IP with query response.
 
@@ -661,18 +661,18 @@ check [Migration](/migration/#migrate-address-filter-fields-to-response-matching
 
 #### rule_set_ip_cidr_accept_empty
 
-!!! question "Since sing-box 1.10.0"
+!!! question "Since singlink 1.10.0"
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
-    `rule_set_ip_cidr_accept_empty` is deprecated and will be removed in sing-box 1.16.0,
+    `rule_set_ip_cidr_accept_empty` is deprecated and will be removed in singlink 1.16.0,
     check [Migration](/migration/#migrate-address-filter-fields-to-response-matching).
 
 Make `ip_cidr` rules in rule-sets accept empty query response.
 
 ### Response Match Fields
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Match fields for the evaluated response. Require `match_response` to be set to `true`
 and a preceding rule with [`evaluate`](/configuration/dns/rule_action/#evaluate) action to populate the response.

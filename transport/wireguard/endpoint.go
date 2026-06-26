@@ -13,8 +13,8 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/dialer"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/dialer"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"

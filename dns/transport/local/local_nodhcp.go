@@ -5,8 +5,8 @@ package local
 import (
 	"context"
 
-	"github.com/sagernet/sing-box/dns"
-	"github.com/sagernet/sing-box/log"
+	"github.com/singlink/singlink/dns"
+	"github.com/singlink/singlink/log"
 	N "github.com/sagernet/sing/common/network"
 )
 

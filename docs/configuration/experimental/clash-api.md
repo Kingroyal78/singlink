@@ -1,9 +1,9 @@
-!!! quote "Changes in sing-box 1.10.0"
+!!! quote "Changes in singlink 1.10.0"
 
     :material-plus: [access_control_allow_origin](#access_control_allow_origin)  
     :material-plus: [access_control_allow_private_network](#access_control_allow_private_network)
 
-!!! quote "Changes in sing-box 1.8.0"
+!!! quote "Changes in singlink 1.8.0"
 
     :material-delete-alert: [store_mode](#store_mode)  
     :material-delete-alert: [store_selected](#store_selected)  
@@ -38,7 +38,7 @@
 
 === "Example (online)"
 
-    !!! question "Since sing-box 1.10.0"
+    !!! question "Since singlink 1.10.0"
 
     ```json
     {
@@ -53,7 +53,7 @@
 
 === "Example (download)"
 
-    !!! question "Since sing-box 1.10.0"
+    !!! question "Since singlink 1.10.0"
 
     ```json
     {
@@ -76,7 +76,7 @@ RESTful web API listening address. Clash API will be disabled if empty.
 #### external_ui
 
 A relative path to the configuration directory or an absolute path to a
-directory in which you put some static web resource. sing-box will then
+directory in which you put some static web resource. singlink will then
 serve it at `http://{{external-controller}}/ui`.
 
 #### external_ui_download_url
@@ -105,7 +105,7 @@ This setting has no direct effect, but can be used in routing and DNS rules via 
 
 #### access_control_allow_origin
 
-!!! question "Since sing-box 1.10.0"
+!!! question "Since singlink 1.10.0"
 
 CORS allowed origins, `*` will be used if empty.
 
@@ -113,7 +113,7 @@ To access the Clash API on a private network from a public website, you must exp
 
 #### access_control_allow_private_network
 
-!!! question "Since sing-box 1.10.0"
+!!! question "Since singlink 1.10.0"
 
 Allow access from private network.
 
@@ -121,7 +121,7 @@ To access the Clash API on a private network from a public website, `access_cont
 
 #### store_mode
 
-!!! failure "Deprecated in sing-box 1.8.0"
+!!! failure "Deprecated in singlink 1.8.0"
 
     `store_mode` is deprecated in Clash API and enabled by default if `cache_file.enabled`.
 
@@ -129,7 +129,7 @@ Store Clash mode in cache file.
 
 #### store_selected
 
-!!! failure "Deprecated in sing-box 1.8.0"
+!!! failure "Deprecated in singlink 1.8.0"
 
     `store_selected` is deprecated in Clash API and enabled by default if `cache_file.enabled`.
 
@@ -141,7 +141,7 @@ Store selected outbound for the `Selector` outbound in cache file.
 
 #### store_fakeip
 
-!!! failure "Deprecated in sing-box 1.8.0"
+!!! failure "Deprecated in singlink 1.8.0"
 
     `store_selected` is deprecated in Clash API and migrated to `cache_file.store_fakeip`.
 
@@ -149,7 +149,7 @@ Store fakeip in cache file.
 
 #### cache_file
 
-!!! failure "Deprecated in sing-box 1.8.0"
+!!! failure "Deprecated in singlink 1.8.0"
 
     `cache_file` is deprecated in Clash API and migrated to `cache_file.enabled` and `cache_file.path`.
 
@@ -157,7 +157,7 @@ Cache file path, `cache.db` will be used if empty.
 
 #### cache_id
 
-!!! failure "Deprecated in sing-box 1.8.0"
+!!! failure "Deprecated in singlink 1.8.0"
 
     `cache_id` is deprecated in Clash API and migrated to `cache_file.cache_id`.
 

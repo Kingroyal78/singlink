@@ -6,7 +6,7 @@ import (
 	"context"
 	"slices"
 
-	"github.com/sagernet/sing-box/adapter"
+	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/tailscale/ipn"
 	"github.com/sagernet/tailscale/ipn/ipnstate"
 )

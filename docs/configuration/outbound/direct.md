@@ -2,7 +2,7 @@
 icon: material/alert-decagram
 ---
 
-!!! quote "Changes in sing-box 1.11.0"
+!!! quote "Changes in singlink 1.11.0"
 
     :material-delete-clock: [override_address](#override_address)  
     :material-delete-clock: [override_port](#override_port)
@@ -27,17 +27,17 @@ icon: material/alert-decagram
 
 #### override_address
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
-    Destination override fields are deprecated in sing-box 1.11.0 and will be removed in sing-box 1.13.0, see [Migration](/migration/#migrate-destination-override-fields-to-route-options).
+    Destination override fields are deprecated in singlink 1.11.0 and will be removed in singlink 1.13.0, see [Migration](/migration/#migrate-destination-override-fields-to-route-options).
 
 Override the connection destination address.
 
 #### override_port
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
-    Destination override fields are deprecated in sing-box 1.11.0 and will be removed in sing-box 1.13.0, see [Migration](/migration/#migrate-destination-override-fields-to-route-options).
+    Destination override fields are deprecated in singlink 1.11.0 and will be removed in singlink 1.13.0, see [Migration](/migration/#migrate-destination-override-fields-to-route-options).
 
 Override the connection destination port.
 

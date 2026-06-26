@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
 	"github.com/sagernet/sing-tun"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/x/list"
+	"github.com/singlink/singlink/adapter"
 
 	"github.com/stretchr/testify/require"
 	"go4.org/netipx"
@@ -49,6 +49,7 @@ func (r *ruleSetItemTestRouter) NeedFindProcess() bool                      { re
 func (r *ruleSetItemTestRouter) NeedFindNeighbor() bool                     { return false }
 func (r *ruleSetItemTestRouter) NeighborResolver() adapter.NeighborResolver { return nil }
 func (r *ruleSetItemTestRouter) AppendTracker(adapter.ConnectionTracker)    {}
+func (r *ruleSetItemTestRouter) RemoveTracker(adapter.ConnectionTracker)    {}
 func (r *ruleSetItemTestRouter) ResetNetwork()                              {}
 
 type countingRuleSet struct {

@@ -1,6 +1,6 @@
 # Introduction
 
-sing-box uses JSON for configuration files.
+singlink uses JSON for configuration files.
 ### Structure
 
 ```json
@@ -40,17 +40,17 @@ sing-box uses JSON for configuration files.
 ### Check
 
 ```bash
-sing-box check
+singlink check
 ```
 
 ### Format
 
 ```bash
-sing-box format -w -c config.json -D config_directory
+singlink format -w -c config.json -D config_directory
 ```
 
 ### Merge
 
 ```bash
-sing-box merge output.json -c config.json -D config_directory
+singlink merge output.json -c config.json -D config_directory
 ```

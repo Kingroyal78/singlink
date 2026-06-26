@@ -3,8 +3,8 @@ package adapter
 import (
 	"context"
 
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 type Endpoint interface {

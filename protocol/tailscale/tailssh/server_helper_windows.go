@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	gliderssh "github.com/sagernet/gliderssh"
-	"github.com/sagernet/sing-box/adapter"
+	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/tailscale/util/winutil"
 

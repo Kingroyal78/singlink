@@ -7,12 +7,13 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing/common/byteformats"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/json"
 	"github.com/sagernet/sing/common/json/badjson"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -64,8 +65,10 @@ func applyDebugListenOption(options option.DebugOptions) {
 		})
 	})
 	debugHTTPServer = &http.Server{
-		Addr:    options.Listen,
-		Handler: r,
+		Addr:              options.Listen,
+		Handler:           r,
+		ReadHeaderTimeout: C.TCPTimeout,
+		IdleTimeout:       C.TCPKeepAliveInitial,
 	}
 	go func() {
 		err := debugHTTPServer.ListenAndServe()

@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 # Service
 
@@ -23,7 +23,7 @@ icon: material/new-box
 
 | Type              | Format                                |
 |-------------------|---------------------------------------|
-| `api`             | [sing-box API](./api)                 |
+| `api`             | [singlink API](./api)                 |
 | `ccm`             | [CCM](./ccm)                          |
 | `derp`            | [DERP](./derp)                        |
 | `hysteria-realm`  | [Hysteria Realm](./hysteria-realm)    |

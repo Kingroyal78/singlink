@@ -3,12 +3,12 @@
 package include
 
 import (
-	"github.com/sagernet/sing-box/adapter/certificate"
-	"github.com/sagernet/sing-box/adapter/endpoint"
-	"github.com/sagernet/sing-box/adapter/service"
-	"github.com/sagernet/sing-box/dns"
-	"github.com/sagernet/sing-box/protocol/tailscale"
-	"github.com/sagernet/sing-box/service/derp"
+	"github.com/singlink/singlink/adapter/certificate"
+	"github.com/singlink/singlink/adapter/endpoint"
+	"github.com/singlink/singlink/adapter/service"
+	"github.com/singlink/singlink/dns"
+	"github.com/singlink/singlink/protocol/tailscale"
+	"github.com/singlink/singlink/service/derp"
 )
 
 func registerTailscaleEndpoint(registry *endpoint.Registry) {

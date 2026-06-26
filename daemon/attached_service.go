@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/sagernet/sing-box/log"
+	"github.com/singlink/singlink/log"
 )
 
 const defaultAttachedLogMaxLines = 3000

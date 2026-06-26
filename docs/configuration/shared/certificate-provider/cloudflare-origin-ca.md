@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 # Cloudflare Origin CA
 
@@ -35,7 +35,7 @@ List of domain names or wildcard domain names to include in the certificate.
 
 Root directory used to store the issued certificate, private key, and metadata.
 
-If empty, sing-box uses the same default data directory as the ACME certificate provider:
+If empty, singlink uses the same default data directory as the ACME certificate provider:
 `$XDG_DATA_HOME/certmagic` or `$HOME/.local/share/certmagic`.
 
 #### api_token

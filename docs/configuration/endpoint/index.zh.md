@@ -1,4 +1,4 @@
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 # 端点
 

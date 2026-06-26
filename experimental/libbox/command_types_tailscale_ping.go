@@ -1,6 +1,6 @@
 package libbox
 
-import "github.com/sagernet/sing-box/daemon"
+import "github.com/singlink/singlink/daemon"
 
 type TailscalePingResult struct {
 	LatencyMs      float64

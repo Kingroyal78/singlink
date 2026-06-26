@@ -2,15 +2,15 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [neighbor_domain](#neighbor_domain)
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [prefer_go](#prefer_go)
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 # Local
 
@@ -42,11 +42,11 @@ icon: material/new-box
 
 #### prefer_go
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 启用后，`local` DNS 服务器将尽可能通过拨号自身来解析 DNS。
 
-具体来说，它禁用了在 sing-box 1.13.0 中作为功能添加的以下行为：
+具体来说，它禁用了在 singlink 1.13.0 中作为功能添加的以下行为：
 
 1. 在 Apple 平台上：尝试在 NetworkExtension 中使用 `getaddrinfo` 解析 A/AAAA 请求。
 2. 在 Linux 上：当可用时通过 `systemd-resolvd` 的 DBus 接口进行解析。
@@ -63,7 +63,7 @@ icon: material/new-box
 
 #### neighbor_domain
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 用于从[邻居解析器](/zh/configuration/shared/neighbor/)而非上游回答 A/AAAA 查询的域后缀列表。
 

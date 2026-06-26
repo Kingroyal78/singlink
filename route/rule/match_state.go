@@ -1,6 +1,6 @@
 package rule
 
-import "github.com/sagernet/sing-box/adapter"
+import "github.com/singlink/singlink/adapter"
 
 type ruleMatchState uint8
 

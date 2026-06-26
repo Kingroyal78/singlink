@@ -4,26 +4,26 @@ icon: material/alert-decagram
 
 # Route
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [default_http_client](#default_http_client)  
     :material-plus: [find_neighbor](#find_neighbor)  
     :material-plus: [dhcp_lease_files](#dhcp_lease_files)
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [default_domain_resolver](#default_domain_resolver)  
     :material-note-remove: [geoip](#geoip)  
     :material-note-remove: [geosite](#geosite)
 
-!!! quote "Changes in sing-box 1.11.0"
+!!! quote "Changes in singlink 1.11.0"
 
     :material-plus: [default_network_strategy](#default_network_strategy)  
     :material-plus: [default_network_type](#default_network_type)  
     :material-plus: [default_fallback_network_type](#default_fallback_network_type)  
     :material-plus: [default_fallback_delay](#default_fallback_delay)
 
-!!! quote "Changes in sing-box 1.8.0"
+!!! quote "Changes in singlink 1.8.0"
 
     :material-plus: [rule_set](#rule_set)  
     :material-delete-clock: [geoip](#geoip)  
@@ -71,7 +71,7 @@ List of [Route Rule](./rule/)
 
 #### rule_set
 
-!!! question "Since sing-box 1.8.0"
+!!! question "Since singlink 1.8.0"
 
 List of [rule-set](/configuration/rule-set/)
 
@@ -127,7 +127,7 @@ Enable process search for logging when no `process_name`, `process_path`, `packa
 
 #### find_neighbor
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 !!! quote ""
 
@@ -139,7 +139,7 @@ See [Neighbor Resolution](/configuration/shared/neighbor/) for setup.
 
 #### dhcp_lease_files
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 !!! quote ""
 
@@ -151,7 +151,7 @@ Automatically detected from common DHCP servers (dnsmasq, odhcpd, ISC dhcpd, Kea
 
 #### default_http_client
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Tag of the default [HTTP Client](/configuration/shared/http-client/) used by remote rule-sets.
 
@@ -159,7 +159,7 @@ If empty and `http_clients` is defined, the first HTTP client is used.
 
 #### default_domain_resolver
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 See [Dial Fields](/configuration/shared/dial/#domain_resolver) for details.
 
@@ -167,7 +167,7 @@ Can be overridden by `outbound.domain_resolver`.
 
 #### default_network_strategy
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 See [Dial Fields](/configuration/shared/dial/#network_strategy) for details.
 
@@ -179,18 +179,18 @@ Conflicts with `default_interface`.
 
 #### default_network_type
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 See [Dial Fields](/configuration/shared/dial/#network_type) for details.
 
 #### default_fallback_network_type
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 See [Dial Fields](/configuration/shared/dial/#fallback_network_type) for details.
 
 #### default_fallback_delay
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 See [Dial Fields](/configuration/shared/dial/#fallback_delay) for details.

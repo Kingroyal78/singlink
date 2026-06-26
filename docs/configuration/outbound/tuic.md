@@ -71,7 +71,7 @@ Conflict with `udp_over_stream`.
 #### udp_over_stream
 
 This is the TUIC port of the [UDP over TCP protocol](/configuration/shared/udp-over-tcp/), designed to provide a QUIC
-stream based UDP relay mode that TUIC does not provide. Since it is an add-on protocol, you will need to use sing-box or
+stream based UDP relay mode that TUIC does not provide. Since it is an add-on protocol, you will need to use singlink or
 another program compatible with the protocol as a server.
 
 This mode has no positive effect in a proper UDP proxy scenario and should only be applied to relay streaming UDP

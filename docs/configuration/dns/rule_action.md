@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-delete-clock: [strategy](#strategy)  
     :material-plus: [evaluate](#evaluate)  
@@ -10,12 +10,12 @@ icon: material/new-box
     :material-plus: [disable_optimistic_cache](#disable_optimistic_cache)  
     :material-plus: [timeout](#timeout)
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [strategy](#strategy)  
     :material-plus: [predefined](#predefined)
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 ### route
 
@@ -42,11 +42,11 @@ Tag of target server.
 
 #### strategy
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
-    `strategy` is deprecated in sing-box 1.14.0 and will be removed in sing-box 1.16.0.
+    `strategy` is deprecated in singlink 1.14.0 and will be removed in singlink 1.16.0.
 
 Set domain strategy for this query.
 
@@ -58,7 +58,7 @@ Disable cache and save cache in this query.
 
 #### disable_optimistic_cache
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Disable optimistic DNS caching in this query.
 
@@ -68,7 +68,7 @@ Rewrite TTL in DNS responses.
 
 #### timeout
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Override the DNS query timeout for matched queries.
 
@@ -84,7 +84,7 @@ Will override `dns.client_subnet`.
 
 ### evaluate
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 ```json
 {
@@ -119,7 +119,7 @@ Disable cache and save cache in this query.
 
 #### disable_optimistic_cache
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Disable optimistic DNS caching in this query.
 
@@ -129,7 +129,7 @@ Rewrite TTL in DNS responses.
 
 #### timeout
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Override the DNS query timeout for matched queries.
 
@@ -145,7 +145,7 @@ Will override `dns.client_subnet`.
 
 ### respond
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 ```json
 {
@@ -201,7 +201,7 @@ Not available when `method` is set to drop.
 
 ### predefined
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 ```json
 {

@@ -1,4 +1,4 @@
-!!! quote "Changes in sing-box 1.10.0"
+!!! quote "Changes in singlink 1.10.0"
 
     :material-plus: QUIC client type detect support for QUIC  
     :material-plus: Chromium support for QUIC  

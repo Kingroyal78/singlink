@@ -5,18 +5,18 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/sagernet/sing-box/adapter"
-	boxService "github.com/sagernet/sing-box/adapter/service"
-	"github.com/sagernet/sing-box/common/listener"
-	"github.com/sagernet/sing-box/common/tls"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/daemon"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	N "github.com/sagernet/sing/common/network"
 	aTLS "github.com/sagernet/sing/common/tls"
+	"github.com/singlink/singlink/adapter"
+	boxService "github.com/singlink/singlink/adapter/service"
+	"github.com/singlink/singlink/common/listener"
+	"github.com/singlink/singlink/common/tls"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/daemon"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -83,7 +83,9 @@ func (s *Service) Start(stage adapter.StartStage) error {
 		}
 	}
 	s.httpServer = &http.Server{
-		Handler: h2c.NewHandler(newHTTPHandler(s.logger, s.grpcServer, s.options, s.dashboard), new(http2.Server)),
+		Handler:           h2c.NewHandler(newHTTPHandler(s.logger, s.grpcServer, s.options, s.dashboard), new(http2.Server)),
+		ReadHeaderTimeout: C.TCPTimeout,
+		IdleTimeout:       C.TCPKeepAliveInitial,
 		BaseContext: func(net.Listener) context.Context {
 			return s.ctx
 		},
@@ -118,11 +120,16 @@ func (s *Service) Start(stage adapter.StartStage) error {
 
 func (s *Service) Close() error {
 	s.cancel()
+	var err error
 	if s.dashboard != nil {
-		s.dashboard.close()
+		err = E.Append(err, s.dashboard.close(), func(closeErr error) error {
+			return E.Cause(closeErr, "close dashboard")
+		})
 	}
 	if s.httpServer != nil {
-		s.httpServer.Close()
+		err = E.Append(err, s.httpServer.Close(), func(closeErr error) error {
+			return E.Cause(closeErr, "close HTTP server")
+		})
 	}
 	if s.grpcServer != nil {
 		s.grpcServer.Stop()
@@ -130,8 +137,11 @@ func (s *Service) Close() error {
 	if s.startedService != nil {
 		s.startedService.Close()
 	}
-	return common.Close(
+	err = E.Append(err, common.Close(
 		common.PtrOrNil(s.listener),
 		s.tlsConfig,
-	)
+	), func(closeErr error) error {
+		return closeErr
+	})
+	return err
 }

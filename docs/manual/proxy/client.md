@@ -22,7 +22,7 @@ which are essentially ordinary HTTP proxies that only support TCP.
 | macOS                                        | :material-check:                     | :material-check:    |
 | GNOME/KDE                                    | :material-check:                     | :material-check:    |
 | Android                                      | ROOT or adb (permission) is required | :material-check:    |
-| Android/iOS (with sing-box graphical client) | via `tun.platform.http_proxy`        | :material-check:    |
+| Android/iOS (with singlink graphical client) | via `tun.platform.http_proxy`        | :material-check:    |
 
 As one of the most well-known proxy methods, it has many shortcomings:
 many TCP clients that are not based on HTTP do not check and use the system proxy.
@@ -51,7 +51,7 @@ due to the low technical requirements it imposes on the software.
 All L2/L3 proxies (seriously defined VPNs, such as OpenVPN, WireGuard) are based on virtual network interfaces,
 which is also the only way for all L4 proxies to work as VPNs on mobile platforms like Android, iOS.
 
-The sing-box inherits and develops clash-premium’s TUN inbound (L3 to L4 conversion)
+The singlink inherits and develops clash-premium’s TUN inbound (L3 to L4 conversion)
 as the most reasonable method for performing transparent proxying.
 
 ```mermaid
@@ -68,7 +68,7 @@ flowchart TB
     gvisor --> assemble
     system --> assemble
     assemble --> conn[TCP and UDP connections]
-    conn --> router[sing-box Router]
+    conn --> router[singlink Router]
     router --> direct[Direct outbound]
     router --> proxy[Proxy outbounds]
     router -- DNS hijack --> dns_out[DNS outbound]

@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/sagernet/fswatch"
-	"github.com/sagernet/sing-box/adapter"
+	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 

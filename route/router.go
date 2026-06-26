@@ -4,15 +4,9 @@ import (
 	"context"
 	"os"
 	"runtime"
+	"sync"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/process"
-	"github.com/sagernet/sing-box/common/taskmonitor"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
-	R "github.com/sagernet/sing-box/route/rule"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/task"
@@ -20,6 +14,13 @@ import (
 	"github.com/sagernet/sing/contrab/maphash"
 	"github.com/sagernet/sing/service"
 	"github.com/sagernet/sing/service/pause"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/process"
+	"github.com/singlink/singlink/common/taskmonitor"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	R "github.com/singlink/singlink/route/rule"
 )
 
 var _ adapter.Router = (*Router)(nil)
@@ -45,6 +46,7 @@ type Router struct {
 	processCache      freelru.Cache[processCacheKey, processCacheEntry]
 	neighborResolver  adapter.NeighborResolver
 	pauseManager      pause.Manager
+	trackersAccess    sync.RWMutex
 	trackers          []adapter.ConnectionTracker
 	platformInterface adapter.PlatformInterface
 	started           bool
@@ -268,7 +270,29 @@ func (r *Router) Rules() []adapter.Rule {
 }
 
 func (r *Router) AppendTracker(tracker adapter.ConnectionTracker) {
+	r.trackersAccess.Lock()
+	defer r.trackersAccess.Unlock()
 	r.trackers = append(r.trackers, tracker)
+}
+
+func (r *Router) RemoveTracker(tracker adapter.ConnectionTracker) {
+	r.trackersAccess.Lock()
+	defer r.trackersAccess.Unlock()
+	for index, existing := range r.trackers {
+		if existing == tracker {
+			r.trackers = append(r.trackers[:index], r.trackers[index+1:]...)
+			return
+		}
+	}
+}
+
+func (r *Router) trackerSnapshot() []adapter.ConnectionTracker {
+	r.trackersAccess.RLock()
+	defer r.trackersAccess.RUnlock()
+	if len(r.trackers) == 0 {
+		return nil
+	}
+	return append([]adapter.ConnectionTracker(nil), r.trackers...)
 }
 
 func (r *Router) NeedFindProcess() bool {

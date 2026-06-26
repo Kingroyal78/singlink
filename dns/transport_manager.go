@@ -7,13 +7,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/taskmonitor"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/taskmonitor"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
 )
 
 var _ adapter.DNSTransportManager = (*TransportManager)(nil)
@@ -166,7 +166,7 @@ func (m *TransportManager) Close() error {
 			monitor.Finish()
 		}
 	}
-	return nil
+	return err
 }
 
 func (m *TransportManager) Transports() []adapter.DNSTransport {

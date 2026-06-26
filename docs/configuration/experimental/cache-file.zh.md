@@ -1,11 +1,11 @@
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-delete-clock: [store_rdrc](#store_rdrc)  
     :material-plus: [store_dns](#store_dns)
 
-!!! quote "sing-box 1.9.0 中的更改"
+!!! quote "singlink 1.9.0 中的更改"
 
     :material-plus: [store_rdrc](#store_rdrc)  
     :material-plus: [rdrc_timeout](#rdrc_timeout)
@@ -46,9 +46,9 @@
 
 #### store_rdrc
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
-    `store_rdrc` 已在 sing-box 1.14.0 废弃，且将在 sing-box 1.16.0 中被移除，参阅[迁移指南](/zh/migration/#迁移-store_rdrc)。
+    `store_rdrc` 已在 singlink 1.14.0 废弃，且将在 singlink 1.16.0 中被移除，参阅[迁移指南](/zh/migration/#迁移-store_rdrc)。
 
 将拒绝的 DNS 响应缓存存储在缓存文件中。
 
@@ -62,6 +62,6 @@
 
 #### store_dns
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 将 DNS 缓存存储在缓存文件中。

@@ -7,18 +7,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	boxService "github.com/sagernet/sing-box/adapter/service"
-	"github.com/sagernet/sing-box/common/listener"
-	"github.com/sagernet/sing-box/common/tls"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	N "github.com/sagernet/sing/common/network"
 	aTLS "github.com/sagernet/sing/common/tls"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	boxService "github.com/singlink/singlink/adapter/service"
+	"github.com/singlink/singlink/common/listener"
+	"github.com/singlink/singlink/common/tls"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/net/http2"
@@ -59,7 +59,9 @@ func NewService(ctx context.Context, logger log.ContextLogger, tag string, optio
 			Listen:  options.ListenOptions,
 		}),
 		httpServer: &http.Server{
-			Handler: chiRouter,
+			Handler:           chiRouter,
+			ReadHeaderTimeout: C.TCPTimeout,
+			IdleTimeout:       C.TCPKeepAliveInitial,
 		},
 		traffics:  make(map[string]*TrafficManager),
 		users:     make(map[string]*UserManager),

@@ -2,9 +2,9 @@
 icon: material/delete-clock
 ---
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
-    旧的特殊出站已被弃用，且将在 sing-box 1.13.0 中被移除, 参阅 [迁移指南](/zh/migration/#迁移旧的特殊出站到规则动作). 
+    旧的特殊出站已被弃用，且将在 singlink 1.13.0 中被移除, 参阅 [迁移指南](/zh/migration/#迁移旧的特殊出站到规则动作).
 
 `dns` 出站是一个内部 DNS 服务器。
 

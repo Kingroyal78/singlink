@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/sagernet/sing-box/common/geosite"
+	"github.com/singlink/singlink/common/geosite"
 
 	"github.com/stretchr/testify/require"
 )

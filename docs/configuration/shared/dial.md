@@ -2,24 +2,24 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-alert: [domain_resolver](#domain_resolver)
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: [disable_tcp_keep_alive](#disable_tcp_keep_alive)  
     :material-plus: [tcp_keep_alive](#tcp_keep_alive)  
     :material-plus: [tcp_keep_alive_interval](#tcp_keep_alive_interval)  
     :material-plus: [bind_address_no_port](#bind_address_no_port)
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [domain_resolver](#domain_resolver)  
     :material-delete-clock: [domain_strategy](#domain_strategy)  
     :material-plus: [netns](#netns)
 
-!!! quote "Changes in sing-box 1.11.0"
+!!! quote "Changes in singlink 1.11.0"
 
     :material-plus: [network_strategy](#network_strategy)  
     :material-alert: [fallback_delay](#fallback_delay)  
@@ -84,7 +84,7 @@ The IPv6 address to bind to.
 
 #### bind_address_no_port
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 !!! quote ""
 
@@ -110,7 +110,7 @@ Reuse listener address.
 
 #### netns
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 !!! quote ""
 
@@ -141,13 +141,13 @@ Enable TCP Multi Path.
 
 #### disable_tcp_keep_alive
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 Disable TCP keep alive.
 
 #### tcp_keep_alive
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
     Default value changed from `10m` to `5m`.
 
@@ -157,7 +157,7 @@ TCP keep alive initial period.
 
 #### tcp_keep_alive_interval
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 TCP keep alive interval.
 
@@ -171,7 +171,7 @@ Enable UDP fragmentation.
 
 !!! warning ""
 
-    `outbound` DNS rule items are deprecated and will be removed in sing-box 1.14.0, so this item will be required for outbound/endpoints using domain name in server address since sing-box 1.14.0.
+    `outbound` DNS rule items are deprecated and will be removed in singlink 1.14.0, so this item will be required for outbound/endpoints using domain name in server address since singlink 1.14.0.
 
 !!! info ""
 
@@ -190,7 +190,7 @@ Setting this option directly to a string is equivalent to setting `server` of th
 
 #### network_strategy
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -212,7 +212,7 @@ Conflicts with `bind_interface`, `inet4_bind_address` and `inet6_bind_address`.
 
 #### network_type
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -227,7 +227,7 @@ Device's default network is used by default.
 
 #### fallback_network_type
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -239,7 +239,7 @@ All other networks expect preferred are used by default.
 
 #### fallback_delay
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -259,9 +259,9 @@ Only take effect when `domain_strategy` or `network_strategy` is set.
 
 #### domain_strategy
 
-!!! failure "Deprecated in sing-box 1.12.0"
+!!! failure "Deprecated in singlink 1.12.0"
 
-    `domain_strategy` is deprecated and will be removed in sing-box 1.14.0, check [Migration](/migration/#migrate-outbound-domain-strategy-option-to-domain-resolver).
+    `domain_strategy` is deprecated and will be removed in singlink 1.14.0, check [Migration](/migration/#migrate-outbound-domain-strategy-option-to-domain-resolver).
 
 Available values: `prefer_ipv4`, `prefer_ipv6`, `ipv4_only`, `ipv6_only`.
 

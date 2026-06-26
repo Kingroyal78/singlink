@@ -5,12 +5,12 @@ import (
 	"os"
 	"sync"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/taskmonitor"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/taskmonitor"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
 )
 
 var _ adapter.EndpointManager = (*Manager)(nil)
@@ -78,7 +78,7 @@ func (m *Manager) Close() error {
 		monitor.Finish()
 		done()
 	}
-	return nil
+	return err
 }
 
 func (m *Manager) Endpoints() []adapter.Endpoint {
@@ -131,6 +131,10 @@ func (m *Manager) Create(ctx context.Context, router adapter.Router, logger log.
 			err = adapter.LegacyStart(endpoint, stage)
 			done()
 			if err != nil {
+				closeErr := endpoint.Close()
+				if closeErr != nil {
+					return E.Errors(E.Cause(err, stage, " ", name), E.Cause(closeErr, "close failed ", name))
+				}
 				return E.Cause(err, stage, " ", name)
 			}
 		}
@@ -139,6 +143,13 @@ func (m *Manager) Create(ctx context.Context, router adapter.Router, logger log.
 		if m.started {
 			err = existsEndpoint.Close()
 			if err != nil {
+				closeErr := endpoint.Close()
+				if closeErr != nil {
+					return E.Errors(
+						E.Cause(err, "close endpoint/", existsEndpoint.Type(), "[", existsEndpoint.Tag(), "]"),
+						E.Cause(closeErr, "close failed endpoint/", endpoint.Type(), "[", endpoint.Tag(), "]"),
+					)
+				}
 				return E.Cause(err, "close endpoint/", existsEndpoint.Type(), "[", existsEndpoint.Tag(), "]")
 			}
 		}

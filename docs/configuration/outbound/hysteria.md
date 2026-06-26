@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [server_ports](#server_ports)  
     :material-plus: [hop_interval](#hop_interval)
@@ -58,7 +58,7 @@ The server port.
 
 #### server_ports
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 Server port range list.
 
@@ -66,7 +66,7 @@ Conflicts with `server_port`.
 
 #### hop_interval
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 Port hopping interval.
 
@@ -135,18 +135,18 @@ See [Dial Fields](/configuration/shared/dial/) for details.
 
 #### recv_window_conn
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
     Use QUIC fields `stream_receive_window` instead.
 
 #### recv_window
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
     Use QUIC fields `connection_receive_window` instead.
 
 #### disable_mtu_discovery
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
     Use QUIC fields `disable_path_mtu_discovery` instead.

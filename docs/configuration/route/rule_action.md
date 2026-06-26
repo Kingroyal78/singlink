@@ -2,19 +2,19 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: [bypass](#bypass)  
     :material-alert: [reject](#reject)
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [resolve.disable_optimistic_cache](#disable_optimistic_cache)  
     :material-plus: [resolve.timeout](#timeout)  
     :material-plus: [tls_spoof](#tls_spoof)  
     :material-plus: [tls_spoof_method](#tls_spoof_method)
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [tls_fragment](#tls_fragment)  
     :material-plus: [tls_fragment_fallback_delay](#tls_fragment_fallback_delay)  
@@ -54,7 +54,7 @@ See `route-options` fields below.
 
 ### bypass
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 !!! quote ""
 
@@ -69,7 +69,7 @@ See `route-options` fields below.
 }
 ```
 
-`bypass` bypasses sing-box at the kernel level for auto redirect connections in pre-match.
+`bypass` bypasses singlink at the kernel level for auto redirect connections in pre-match.
 
 For non-auto-redirect connections and already established connections,
 if `outbound` is specified, the behavior is the same as `route`;
@@ -88,9 +88,9 @@ See `route-options` fields below.
 
 ### reject
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
-    Since sing-box 1.13.0, you can reject (or directly reply to) ICMP echo (ping) requests using `reject` action.
+    Since singlink 1.13.0, you can reject (or directly reply to) ICMP echo (ping) requests using `reject` action.
 
 ```json
 {
@@ -133,7 +133,7 @@ Not available when `method` is set to drop.
 }
 ```
 
-`hijack-dns` hijack DNS requests to the sing-box DNS module.
+`hijack-dns` hijack DNS requests to the singlink DNS module.
 
 ## Non-final actions
 
@@ -222,7 +222,7 @@ If no protocol is sniffed, the following ports will be recognized as protocols b
 
 #### tls_fragment
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 Fragment TLS handshakes to bypass firewalls.
 
@@ -240,7 +240,7 @@ because the target is considered to be local or behind a transparent proxy.
 
 #### tls_fragment_fallback_delay
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 The fallback value used when TLS segmentation cannot automatically determine the wait time.
 
@@ -248,13 +248,13 @@ The fallback value used when TLS segmentation cannot automatically determine the
 
 #### tls_record_fragment
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 Fragment TLS handshake into multiple TLS records to bypass firewalls.
 
 #### tls_spoof
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 !!! quote ""
 
@@ -268,7 +268,7 @@ and required privileges.
 
 #### tls_spoof_method
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 How the forged segment is rejected by the real server. See outbound TLS
 [`spoof_method`](/configuration/shared/tls/#spoof_method) for the full table
@@ -331,25 +331,25 @@ DNS resolution strategy, available values are: `prefer_ipv4`, `prefer_ipv6`, `ip
 
 #### disable_cache
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 Disable cache and save cache in this query.
 
 #### disable_optimistic_cache
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Disable optimistic DNS caching in this query.
 
 #### rewrite_ttl
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 Rewrite TTL in DNS responses.
 
 #### timeout
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Override the DNS query timeout for this lookup.
 
@@ -357,7 +357,7 @@ Will override `dns.timeout`.
 
 #### client_subnet
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 Append a `edns0-subnet` OPT extra record with the specified IP prefix to every query by default.
 

@@ -2,11 +2,11 @@
 icon: material/alert-decagram
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [mdns](./mdns/)
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [type](#type)
 

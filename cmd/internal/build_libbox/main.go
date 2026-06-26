@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	_ "github.com/sagernet/gomobile"
-	"github.com/sagernet/sing-box/cmd/internal/build_shared"
-	"github.com/sagernet/sing-box/log"
+	"github.com/singlink/singlink/cmd/internal/build_shared"
+	"github.com/singlink/singlink/log"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/rw"
 	"github.com/sagernet/sing/common/shell"
@@ -60,8 +60,8 @@ func init() {
 	if err != nil {
 		currentTag = "unknown"
 	}
-	sharedFlags = append(sharedFlags, "-ldflags", "-X github.com/sagernet/sing-box/constant.Version="+currentTag+" -X internal/godebug.defaultGODEBUG=multipathtcp=0 -s -w -buildid=  -checklinkname=0")
-	debugFlags = append(debugFlags, "-ldflags", "-X github.com/sagernet/sing-box/constant.Version="+currentTag+" -X internal/godebug.defaultGODEBUG=multipathtcp=0 -checklinkname=0")
+	sharedFlags = append(sharedFlags, "-ldflags", "-X github.com/singlink/singlink/constant.Version="+currentTag+" -X internal/godebug.defaultGODEBUG=multipathtcp=0 -s -w -buildid=  -checklinkname=0")
+	debugFlags = append(debugFlags, "-ldflags", "-X github.com/singlink/singlink/constant.Version="+currentTag+" -X internal/godebug.defaultGODEBUG=multipathtcp=0 -checklinkname=0")
 
 	sharedTags = append(sharedTags, "with_gvisor", "with_quic", "with_wireguard", "with_utls", "with_naive_outbound", "with_clash_api", "with_usbip", "badlinkname", "tfogo_checklinkname0")
 	darwinTags = append(darwinTags, "with_dhcp", "grpcnotrace")
@@ -146,7 +146,7 @@ func buildAndroidVariant(config AndroidBuildConfig, bindTarget string) {
 		log.Fatal(err)
 	}
 
-	copyPath := filepath.Join("..", "sing-box-for-android", "app", "libs")
+	copyPath := filepath.Join("..", "singlink-for-android", "app", "libs")
 	if rw.IsDir(copyPath) {
 		copyPath, _ = filepath.Abs(copyPath)
 		err = rw.CopyFile(config.OutputName, filepath.Join(copyPath, config.OutputName))
@@ -237,7 +237,7 @@ func buildApple() {
 		log.Fatal(err)
 	}
 
-	copyPath := filepath.Join("..", "sing-box-for-apple")
+	copyPath := filepath.Join("..", "singlink-for-apple")
 	if rw.IsDir(copyPath) {
 		targetDir := filepath.Join(copyPath, "Libbox.xcframework")
 		targetDir, _ = filepath.Abs(targetDir)

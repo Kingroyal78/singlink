@@ -2,10 +2,10 @@
 icon: material/new-box
 ---
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 `cloudflared` 入站运行一个内嵌的 Cloudflare Tunnel 客户端，并将所有传入的隧道流量
-（TCP、UDP、ICMP）通过 sing-box 的路由引擎转发。
+（TCP、UDP、ICMP）通过 singlink 的路由引擎转发。
 
 ### 结构
 

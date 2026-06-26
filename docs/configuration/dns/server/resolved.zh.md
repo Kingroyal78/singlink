@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 # Resolved
 
@@ -42,7 +42,7 @@ icon: material/new-box
 
 === "仅分割 DNS"
 
-    === ":material-card-multiple: sing-box 1.14.0"
+    === ":material-card-multiple: singlink 1.14.0"
 
         ```json
         {
@@ -69,7 +69,7 @@ icon: material/new-box
         }
         ```
 
-    === ":material-card-remove: sing-box < 1.14.0"
+    === ":material-card-remove: singlink < 1.14.0"
 
         ```json
         {

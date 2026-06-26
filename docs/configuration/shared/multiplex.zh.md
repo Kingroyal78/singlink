@@ -76,7 +76,7 @@
 
 !!! info
 
-    需要 sing-box 服务器版本 1.3-beta9 或更高。
+    需要 singlink 服务器版本 1.3-beta9 或更高。
 
 启用填充。
 

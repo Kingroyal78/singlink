@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/process"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/process"
 )
 
 type processCacheKey struct {

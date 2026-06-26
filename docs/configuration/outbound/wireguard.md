@@ -2,15 +2,15 @@
 icon: material/delete-clock
 ---
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
-    WireGuard outbound is deprecated and will be removed in sing-box 1.13.0, check [Migration](/migration/#migrate-wireguard-outbound-to-endpoint).
+    WireGuard outbound is deprecated and will be removed in singlink 1.13.0, check [Migration](/migration/#migrate-wireguard-outbound-to-endpoint).
 
-!!! quote "Changes in sing-box 1.11.0"
+!!! quote "Changes in singlink 1.11.0"
 
     :material-delete-alert: [gso](#gso)
 
-!!! quote "Changes in sing-box 1.8.0"
+!!! quote "Changes in singlink 1.8.0"
     
     :material-plus: [gso](#gso)
 
@@ -84,11 +84,11 @@ Custom interface name for system interface.
 
 #### gso
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
-    GSO will be automatically enabled when available since sing-box 1.11.0.
+    GSO will be automatically enabled when available since singlink 1.11.0.
 
-!!! question "Since sing-box 1.8.0"
+!!! question "Since singlink 1.8.0"
 
 !!! quote ""
 

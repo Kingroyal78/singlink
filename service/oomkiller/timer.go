@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common/byteformats"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/memory"

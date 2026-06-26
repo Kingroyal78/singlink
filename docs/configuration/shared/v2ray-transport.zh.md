@@ -55,7 +55,7 @@ V2Ray Transport 是 v2ray 发明的一组私有协议，并污染了其他协议
 !!! warning
 
     V2Ray 文档称服务端和客户端的路径必须一致，但实际代码允许客户端向路径添加任何后缀。
-    sing-box 使用与 V2Ray 相同的行为，但请注意，该行为在 `WebSocket` 和 `HTTPUpgrade` 传输层中不存在。
+    singlink 使用与 V2Ray 相同的行为，但请注意，该行为在 `WebSocket` 和 `HTTPUpgrade` 传输层中不存在。
 
 HTTP 请求路径
 

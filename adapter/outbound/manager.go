@@ -7,13 +7,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/taskmonitor"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/taskmonitor"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
 )
 
 var _ adapter.OutboundManager = (*Manager)(nil)
@@ -189,7 +189,7 @@ func (m *Manager) Close() error {
 			done()
 		}
 	}
-	return nil
+	return err
 }
 
 func (m *Manager) Outbounds() []adapter.Outbound {
@@ -221,6 +221,10 @@ func (m *Manager) Remove(tag string) error {
 	if !found {
 		return os.ErrInvalid
 	}
+	dependBy := m.dependByTag[tag]
+	if len(dependBy) > 0 {
+		return E.New("outbound[", tag, "] is depended by ", strings.Join(dependBy, ", "))
+	}
 	delete(m.outboundByTag, tag)
 	index := common.Index(m.outbounds, func(it adapter.Outbound) bool {
 		return it == outbound
@@ -238,20 +242,7 @@ func (m *Manager) Remove(tag string) error {
 			m.defaultOutbound = nil
 		}
 	}
-	dependBy := m.dependByTag[tag]
-	if len(dependBy) > 0 {
-		return E.New("outbound[", tag, "] is depended by ", strings.Join(dependBy, ", "))
-	}
-	dependencies := outbound.Dependencies()
-	for _, dependency := range dependencies {
-		if len(m.dependByTag[dependency]) == 1 {
-			delete(m.dependByTag, dependency)
-		} else {
-			m.dependByTag[dependency] = common.Filter(m.dependByTag[dependency], func(it string) bool {
-				return it != tag
-			})
-		}
-	}
+	m.removeDependenciesLocked(outbound)
 	if started {
 		return common.Close(outbound)
 	}
@@ -273,6 +264,10 @@ func (m *Manager) Create(ctx context.Context, router adapter.Router, logger log.
 			err = adapter.LegacyStart(outbound, stage)
 			done()
 			if err != nil {
+				closeErr := common.Close(outbound)
+				if closeErr != nil {
+					return E.Errors(E.Cause(err, stage, " ", name), E.Cause(closeErr, "close failed ", name))
+				}
 				return E.Cause(err, stage, " ", name)
 			}
 		}
@@ -283,9 +278,17 @@ func (m *Manager) Create(ctx context.Context, router adapter.Router, logger log.
 		if m.started {
 			err = common.Close(existsOutbound)
 			if err != nil {
+				closeErr := common.Close(outbound)
+				if closeErr != nil {
+					return E.Errors(
+						E.Cause(err, "close outbound/", existsOutbound.Type(), "[", existsOutbound.Tag(), "]"),
+						E.Cause(closeErr, "close failed outbound/", outbound.Type(), "[", outbound.Tag(), "]"),
+					)
+				}
 				return E.Cause(err, "close outbound/", existsOutbound.Type(), "[", existsOutbound.Tag(), "]")
 			}
 		}
+		m.removeDependenciesLocked(existsOutbound)
 		existsIndex := common.Index(m.outbounds, func(it adapter.Outbound) bool {
 			return it == existsOutbound
 		})
@@ -307,4 +310,16 @@ func (m *Manager) Create(ctx context.Context, router adapter.Router, logger log.
 		}
 	}
 	return nil
+}
+
+func (m *Manager) removeDependenciesLocked(outbound adapter.Outbound) {
+	for _, dependency := range outbound.Dependencies() {
+		if len(m.dependByTag[dependency]) == 1 {
+			delete(m.dependByTag, dependency)
+		} else {
+			m.dependByTag[dependency] = common.Filter(m.dependByTag[dependency], func(it string) bool {
+				return it != outbound.Tag()
+			})
+		}
+	}
 }

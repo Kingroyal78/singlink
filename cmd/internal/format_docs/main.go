@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sagernet/sing-box/log"
+	"github.com/singlink/singlink/log"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func processFile(path string) error {
 
 	for _, line := range lines {
 		// Check for quote block start
-		if strings.HasPrefix(line, "!!! quote \"") && strings.Contains(line, "sing-box") {
+		if strings.HasPrefix(line, "!!! quote \"") && strings.Contains(line, "singlink") {
 			inQuoteBlock = true
 			materialLines = nil
 			result = append(result, line)

@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 # SSM API
 

@@ -1,6 +1,6 @@
 # 实验性
 
-!!! quote "sing-box 1.8.0 中的更改"
+!!! quote "singlink 1.8.0 中的更改"
 
     :material-plus: [cache_file](#cache_file)  
     :material-alert-decagram: [clash_api](#clash_api)

@@ -14,13 +14,6 @@ import (
 	"time"
 
 	"github.com/sagernet/cors"
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/trafficcontrol"
-	"github.com/sagernet/sing-box/common/urltest"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/experimental"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/json"
@@ -29,6 +22,13 @@ import (
 	"github.com/sagernet/sing/service/filemanager"
 	"github.com/sagernet/ws"
 	"github.com/sagernet/ws/wsutil"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/trafficcontrol"
+	"github.com/singlink/singlink/common/urltest"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/experimental"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -83,8 +83,10 @@ func NewServer(ctx context.Context, logFactory log.ObservableFactory, options op
 		endpoint:  service.FromContext[adapter.EndpointManager](ctx),
 		logger:    logFactory.NewLogger("clash-api"),
 		httpServer: &http.Server{
-			Addr:    options.ExternalController,
-			Handler: chiRouter,
+			Addr:              options.ExternalController,
+			Handler:           chiRouter,
+			ReadHeaderTimeout: C.TCPTimeout,
+			IdleTimeout:       C.TCPKeepAliveInitial,
 		},
 		trafficManager:           trafficManager,
 		urlTestHistory:           urlTestHistory,

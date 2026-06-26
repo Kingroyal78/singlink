@@ -2,35 +2,35 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [include_mac_address](#include_mac_address)  
     :material-plus: [exclude_mac_address](#exclude_mac_address)  
     :material-plus: [dns_mode](#dns_mode)  
     :material-plus: [dns_address](#dns_address)
 
-!!! quote "sing-box 1.13.3 中的更改"
+!!! quote "singlink 1.13.3 中的更改"
 
     :material-alert: [strict_route](#strict_route)
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [auto_redirect_reset_mark](#auto_redirect_reset_mark)  
     :material-plus: [auto_redirect_nfqueue](#auto_redirect_nfqueue)  
     :material-plus: [exclude_mptcp](#exclude_mptcp)  
     :material-plus: [auto_redirect_iproute2_fallback_rule_index](#auto_redirect_iproute2_fallback_rule_index)
 
-!!! quote "sing-box 1.12.0 中的更改"
+!!! quote "singlink 1.12.0 中的更改"
 
     :material-plus: [loopback_address](#loopback_address)
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-delete-alert: [gso](#gso)  
     :material-alert-decagram: [route_address_set](#stack)  
     :material-alert-decagram: [route_exclude_address_set](#stack)
 
-!!! quote "sing-box 1.10.0 中的更改"
+!!! quote "singlink 1.10.0 中的更改"
 
     :material-plus: [address](#address)  
     :material-delete-clock: [inet4_address](#inet4_address)  
@@ -49,12 +49,12 @@ icon: material/new-box
     :material-plus: [route_address_set](#route_address_set)  
     :material-plus: [route_exclude_address_set](#route_address_set)
 
-!!! quote "sing-box 1.9.0 中的更改"
+!!! quote "singlink 1.9.0 中的更改"
 
     :material-plus: [platform.http_proxy.bypass_domain](#platformhttp_proxybypass_domain)  
     :material-plus: [platform.http_proxy.match_domain](#platformhttp_proxymatch_domain)
 
-!!! quote "sing-box 1.8.0 中的更改"
+!!! quote "singlink 1.8.0 中的更改"
 
     :material-plus: [gso](#gso)  
     :material-alert-decagram: [stack](#stack)
@@ -201,7 +201,7 @@ icon: material/new-box
 
 #### address
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 ==必填==
 
@@ -209,9 +209,9 @@ tun 接口的 IPv4 和 IPv6 前缀。
 
 #### inet4_address
 
-!!! failure "已在 sing-box 1.10.0 废弃"
+!!! failure "已在 singlink 1.10.0 废弃"
 
-    `inet4_address` 已合并到 `address` 且将在 sing-box 1.12.0 中被移除。
+    `inet4_address` 已合并到 `address` 且将在 singlink 1.12.0 中被移除。
 
 ==必填==
 
@@ -219,9 +219,9 @@ tun 接口的 IPv4 前缀。
 
 #### inet6_address
 
-!!! failure "已在 sing-box 1.10.0 废弃"
+!!! failure "已在 singlink 1.10.0 废弃"
 
-    `inet6_address` 已合并到 `address` 且将在 sing-box 1.12.0 中被移除。
+    `inet6_address` 已合并到 `address` 且将在 singlink 1.12.0 中被移除。
 
 tun 接口的 IPv6 前缀。
 
@@ -231,7 +231,7 @@ tun 接口的 IPv6 前缀。
 
 #### dns_mode
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 TUN 接口上 DNS 的处理方式。
 
@@ -257,13 +257,13 @@ TUN 接口的 53 端口流量。
 
 #### dns_address
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 [`dns_mode`](#dns_mode) 使用的 DNS 服务器地址列表。
 
-未设置时，sing-box 会按地址族在 [`address`](#address) 的第一个 IPv4/IPv6
+未设置时，singlink 会按地址族在 [`address`](#address) 的第一个 IPv4/IPv6
 条目后面取下一个 IP 作为 DNS 服务器地址，并将流向这些推导地址的连接额外劫持到
-sing-box DNS 模块，等价于一条
+singlink DNS 模块，等价于一条
 [`hijack-dns`](/zh/configuration/route/rule_action/#hijack-dns) 路由动作；这与此选项加入之前的行为一致。
 
 设置后，将不再自动劫持；如仍需此行为，请显式配置
@@ -271,11 +271,11 @@ sing-box DNS 模块，等价于一条
 
 #### gso
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
-    GSO 对于透明代理场景没有优势，已废弃和不再生效，且将在 sing-box 1.12.0 中被移除。
+    GSO 对于透明代理场景没有优势，已废弃和不再生效，且将在 singlink 1.12.0 中被移除。
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 !!! quote ""
 
@@ -301,7 +301,7 @@ sing-box DNS 模块，等价于一条
 
 #### iproute2_table_index
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 `auto_route` 生成的 iproute2 路由表索引。
 
@@ -309,7 +309,7 @@ sing-box DNS 模块，等价于一条
 
 #### iproute2_rule_index
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 `auto_route` 生成的 iproute2 规则起始索引。
 
@@ -317,7 +317,7 @@ sing-box DNS 模块，等价于一条
 
 #### auto_redirect
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 !!! quote ""
 
@@ -336,7 +336,7 @@ sing-box DNS 模块，等价于一条
 
 #### auto_redirect_input_mark
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 `auto_redirect` 使用的连接输入标记。
 
@@ -344,7 +344,7 @@ sing-box DNS 模块，等价于一条
 
 #### auto_redirect_output_mark
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 `auto_redirect` 使用的连接输出标记。
 
@@ -352,7 +352,7 @@ sing-box DNS 模块，等价于一条
 
 #### auto_redirect_reset_mark
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 `auto_redirect` 预匹配使用的连接重置标记。
 
@@ -360,7 +360,7 @@ sing-box DNS 模块，等价于一条
 
 #### auto_redirect_nfqueue
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 `auto_redirect` 预匹配使用的 NFQueue 编号。
 
@@ -368,18 +368,18 @@ sing-box DNS 模块，等价于一条
 
 #### auto_redirect_iproute2_fallback_rule_index
 
-!!! question "自 sing-box 1.12.18 起"
+!!! question "自 singlink 1.12.18 起"
 
 `auto_redirect` 生成的 iproute2 回退规则索引。
 
 此规则在系统默认规则（32766: main，32767: default）之后检查，
-仅当系统路由表中未找到路由时才将流量路由到 sing-box 路由表。
+仅当系统路由表中未找到路由时才将流量路由到 singlink 路由表。
 
 默认使用 `32768`。
 
 #### exclude_mptcp
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -389,11 +389,11 @@ sing-box DNS 模块，等价于一条
 
 此类流量通常由 Apple 系统创建。
 
-启用时，MPTCP 连接将绕过 sing-box 直接连接，否则，将被拒绝以避免错误。
+启用时，MPTCP 连接将绕过 singlink 直接连接，否则，将被拒绝以避免错误。
 
 #### loopback_address
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 环回地址是用于使指向指定地址的 TCP 连接连接到来源地址的。
 
@@ -410,8 +410,8 @@ sing-box DNS 模块，等价于一条
 * 使不支持的网络不可达。
 * 出于历史遗留原因，当未启用 `strict_route` 或 `auto_redirect` 时，所有 ICMP 流量将不会通过 TUN。
 * 当启用 `auto_redirect` 时，`strict_route` 也影响 `SO_BINDTODEVICE` 流量：
-    * 启用：`SO_BINDTODEVICE` 流量被重定向通过 sing-box。
-    * 禁用：`SO_BINDTODEVICE` 流量绕过 sing-box。
+    * 启用：`SO_BINDTODEVICE` 流量被重定向通过 singlink。
+    * 禁用：`SO_BINDTODEVICE` 流量绕过 singlink。
 
 *在 Windows 中*：
 
@@ -422,45 +422,45 @@ sing-box DNS 模块，等价于一条
 
 #### route_address
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 设置到 Tun 的自定义路由。
 
 #### inet4_route_address
 
-!!! failure "已在 sing-box 1.10.0 废弃"
+!!! failure "已在 singlink 1.10.0 废弃"
 
-    `inet4_route_address` 已合并到 `route_address` 且将在 sing-box 1.12.0 中被移除。
+    `inet4_route_address` 已合并到 `route_address` 且将在 singlink 1.12.0 中被移除。
 
 启用 `auto_route` 时使用自定义路由而不是默认路由。
 
 #### inet6_route_address
 
-!!! failure "已在 sing-box 1.10.0 废弃"
+!!! failure "已在 singlink 1.10.0 废弃"
 
-    `inet6_route_address` 已合并到 `route_address` 且将在 sing-box 1.12.0 中被移除。
+    `inet6_route_address` 已合并到 `route_address` 且将在 singlink 1.12.0 中被移除。
 
 启用 `auto_route` 时使用自定义路由而不是默认路由。
 
 #### route_exclude_address
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 设置到 Tun 的排除自定义路由。
 
 #### inet4_route_exclude_address
 
-!!! failure "已在 sing-box 1.10.0 废弃"
+!!! failure "已在 singlink 1.10.0 废弃"
 
-    `inet4_route_exclude_address` 已合并到 `route_exclude_address` 且将在 sing-box 1.12.0 中被移除。
+    `inet4_route_exclude_address` 已合并到 `route_exclude_address` 且将在 singlink 1.12.0 中被移除。
 
 启用 `auto_route` 时排除自定义路由。
 
 #### inet6_route_exclude_address
 
-!!! failure "已在 sing-box 1.10.0 废弃"
+!!! failure "已在 singlink 1.10.0 废弃"
 
-    `inet6_route_exclude_address` 已合并到 `route_exclude_address` 且将在 sing-box 1.12.0 中被移除。
+    `inet6_route_exclude_address` 已合并到 `route_exclude_address` 且将在 singlink 1.12.0 中被移除。
 
 启用 `auto_route` 时排除自定义路由。
 
@@ -468,21 +468,21 @@ sing-box DNS 模块，等价于一条
 
 === "`auto_redirect` 已启用"
 
-    !!! question "自 sing-box 1.10.0 起"
+    !!! question "自 singlink 1.10.0 起"
     
     !!! quote ""
     
         仅支持 Linux，且需要 nftables，`auto_route` 和 `auto_redirect` 已启用。 
     
     将指定规则集中的目标 IP CIDR 规则添加到防火墙。
-    不匹配的流量将绕过 sing-box 路由。
+    不匹配的流量将绕过 singlink 路由。
 
 === "`auto_redirect` 未启用"
 
-    !!! question "自 sing-box 1.11.0 起"
+    !!! question "自 singlink 1.11.0 起"
 
     将指定规则集中的目标 IP CIDR 规则添加到路由，相当于添加到 `route_address`。
-    不匹配的流量将绕过 sing-box 路由。
+    不匹配的流量将绕过 singlink 路由。
 
     请注意，由于 Android VpnService 无法处理大量路由（DeadSystemException），
     因此它**在 Android 图形客户端上不起作用**，但除此之外，它在所有命令行客户端和 Apple 平台上都可以正常工作。
@@ -491,23 +491,23 @@ sing-box DNS 模块，等价于一条
 
 === "`auto_redirect` 已启用"
 
-    !!! question "自 sing-box 1.10.0 起"
+    !!! question "自 singlink 1.10.0 起"
     
     !!! quote ""
     
         仅支持 Linux，且需要 nftables，`auto_route` 和 `auto_redirect` 已启用。 
 
     将指定规则集中的目标 IP CIDR 规则添加到防火墙。
-    匹配的流量将绕过 sing-box 路由。
+    匹配的流量将绕过 singlink 路由。
 
     与 `route.default_mark` 和 `[dialOptions].routing_mark` 冲突。
 
 === "`auto_redirect` 未启用"
 
-    !!! question "自 sing-box 1.11.0 起"
+    !!! question "自 singlink 1.11.0 起"
 
     将指定规则集中的目标 IP CIDR 规则添加到路由，相当于添加到 `route_exclude_address`。
-    匹配的流量将绕过 sing-box 路由。
+    匹配的流量将绕过 singlink 路由。
 
     请注意，由于 Android VpnService 无法处理大量路由（DeadSystemException），
     因此它**在 Android 图形客户端上不起作用**，但除此之外，它在所有命令行客户端和 Apple 平台上都可以正常工作。
@@ -526,7 +526,7 @@ UDP NAT 过期时间。
 
 #### stack
 
-!!! quote "sing-box 1.8.0 中的更改"
+!!! quote "singlink 1.8.0 中的更改"
 
     :material-delete-alert: 旧的 LWIP 栈已被弃用并移除。
 
@@ -603,7 +603,7 @@ TCP/IP 栈。
 
 #### include_mac_address
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 !!! quote ""
 
@@ -615,7 +615,7 @@ TCP/IP 栈。
 
 #### exclude_mac_address
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 !!! quote ""
 

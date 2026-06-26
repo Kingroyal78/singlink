@@ -4,9 +4,9 @@ import (
 	"flag"
 	"os"
 
-	"github.com/sagernet/sing-box/cmd/internal/build_shared"
-	"github.com/sagernet/sing-box/common/badversion"
-	"github.com/sagernet/sing-box/log"
+	"github.com/singlink/singlink/cmd/internal/build_shared"
+	"github.com/singlink/singlink/common/badversion"
+	"github.com/singlink/singlink/log"
 )
 
 var (

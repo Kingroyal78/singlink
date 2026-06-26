@@ -2,19 +2,19 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [bypass](#bypass)  
     :material-alert: [reject](#reject)
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [resolve.disable_optimistic_cache](#disable_optimistic_cache)  
     :material-plus: [resolve.timeout](#timeout)  
     :material-plus: [tls_spoof](#tls_spoof)  
     :material-plus: [tls_spoof_method](#tls_spoof_method)
 
-!!! quote "sing-box 1.12.0 中的更改"
+!!! quote "singlink 1.12.0 中的更改"
 
     :material-plus: [tls_fragment](#tls_fragment)  
     :material-plus: [tls_fragment_fallback_delay](#tls_fragment_fallback_delay)  
@@ -50,7 +50,7 @@ icon: material/new-box
 
 ### bypass
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -65,7 +65,7 @@ icon: material/new-box
 }
 ```
 
-`bypass` 在预匹配中为 auto redirect 连接在内核层面绕过 sing-box。
+`bypass` 在预匹配中为 auto redirect 连接在内核层面绕过 singlink。
 
 对于非 auto redirect 连接和已建立的连接，如果指定了 `outbound`，行为与 `route` 相同；否则规则将被跳过。
 
@@ -81,9 +81,9 @@ icon: material/new-box
 
 ### reject
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
-    自 sing-box 1.13.0 起，您可以通过 `reject` 动作拒绝（或直接回复）ICMP 回显（ping）请求。
+    自 singlink 1.13.0 起，您可以通过 `reject` 动作拒绝（或直接回复）ICMP 回显（ping）请求。
 
 ```json
 {
@@ -126,7 +126,7 @@ icon: material/new-box
 }
 ```
 
-`hijack-dns` 劫持 DNS 请求至 sing-box DNS 模块。
+`hijack-dns` 劫持 DNS 请求至 singlink DNS 模块。
 
 ## 非最终动作
 
@@ -217,7 +217,7 @@ UDP 连接超时时间。
 
 #### tls_fragment
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 通过分段 TLS 握手数据包来绕过防火墙检测。
 
@@ -232,7 +232,7 @@ UDP 连接超时时间。
 
 #### tls_fragment_fallback_delay
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 当 TLS 分片功能无法自动判定等待时间时使用的回退值。
 
@@ -240,13 +240,13 @@ UDP 连接超时时间。
 
 #### tls_record_fragment
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 通过分段 TLS 握手数据包到多个 TLS 记录来绕过防火墙检测。
 
 #### tls_spoof
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 !!! quote ""
 
@@ -259,7 +259,7 @@ UDP 连接超时时间。
 
 #### tls_spoof_method
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 控制伪造报文被真实服务器拒绝的方式。完整取值表与平台说明参阅出站 TLS
 [`spoof_method`](/zh/configuration/shared/tls/#spoof_method)。
@@ -321,25 +321,25 @@ DNS 解析策略，可用值有：`prefer_ipv4`、`prefer_ipv6`、`ipv4_only`、
 
 #### disable_cache
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 在此查询中禁用缓存。
 
 #### disable_optimistic_cache
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 在此查询中禁用乐观 DNS 缓存。
 
 #### rewrite_ttl
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 重写 DNS 回应中的 TTL。
 
 #### timeout
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 覆盖此查询的 DNS 查询超时时间。
 
@@ -347,7 +347,7 @@ DNS 解析策略，可用值有：`prefer_ipv4`、`prefer_ipv6`、`ipv4_only`、
 
 #### client_subnet
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 默认情况下，将带有指定 IP 前缀的 `edns0-subnet` OPT 附加记录附加到每个查询。
 

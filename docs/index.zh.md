@@ -1,10 +1,10 @@
 ---
-description: 欢迎来到该 sing-box 项目的文档页。
+description: 欢迎来到该 singlink 项目的文档页。
 ---
 
 # :material-home: 开始
 
-欢迎来到该 sing-box 项目的文档页。
+欢迎来到该 singlink 项目的文档页。
 
 通用代理平台。
 

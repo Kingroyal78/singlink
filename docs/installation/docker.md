@@ -8,12 +8,12 @@ icon: material/docker
 
 ```bash
 docker run -d \
-  -v /etc/sing-box:/etc/sing-box/ \
-  --name=sing-box \
+  -v /etc/singlink:/etc/singlink/ \
+  --name=singlink \
   --restart=always \
-  ghcr.io/sagernet/sing-box \
-  -D /var/lib/sing-box \
-  -C /etc/sing-box/ run
+  ghcr.io/sagernet/singlink \
+  -D /var/lib/singlink \
+  -C /etc/singlink/ run
 ```
 
 ## :material-box-shadow: Compose
@@ -21,11 +21,11 @@ docker run -d \
 ```yaml
 version: "3.8"
 services:
-  sing-box:
-    image: ghcr.io/sagernet/sing-box
-    container_name: sing-box
+  singlink:
+    image: ghcr.io/sagernet/singlink
+    container_name: singlink
     restart: always
     volumes:
-      - /etc/sing-box:/etc/sing-box/
-    command: -D /var/lib/sing-box -C /etc/sing-box/ run
+      - /etc/singlink:/etc/singlink/
+    command: -D /var/lib/singlink -C /etc/singlink/ run
 ```

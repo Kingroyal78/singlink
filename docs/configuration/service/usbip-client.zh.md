@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 # USB/IP Client
 
@@ -10,7 +10,7 @@ USB/IP Client 服务通过 [USB/IP](https://usbip.sourceforge.net/) 导入由 [U
 
 可用于 Linux、Windows 和 macOS（macOS 需要使用 CGO 构建）。不支持 iOS。
 
-服务端必须是 sing-box（或 sing-usbip）服务端。
+服务端必须是 singlink（或 sing-usbip）服务端。
 
 ### 结构
 
@@ -28,7 +28,7 @@ USB/IP Client 服务通过 [USB/IP](https://usbip.sourceforge.net/) 导入由 [U
 
 !!! info "与官方 USB/IP 协议的区别"
 
-    sing-box 使用 [sing-usbip](https://github.com/SagerNet/sing-usbip)，它使用一套附加协议来支持热插拔等增强功能，但仍然可以与标准 USB/IP 互操作。
+    singlink 使用 [sing-usbip](https://github.com/SagerNet/sing-usbip)，它使用一套附加协议来支持热插拔等增强功能，但仍然可以与标准 USB/IP 互操作。
 
 ### 拨号字段
 

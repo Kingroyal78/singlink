@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.12.0 中的更改"
+!!! quote "singlink 1.12.0 中的更改"
 
     :material-plus: [server_ports](#server_ports)  
     :material-plus: [hop_interval](#hop_interval)
@@ -58,7 +58,7 @@ icon: material/new-box
 
 #### server_ports
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 服务器端口范围列表。
 
@@ -66,7 +66,7 @@ icon: material/new-box
 
 #### hop_interval
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 端口跳跃间隔。
 
@@ -135,18 +135,18 @@ TLS 配置, 参阅 [TLS](/zh/configuration/shared/tls/#出站)。
 
 #### recv_window_conn
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
     请使用 QUIC 字段 `stream_receive_window` 代替。
 
 #### recv_window
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
     请使用 QUIC 字段 `connection_receive_window` 代替。
 
 #### disable_mtu_discovery
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
     请使用 QUIC 字段 `disable_path_mtu_discovery` 代替。

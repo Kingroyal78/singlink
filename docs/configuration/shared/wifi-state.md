@@ -4,12 +4,12 @@ icon: material/new-box
 
 # Wi-Fi State
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: Linux support  
     :material-plus: Windows support
 
-sing-box can monitor Wi-Fi state to enable routing rules based on `wifi_ssid` and `wifi_bssid`.
+singlink can monitor Wi-Fi state to enable routing rules based on `wifi_ssid` and `wifi_bssid`.
 
 ### Platform Support
 
@@ -23,7 +23,7 @@ sing-box can monitor Wi-Fi state to enable routing rules based on `wifi_ssid` an
 
 ### Linux
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 The following backends are supported and will be auto-detected in order of priority:
 
@@ -36,6 +36,6 @@ The following backends are supported and will be auto-detected in order of prior
 
 ### Windows
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 Uses Windows WLAN API.

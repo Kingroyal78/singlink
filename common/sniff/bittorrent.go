@@ -7,8 +7,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/sagernet/sing-box/adapter"
-	C "github.com/sagernet/sing-box/constant"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 	E "github.com/sagernet/sing/common/exceptions"
 )
 

@@ -2,9 +2,9 @@
 icon: material/note-remove
 ---
 
-!!! failure "已在 sing-box 1.12.0 中被移除"
+!!! failure "已在 singlink 1.12.0 中被移除"
 
-    GeoIP 已在 sing-box 1.8.0 废弃且在 sing-box 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-geoip-到规则集)。
+    GeoIP 已在 singlink 1.8.0 废弃且在 singlink 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-geoip-到规则集)。
 
 ### 结构
 

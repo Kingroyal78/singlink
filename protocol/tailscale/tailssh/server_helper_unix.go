@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	gliderssh "github.com/sagernet/gliderssh"
-	"github.com/sagernet/sing-box/adapter"
+	"github.com/singlink/singlink/adapter"
 )
 
 func isPrivilegedUser() bool {

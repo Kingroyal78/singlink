@@ -77,7 +77,7 @@ Conflict with `max_connections` and `min_streams`.
 
 !!! info
 
-    Requires sing-box server version 1.3-beta9 or later.
+    Requires singlink server version 1.3-beta9 or later.
 
 Enable padding.
 

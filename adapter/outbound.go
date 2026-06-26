@@ -5,8 +5,8 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-tun"
 	N "github.com/sagernet/sing/common/network"
 )

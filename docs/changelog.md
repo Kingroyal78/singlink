@@ -17,9 +17,9 @@ icon: material/alert-decagram
 
 **1**:
 
-A new jailbreak build of the iOS [sing-box for Apple](/clients/apple/) client is
+A new jailbreak build of the iOS [singlink for Apple](/clients/apple/) client is
 available, distributed as a `.deb` for rootless iOS 15.0+ from
-[GitHub Releases](https://github.com/SagerNet/sing-box/releases)
+[GitHub Releases](https://github.com/SagerNet/singlink/releases)
 (`SFI-iphoneos-arm64.deb`). Unlike the App Store and TestFlight builds, it can run
 a [Tailscale SSH server](/configuration/endpoint/tailscale/#ssh_server) on the
 device and supports [process matching](/configuration/route/rule/#process_name)
@@ -33,8 +33,8 @@ device and supports [process matching](/configuration/route/rule/#process_name)
 
 **1**:
 
-The [sing-box API service](/configuration/service/api/) can now download, update
-and serve [sing-box-dashboard](https://github.com/SagerNet/sing-box-dashboard)
+The [singlink API service](/configuration/service/api/) can now download, update
+and serve [singlink-dashboard](https://github.com/SagerNet/singlink-dashboard)
 directly over its listener, configured via the new
 [`dashboard`](/configuration/service/api/#dashboard) option.
 
@@ -49,7 +49,7 @@ devices (`provider: default`) runs via the CLI on Linux, Windows, and macOS and
 requires elevated privileges (macOS additionally needs a CGO build and disabled
 System Integrity Protection). With `provider: dynamic`, devices are instead
 supplied at runtime through the API service by the graphical clients on macOS and
-Android, or the [sing-box Dashboard](https://github.com/SagerNet/sing-box-dashboard).
+Android, or the [singlink Dashboard](https://github.com/SagerNet/singlink-dashboard).
 
 #### 1.14.0-alpha.31
 
@@ -57,15 +57,15 @@ Android, or the [sing-box Dashboard](https://github.com/SagerNet/sing-box-dashbo
 
 #### 1.14.0-alpha.30
 
-* Introducing sing-box API service **1**
+* Introducing singlink API service **1**
 * Apple/Android: Introducing remote control **2**
-* Introducing sing-box Dashboard **3**
+* Introducing singlink Dashboard **3**
 * Fixes and improvements
 
 **1**:
 
-The new [sing-box API service](/configuration/service/api/) is a gRPC
-server for observing and controlling the running sing-box instance,
+The new [singlink API service](/configuration/service/api/) is a gRPC
+server for observing and controlling the running singlink instance,
 exposing the same interface the graphical clients use locally: service
 status, logs, outbound groups (selection and URL tests), Clash mode,
 connection tracking, and tools such as network quality tests, STUN
@@ -74,17 +74,17 @@ tests, and Tailscale operations.
 **2**:
 
 The graphical clients for Apple platforms and Android can now control
-remote sing-box instances running the API service. Remote servers (URL
+remote singlink instances running the API service. Remote servers (URL
 and secret) are managed in settings; the dashboard, logs, connections,
 groups, and tools pages can then switch between the local service and
 remote instances.
 
 **3**:
 
-[sing-box Dashboard](https://github.com/SagerNet/sing-box-dashboard) is
+[singlink Dashboard](https://github.com/SagerNet/singlink-dashboard) is
 a new web client for the API service, providing almost the same
 experience as the graphical clients. A public instance is available at
-http://sing-box-dashboard.sagernet.org (shortcut: dash.sing-box.app).
+http://singlink-dashboard.sagernet.org (shortcut: dash.singlink.app).
 
 #### 1.14.0-alpha.29
 
@@ -317,7 +317,7 @@ selects a default rule-set client by tag and is the only field that
 consults it. If `default_http_client` is empty and `http_clients` is
 non-empty, the first entry is used automatically. The legacy fallback
 (use the default outbound when `http_clients` is empty altogether) is
-preserved with a deprecation warning and will be removed in sing-box
+preserved with a deprecation warning and will be removed in singlink
 1.16.0, together with the legacy `download_detour` remote rule-set
 option and the legacy dialer fields on Tailscale endpoints.
 
@@ -351,7 +351,7 @@ or HTTP/3.
 
 This deprecates the Hysteria v1 tuning fields `recv_window_conn`,
 `recv_window`, `recv_window_client`, `max_conn_client` and
-`disable_mtu_discovery`; they will be removed in sing-box 1.16.0.
+`disable_mtu_discovery`; they will be removed in singlink 1.16.0.
 
 **4**:
 
@@ -394,7 +394,7 @@ action.
 
 This deprecates the `independent_cache` DNS option (the DNS cache now
 always keys by transport) and the `store_rdrc` cache file option
-(replaced by `store_dns`); both will be removed in sing-box 1.16.0.
+(replaced by `store_dns`); both will be removed in singlink 1.16.0.
 See [Migration](/migration/#migrate-independent-dns-cache).
 
 #### 1.14.0-alpha.10
@@ -423,7 +423,7 @@ This deprecates the Legacy Address Filter Fields (`ip_cidr`,
 `ip_is_private` without `match_response`) in DNS rules, the Legacy
 `strategy` DNS rule action option, and the Legacy
 `rule_set_ip_cidr_accept_empty` DNS rule item; all three will be removed
-in sing-box 1.16.0.
+in singlink 1.16.0.
 See [Migration](/migration/#migrate-address-filter-fields-to-response-matching).
 
 **2**:
@@ -622,15 +622,15 @@ NaiveProxy outbound now supports QUIC, ECH, UDP over TCP, and configurable QUIC 
 
 Only available on Apple platforms, Android, Windows and some Linux architectures.
 Each Windows release includes `libcronet.dll` —
-ensure this file is in the same directory as `sing-box.exe` or in a directory listed in `PATH`.
+ensure this file is in the same directory as `singlink.exe` or in a directory listed in `PATH`.
 
 See [NaiveProxy outbound](/configuration/outbound/naive/).
 
 **2**:
 
-`auto_redirect` now allows you to bypass sing-box for connections based on routing rules.
+`auto_redirect` now allows you to bypass singlink for connections based on routing rules.
 
-A new rule action `bypass` is introduced to support this feature. When matched during pre-match, the connection will bypass sing-box and connect directly.
+A new rule action `bypass` is introduced to support this feature. When matched during pre-match, the connection will bypass singlink and connect directly.
 
 This feature requires Linux with `auto_redirect` enabled.
 
@@ -639,10 +639,10 @@ See [Pre-match](/configuration/shared/pre-match/) and [Rule Action](/configurati
 **3**:
 
 `auto_redirect` now rejects MPTCP connections by default to fix compatibility issues.
-You can change it to bypass sing-box via the new `exclude_mptcp` option.
+You can change it to bypass singlink via the new `exclude_mptcp` option.
 
 Adds a fallback iproute2 rule checked after system default rules (32766: main, 32767: default),
-ensuring traffic is routed to the sing-box table when no route is found in system tables.
+ensuring traffic is routed to the singlink table when no route is found in system tables.
 The rule index can be customized via `auto_redirect_iproute2_fallback_rule_index` (default: 32768).
 
 See [TUN](/configuration/inbound/tun/#exclude_mptcp).
@@ -660,7 +660,7 @@ See [DNS-01 Challenge](/configuration/shared/dns01_challenge/).
 
 **6**:
 
-sing-box can now monitor Wi-Fi state on Linux and Windows to enable routing rules based on `wifi_ssid` and `wifi_bssid`.
+singlink can now monitor Wi-Fi state on Linux and Windows to enable routing rules based on `wifi_ssid` and `wifi_bssid`.
 
 See [Wi-Fi State](/configuration/shared/wifi-state/).
 
@@ -677,7 +677,7 @@ See [TLS](/configuration/shared/tls/).
 
 **9**:
 
-sing-box can now proxy ICMP echo (ping) requests.
+singlink can now proxy ICMP echo (ping) requests.
 A new `icmp` network type is available for route rules.
 Supported from TUN, WireGuard and Tailscale inbounds to Direct, WireGuard and Tailscale outbounds.
 The `reject` action can also reply to ICMP echo requests.
@@ -733,11 +733,11 @@ See [OCM](/configuration/service/ocm).
 
 **18**:
 
-Due to maintenance difficulties, sing-box 1.13.0 requires at least Go 1.24 to compile.
+Due to maintenance difficulties, singlink 1.13.0 requires at least Go 1.24 to compile.
 
 **19**:
 
-Due to maintenance difficulties, sing-box 1.13.0 will be the last version to support Android 5.0,
+Due to maintenance difficulties, singlink 1.13.0 will be the last version to support Android 5.0,
 and only through a separate legacy build (with `-legacy-android-5` suffix).
 
 For standalone binaries, the minimum Android version has been raised to Android 6.0,
@@ -795,7 +795,7 @@ use NaiveProxy instead for TLS fingerprint resistance.
 **1**:
 
 Adds a fallback iproute2 rule checked after system default rules (32766: main, 32767: default),
-ensuring traffic is routed to the sing-box table when no route is found in system tables.
+ensuring traffic is routed to the singlink table when no route is found in system tables.
 
 The rule index can be customized via `auto_redirect_iproute2_fallback_rule_index` (default: 32768).
 
@@ -807,7 +807,7 @@ The rule index can be customized via `auto_redirect_iproute2_fallback_rule_index
 **1**:
 
 Adds a fallback iproute2 rule checked after system default rules (32766: main, 32767: default),
-ensuring traffic is routed to the sing-box table when no route is found in system tables.
+ensuring traffic is routed to the singlink table when no route is found in system tables.
 
 The rule index can be customized via `auto_redirect_iproute2_fallback_rule_index` (default: 32768).
 
@@ -892,9 +892,9 @@ See [Tailscale endpoint](/configuration/endpoint/tailscale/#system_interface).
 
 **1**:
 
-`auto_redirect` now allows you to bypass sing-box for connections based on routing rules.
+`auto_redirect` now allows you to bypass singlink for connections based on routing rules.
 
-A new rule action `bypass` is introduced to support this feature. When matched during pre-match, the connection will bypass sing-box and connect directly.
+A new rule action `bypass` is introduced to support this feature. When matched during pre-match, the connection will bypass singlink and connect directly.
 
 This feature requires Linux with `auto_redirect` enabled.
 
@@ -924,17 +924,17 @@ See [DNS-01 Challenge](/configuration/shared/dns01_challenge/).
 
 **3**:
 
-sing-box can now monitor Wi-Fi state on Linux and Windows to enable routing rules based on `wifi_ssid` and `wifi_bssid`.
+singlink can now monitor Wi-Fi state on Linux and Windows to enable routing rules based on `wifi_ssid` and `wifi_bssid`.
 
 See [Wi-Fi State](/configuration/shared/wifi-state/).
 
 **4**:
 
-Due to maintenance difficulties, sing-box 1.13.0 requires at least Go 1.24 to compile.
+Due to maintenance difficulties, singlink 1.13.0 requires at least Go 1.24 to compile.
 
 **5**:
 
-Due to maintenance difficulties, sing-box 1.13.0 will be the last version to support Android 5.0,
+Due to maintenance difficulties, singlink 1.13.0 will be the last version to support Android 5.0,
 and only through a separate legacy build (with `-legacy-android-5` suffix).
 
 For standalone binaries, the minimum Android version has been raised to Android 6.0,
@@ -995,7 +995,7 @@ See [TLS](/configuration/shared/tls/#query_server_name).
 **3**:
 
 Each Windows release now includes `libcronet.dll`.
-Ensure this file is in the same directory as `sing-box.exe` or in a directory listed in `PATH`.
+Ensure this file is in the same directory as `singlink.exe` or in a directory listed in `PATH`.
 
 **4**:
 
@@ -1079,7 +1079,7 @@ See [CCM](/configuration/service/ccm).
 **1**:
 
 `auto_redirect` now rejects MPTCP connections by default to fix compatibility issues,
-but you can change it to bypass the sing-box via the new `exclude_mptcp` option.
+but you can change it to bypass the singlink via the new `exclude_mptcp` option.
 
 See [TUN](/configuration/inbound/tun/#exclude_mptcp).
 
@@ -1196,7 +1196,7 @@ See [DNS server](/configuration/dns/server/).
 
 For migration, see [Migrate to new DNS server formats](/migration/#migrate-to-new-dns-server-formats).
 
-Compatibility for old formats will be removed in sing-box 1.14.0.
+Compatibility for old formats will be removed in singlink 1.14.0.
 
 **2**:
 
@@ -1229,7 +1229,7 @@ See [Tailscale](/configuration/endpoint/tailscale/).
 
 **6**:
 
-Due to maintenance difficulties, sing-box 1.12.0 requires at least Go 1.23 to compile.
+Due to maintenance difficulties, singlink 1.12.0 requires at least Go 1.23 to compile.
 
 For Windows 7 users, legacy binaries now continue to compile with Go 1.23 and patches
 from [MetaCubeX/go](https://github.com/MetaCubeX/go).
@@ -1295,7 +1295,7 @@ See [Tun](/configuration/inbound/tun/#loopback_address).
 We have significantly improved the performance of tun inbound on Apple platforms, especially in the gVisor stack.
 
 The following data was tested
-using [tun_bench](https://github.com/SagerNet/sing-box/blob/dev-next/cmd/internal/tun_bench/main.go) on M4 MacBook pro.
+using [tun_bench](https://github.com/SagerNet/singlink/blob/dev-next/cmd/internal/tun_bench/main.go) on M4 MacBook pro.
 
 | Version     | Stack  | MTU   | Upload | Download |
 |-------------|--------|-------|--------|----------|
@@ -1314,7 +1314,7 @@ using [tun_bench](https://github.com/SagerNet/sing-box/blob/dev-next/cmd/interna
 
 **18**:
 
-We continue to experience issues updating our sing-box apps on the App Store and Play Store.
+We continue to experience issues updating our singlink apps on the App Store and Play Store.
 Until we rewrite and resubmit the apps, they are considered irrecoverable.
 Therefore, after this release, we will not be repeating this notice unless there is new information.
 
@@ -1322,7 +1322,7 @@ Therefore, after this release, we will not be repeating this notice unless there
 
 * Fixes and improvements
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-beta.32
@@ -1338,7 +1338,7 @@ We have significantly improved the performance of tun inbound on Apple platforms
 
 * Fixes and improvements
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-beta.24
@@ -1388,7 +1388,7 @@ See [DERP](/configuration/service/derp/#home).
 
 * Fixes and improvements
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-beta.17
@@ -1426,7 +1426,7 @@ See [SSM API Service](/configuration/service/ssm-api/).
 
 * Fixes and improvements
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-beta.13
@@ -1464,7 +1464,7 @@ See [Listen Fields](/configuration/shared/listen/).
 Since we don’t have a replacement for using the `block` outbound in selectors yet,
 we decided to temporarily undeprecate the `block` outbound until a replacement is available in the future.
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-beta.9
@@ -1476,7 +1476,7 @@ violated the rules (TestFlight users are not affected)._
 
 * Fixes and improvements
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-beta.5
@@ -1493,7 +1493,7 @@ violated the rules (TestFlight users are not affected)._
 Now `auto_redirect` fixes compatibility issues between TUN and Docker bridge networks,
 see [Tun](/configuration/inbound/tun/#auto_redirect).
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-beta.3
@@ -1504,7 +1504,7 @@ violated the rules (TestFlight users are not affected)._
 
 * Fixes and improvements
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-beta.1
@@ -1520,7 +1520,7 @@ see [Tun](/configuration/inbound/tun/#auto_redirect).
 
 * Fixes and improvements
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-alpha.19
@@ -1561,7 +1561,7 @@ See [Dial Fields](/configuration/shared/dial/#domain_resolver).
 
 * Fixes and improvements
 
-_We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we
+_We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we
 violated the rules (TestFlight users are not affected)._
 
 #### 1.12.0-alpha.13
@@ -1626,7 +1626,7 @@ See [Tailscale](/configuration/endpoint/tailscale/).
 
 **2**:
 
-Due to maintenance difficulties, sing-box 1.12.0 requires at least Go 1.23 to compile.
+Due to maintenance difficulties, singlink 1.12.0 requires at least Go 1.23 to compile.
 
 For Windows 7 users, legacy binaries now continue to compile with Go 1.23 and patches
 from [MetaCubeX/go](https://github.com/MetaCubeX/go).
@@ -1666,7 +1666,7 @@ See [DNS server](/configuration/dns/server/).
 
 For migration, see [Migrate to new DNS server formats](/migration/#migrate-to-new-dns-server-formats).
 
-Compatibility for old formats will be removed in sing-box 1.14.0.
+Compatibility for old formats will be removed in singlink 1.14.0.
 
 **2**:
 
@@ -1792,7 +1792,7 @@ See [Rule Action](/configuration/route/#override_address) and
 **9**:
 
 The new WireGuard endpoint combines inbound and outbound capabilities,
-and the old outbound will be removed in sing-box 1.13.0.
+and the old outbound will be removed in singlink 1.13.0.
 
 See [Endpoint](/configuration/endpoint/), [WireGuard Endpoint](/configuration/endpoint/wireguard/)
 and [Migrate WireGuard outbound fields to route options](/migration/#migrate-wireguard-outbound-to-endpoint).
@@ -1911,7 +1911,7 @@ see [Deprecated](/deprecated/#gso-option-in-tun).
 **1**:
 
 The new WireGuard endpoint combines inbound and outbound capabilities,
-and the old outbound will be removed in sing-box 1.13.0.
+and the old outbound will be removed in singlink 1.13.0.
 
 See [Endpoint](/configuration/endpoint/), [WireGuard Endpoint](/configuration/endpoint/wireguard/)
 and [Migrate WireGuard outbound fields to route options](/migration/#migrate-wireguard-outbound-to-endpoint).
@@ -2087,14 +2087,14 @@ configure connection redirection to improve proxy performance.
 When auto-redirect is enabled, new route address set options will allow you to
 automatically configure destination IP CIDR rules from a specified rule set to the firewall.
 
-Specified or unspecified destinations will bypass the sing-box routes to get better performance
+Specified or unspecified destinations will bypass the singlink routes to get better performance
 (for example, keep hardware offloading of direct traffics on the router).
 
 See [TUN](/configuration/inbound/tun).
 
 **2**:
 
-The new feature allows you to use AdGuard DNS Filter lists in a sing-box without AdGuard Home.
+The new feature allows you to use AdGuard DNS Filter lists in a singlink without AdGuard Home.
 
 See [AdGuard DNS Filter](/configuration/rule-set/adguard/).
 
@@ -2111,7 +2111,7 @@ See [iproute2_table_index](/configuration/inbound/tun/#iproute2_table_index),
 
 **5**:
 
-Due to maintenance difficulties, sing-box 1.10.0 requires at least Go 1.20 to compile.
+Due to maintenance difficulties, singlink 1.10.0 requires at least Go 1.20 to compile.
 
 **6**:
 
@@ -2140,7 +2140,7 @@ See [DNS Rule](/configuration/dns/rule/#rule_set_ip_cidr_accept_empty).
 
 **10**:
 
-sing-box now uses fsnotify correctly and will not cancel watching
+singlink now uses fsnotify correctly and will not cancel watching
 if the target file is deleted or recreated via rename (e.g. `mv`).
 
 This affects all path options that support reload, including
@@ -2173,7 +2173,7 @@ see [utls](/configuration/shared/tls#utls).
 * Add `process_path_regex` rule item
 * Fixes and improvements
 
-_The macOS standalone versions of sing-box (>=1.9.5/<1.10.0-beta.11) now silently fail and require manual granting of
+_The macOS standalone versions of singlink (>=1.9.5/<1.10.0-beta.11) now silently fail and require manual granting of
 the **Full Disk Access** permission to system extension to start, probably due to Apple's changed security policy. We
 will prompt users about this in feature versions._
 
@@ -2198,14 +2198,14 @@ will prompt users about this in feature versions._
 
 See [Migration](/migration/#bundle-identifier-updates-in-apple-platform-clients).
 
-We are still working on getting all sing-box apps back on the App Store, which should be completed within a week
+We are still working on getting all singlink apps back on the App Store, which should be completed within a week
 (SFI on the App Store and others on TestFlight are already available).
 
 #### 1.10.0-beta.8
 
 * Fixes and improvements
 
-_With the help of a netizen, we are in the process of getting sing-box apps back on the App Store, which should be
+_With the help of a netizen, we are in the process of getting singlink apps back on the App Store, which should be
 completed within a month (TestFlight is already available)._
 
 #### 1.10.0-beta.7
@@ -2249,7 +2249,7 @@ completed within a month (TestFlight is already available)._
 * Fixes and improvements
 
 _Due to problems with our Apple developer account,
-sing-box apps on Apple platforms are temporarily unavailable for download or update.
+singlink apps on Apple platforms are temporarily unavailable for download or update.
 If your company or organization is willing to help us return to the App Store,
 please [contact us](mailto:contact@sagernet.org)._
 
@@ -2264,7 +2264,7 @@ please [contact us](mailto:contact@sagernet.org)._
 
 **1**:
 
-The new feature allows you to use AdGuard DNS Filter lists in a sing-box without AdGuard Home.
+The new feature allows you to use AdGuard DNS Filter lists in a singlink without AdGuard Home.
 
 See [AdGuard DNS Filter](/configuration/rule-set/adguard/).
 
@@ -2316,7 +2316,7 @@ allows you to write headless rules directly without creating a rule-set file.
 
 **2**:
 
-sing-box now uses fsnotify correctly and will not cancel watching
+singlink now uses fsnotify correctly and will not cancel watching
 if the target file is deleted or recreated via rename (e.g. `mv`).
 
 This affects all path options that support reload, including
@@ -2337,7 +2337,7 @@ Something may be broken, please actively report problems with this version.
 **2**:
 
 `rule_set_ipcidr_match_source` route and DNS rule items are renamed to
-`rule_set_ip_cidr_match_source` and will be remove in sing-box 1.11.0.
+`rule_set_ip_cidr_match_source` and will be remove in singlink 1.11.0.
 
 **3**:
 
@@ -2369,7 +2369,7 @@ See [Migration](/migration/#tun-address-fields-are-merged).
 The new feature will allow you to configure the destination IP CIDR rules
 in the specified rule-sets to the firewall automatically.
 
-Specified or unspecified destinations will bypass the sing-box routes to get better performance
+Specified or unspecified destinations will bypass the singlink routes to get better performance
 (for example, keep hardware offloading of direct traffics on the router).
 
 See [route_address_set](/configuration/inbound/tun/#route_address_set)
@@ -2401,7 +2401,7 @@ and [route_exclude_address_set](/configuration/inbound/tun/#route_exclude_addres
 
 **1**:
 
-Due to maintenance difficulties, sing-box 1.10.0 requires at least Go 1.20 to compile.
+Due to maintenance difficulties, singlink 1.10.0 requires at least Go 1.20 to compile.
 
 ### 1.9.1
 
@@ -2454,7 +2454,7 @@ See [Tun](/configuration/inbound/tun/#auto_redirect).
 
 **1**:
 
-It allows you to use redirect inbound in the sing-box Android client
+It allows you to use redirect inbound in the singlink Android client
 and automatically configures IPv4 TCP redirection via su.
 
 This may alleviate the symptoms of some OCD patients who think that
@@ -2587,7 +2587,7 @@ See [TunnelVision](/manual/misc/tunnelvision).
 
 **1**:
 
-Including stable and beta versions, see https://sing-box.sagernet.org/installation/package-manager/
+Including stable and beta versions, see https://singlink.sagernet.org/installation/package-manager/
 
 #### 1.9.0-rc.11
 
@@ -2611,7 +2611,7 @@ Including stable and beta versions, see https://sing-box.sagernet.org/installati
 * Fixes and improvements
 
 _Our Testflight distribution has been temporarily blocked by Apple (possibly due to too many beta versions)
-and you cannot join the test, install or update the sing-box beta app right now.
+and you cannot join the test, install or update the singlink beta app right now.
 Please wait patiently for processing._
 
 #### 1.9.0-beta.14
@@ -2770,7 +2770,7 @@ Important changes since 1.7:
 
 * Migrate cache file from Clash API to independent options **1**
 * Introducing [rule-set](/configuration/rule-set/) **2**
-* Add `sing-box geoip`, `sing-box geosite` and `sing-box rule-set` commands **3**
+* Add `singlink geoip`, `singlink geosite` and `singlink rule-set` commands **3**
 * Allow nested logical rules **4**
 * Independent `source_ip_is_private` and `ip_is_private` rules **5**
 * Add context to JSON decode error message **6**
@@ -3020,7 +3020,7 @@ Since GeoIP was deprecated, we made this rule independent, see [Migration](/migr
 
 * Migrate cache file from Clash API to independent options **1**
 * Introducing [rule-set](/configuration/rule-set/) **2**
-* Add `sing-box geoip`, `sing-box geosite` and `sing-box rule-set` commands **3**
+* Add `singlink geoip`, `singlink geosite` and `singlink rule-set` commands **3**
 * Allow nested logical rules **4**
 
 **1**:
@@ -3411,7 +3411,7 @@ Important changes since 1.4:
 
 **1**:
 
-Command: `sing-box generate ech-keypair <plain_server_name> [--pq-signature-schemes-enabled]`
+Command: `singlink generate ech-keypair <plain_server_name> [--pq-signature-schemes-enabled]`
 
 **2**:
 
@@ -3454,11 +3454,11 @@ configuration, such as TLS certificates or SSH private keys.
 
 **Security Advisory**
 
-This update fixes an improper authentication vulnerability in the sing-box SOCKS inbound. This vulnerability allows an
+This update fixes an improper authentication vulnerability in the singlink SOCKS inbound. This vulnerability allows an
 attacker to craft special requests to bypass user authentication. All users exposing SOCKS servers with user
 authentication in an insecure environment are advised to update immediately.
 
-此更新修复了 sing-box SOCKS 入站中的一个不正确身份验证漏洞。 该漏洞允许攻击者制作特殊请求来绕过用户身份验证。建议所有将使用用户认证的
+此更新修复了 singlink SOCKS 入站中的一个不正确身份验证漏洞。 该漏洞允许攻击者制作特殊请求来绕过用户身份验证。建议所有将使用用户认证的
 SOCKS 服务器暴露在不安全环境下的用户立更新。
 
 #### 1.4.5
@@ -3468,11 +3468,11 @@ SOCKS 服务器暴露在不安全环境下的用户立更新。
 
 **Security Advisory**
 
-This update fixes an improper authentication vulnerability in the sing-box SOCKS inbound. This vulnerability allows an
+This update fixes an improper authentication vulnerability in the singlink SOCKS inbound. This vulnerability allows an
 attacker to craft special requests to bypass user authentication. All users exposing SOCKS servers with user
 authentication in an insecure environment are advised to update immediately.
 
-此更新修复了 sing-box SOCKS 入站中的一个不正确身份验证漏洞。 该漏洞允许攻击者制作特殊请求来绕过用户身份验证。建议所有将使用用户认证的
+此更新修复了 singlink SOCKS 入站中的一个不正确身份验证漏洞。 该漏洞允许攻击者制作特殊请求来绕过用户身份验证。建议所有将使用用户认证的
 SOCKS 服务器暴露在不安全环境下的用户立更新。
 
 #### 1.5.0-rc.3
@@ -3493,7 +3493,7 @@ configuration, such as TLS certificates or SSH private keys.
 Merge configurations
 
 Usage:
-  sing-box merge [output] [flags]
+  singlink merge [output] [flags]
 
 Flags:
   -h, --help   help for merge
@@ -3576,7 +3576,7 @@ For protocol description, please refer to [https://v2.hysteria.network](https://
 
 **1**:
 
-Command: `sing-box generate ech-keypair <plain_server_name> [--pq-signature-schemes-enabled]`
+Command: `singlink generate ech-keypair <plain_server_name> [--pq-signature-schemes-enabled]`
 
 **2**:
 
@@ -3607,7 +3607,7 @@ and [TUIC outbound](/configuration/outbound/tuic/)
 **2**:
 
 This is the TUIC port of the [UDP over TCP protocol](/configuration/shared/udp-over-tcp/), designed to provide a QUIC
-stream based UDP relay mode that TUIC does not provide. Since it is an add-on protocol, you will need to use sing-box or
+stream based UDP relay mode that TUIC does not provide. Since it is an add-on protocol, you will need to use singlink or
 another program compatible with the protocol as a server.
 
 This mode has no positive effect in a proper UDP proxy scenario and should only be applied to relay streaming UDP
@@ -3615,7 +3615,7 @@ traffic (basically QUIC streams).
 
 *3*:
 
-Requires sing-box to be compiled with Go 1.21.
+Requires singlink to be compiled with Go 1.21.
 
 #### 1.4.0-rc.3
 
@@ -3638,7 +3638,7 @@ Requires sing-box to be compiled with Go 1.21.
 **1**:
 
 This is the TUIC port of the [UDP over TCP protocol](/configuration/shared/udp-over-tcp/), designed to provide a QUIC
-stream based UDP relay mode that TUIC does not provide. Since it is an add-on protocol, you will need to use sing-box or
+stream based UDP relay mode that TUIC does not provide. Since it is an add-on protocol, you will need to use singlink or
 another program compatible with the protocol as a server.
 
 This mode has no positive effect in a proper UDP proxy scenario and should only be applied to relay streaming UDP
@@ -3665,7 +3665,7 @@ traffic (basically QUIC streams).
 
 *1*:
 
-Requires sing-box to be compiled with Go 1.21.
+Requires singlink to be compiled with Go 1.21.
 
 #### 1.4.0-beta.1
 
@@ -3697,7 +3697,7 @@ downloaded through TestFlight.
 #### 1.3.4
 
 * Fixes and improvements
-* We're now on the [App Store](https://apps.apple.com/us/app/sing-box/id6451272673), always free! It should be noted
+* We're now on the [App Store](https://apps.apple.com/us/app/singlink/id6451272673), always free! It should be noted
   that due to stricter and slower review, the release of Store versions will be delayed.
 * We've made a standalone version of the macOS client (the original Application Extension relies on App Store
   distribution), which you can download as SFM-version-universal.zip in the release artifacts.
@@ -4424,7 +4424,7 @@ and [Listen Fields](/configuration/shared/listen#udp_fragment).
 * Add strict_route option for [Tun inbound](/configuration/inbound/tun#strict_route)
 * Add packetaddr support for [VMess outbound](/configuration/outbound/vmess#packet_addr)
 * Add better performing alternative gRPC implementation
-* Add [docker image](https://github.com/SagerNet/sing-box/pkgs/container/sing-box)
+* Add [docker image](https://github.com/SagerNet/singlink/pkgs/container/singlink)
 * Fix sniff override destination
 
 #### 1.0-beta1
@@ -4532,4 +4532,4 @@ and [Listen Fields](/configuration/shared/listen#udp_fragment).
 
 No changelog before.
 
-[#9]: https://github.com/SagerNet/sing-box/pull/9
+[#9]: https://github.com/SagerNet/singlink/pull/9

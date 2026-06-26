@@ -3,8 +3,8 @@
 package include
 
 import (
-	"github.com/sagernet/sing-box/adapter/outbound"
-	"github.com/sagernet/sing-box/protocol/naive"
+	"github.com/singlink/singlink/adapter/outbound"
+	"github.com/singlink/singlink/protocol/naive"
 )
 
 func registerNaiveOutbound(registry *outbound.Registry) {

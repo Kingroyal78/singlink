@@ -7,6 +7,7 @@ import (
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
 	"github.com/sagernet/sing/common/json"
+	C "github.com/singlink/singlink/constant"
 )
 
 type _Options struct {
@@ -75,6 +76,10 @@ func checkOptions(options *Options) error {
 	if err != nil {
 		return err
 	}
+	err = checkV2BoardNodeTags(options.Services)
+	if err != nil {
+		return err
+	}
 	err = checkHTTPClients(options.HTTPClients)
 	if err != nil {
 		return err
@@ -107,6 +112,36 @@ func checkHTTPClients(clients []HTTPClient) error {
 			return E.New("duplicate http client tag: ", client.Tag)
 		}
 		seen[client.Tag] = true
+	}
+	return nil
+}
+
+func checkV2BoardNodeTags(services []Service) error {
+	seen := make(map[string]string)
+	for serviceIndex, service := range services {
+		if service.Type != C.TypeV2Board {
+			continue
+		}
+		serviceTag := service.Tag
+		var serviceOptions V2BoardServiceOptions
+		switch options := service.Options.(type) {
+		case V2BoardServiceOptions:
+			serviceOptions = options
+		case *V2BoardServiceOptions:
+			if options == nil {
+				continue
+			}
+			serviceOptions = *options
+		default:
+			continue
+		}
+		for nodeIndex, nodeOptions := range serviceOptions.Nodes {
+			nodeTag := v2BoardNodeTag(serviceTag, serviceOptions, nodeOptions)
+			if previous, loaded := seen[nodeTag]; loaded {
+				return E.New("duplicate v2board node tag: ", nodeTag, " used by ", previous, " and service[", serviceIndex, "].node[", nodeIndex, "]")
+			}
+			seen[nodeTag] = F.ToString("service[", serviceIndex, "].node[", nodeIndex, "]")
+		}
 	}
 	return nil
 }

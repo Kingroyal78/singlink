@@ -3,8 +3,8 @@ package rule
 import (
 	"strings"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 )
 

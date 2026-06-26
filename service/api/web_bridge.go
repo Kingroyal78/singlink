@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/sagernet/cors"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 
 	"golang.org/x/net/http2"
 	"google.golang.org/grpc"

@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [wildcard_sni](#wildcard_sni)
 
@@ -92,7 +92,7 @@ Only available in the ShadowTLS protocol 3.
 
 #### wildcard_sni
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 ShadowTLS wildcard SNI mode.
 

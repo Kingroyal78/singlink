@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 # USB/IP Server
 
@@ -28,7 +28,7 @@ requires disabling System Integrity Protection). Not available on iOS.
 
 !!! info "Difference from the official USB/IP protocol"
 
-    sing-box uses [sing-usbip](https://github.com/SagerNet/sing-usbip), which uses an additional
+    singlink uses [sing-usbip](https://github.com/SagerNet/sing-usbip), which uses an additional
     set of protocols to support enhancements such as hotplug, while remaining interoperable with
     the standard USB/IP protocol.
 
@@ -45,10 +45,10 @@ See [Listen Fields](/configuration/shared/listen/) for details.
 The device source provider.
 
 - `default`: Exports the local devices matched by `devices`. The default value.
-- `dynamic`: Devices are provided at runtime through a [sing-box API](/configuration/service/api/)
-  client instead of from configuration, on supported platforms: the sing-box graphical clients on
+- `dynamic`: Devices are provided at runtime through a [singlink API](/configuration/service/api/)
+  client instead of from configuration, on supported platforms: the singlink graphical clients on
   [macOS](/clients/apple/) and [Android](/clients/android/), and Chromium-based browsers with
-  [sing-box Dashboard](https://github.com/SagerNet/sing-box-dashboard).
+  [singlink Dashboard](https://github.com/SagerNet/singlink-dashboard).
 
 !!! quote ""
 

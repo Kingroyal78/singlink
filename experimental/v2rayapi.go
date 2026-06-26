@@ -3,9 +3,9 @@ package experimental
 import (
 	"os"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 type V2RayServerConstructor = func(logger log.Logger, options option.V2RayAPIOptions) (adapter.V2RayServer, error)

@@ -1,11 +1,11 @@
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [hop_interval_max](#hop_interval_max)  
     :material-plus: [bbr_profile](#bbr_profile)  
     :material-plus: [realm](#realm)  
     :material-alert: [obfs](#obfstype)
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-plus: [server_ports](#server_ports)  
     :material-plus: [hop_interval](#hop_interval)
@@ -57,8 +57,8 @@
 !!! warning "与官方 Hysteria2 的区别"
 
     官方程序支持一种名为 **userpass** 的验证方式，
-    本质上是将用户名与密码的组合 `<username>:<password>` 作为实际上的密码，而 sing-box 不提供此别名。
-    要将 sing-box 与官方程序一起使用， 您需要填写该组合作为实际密码。
+    本质上是将用户名与密码的组合 `<username>:<password>` 作为实际上的密码，而 singlink 不提供此别名。
+    要将 singlink 与官方程序一起使用， 您需要填写该组合作为实际密码。
 
 ### 字段
 
@@ -82,7 +82,7 @@
 
 #### server_ports
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 服务器端口范围列表。
 
@@ -90,7 +90,7 @@
 
 #### hop_interval
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 端口跳跃间隔。
 
@@ -98,7 +98,7 @@
 
 #### hop_interval_max
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 最大端口跳跃间隔，用于随机化。
 
@@ -122,7 +122,7 @@ QUIC 流量混淆器密码。
 
 #### obfs.min_packet_size
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 最小线上数据包大小（字节）。仅限 Gecko。
 
@@ -130,7 +130,7 @@ QUIC 流量混淆器密码。
 
 #### obfs.max_packet_size
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 最大线上数据包大小（字节）。仅限 Gecko。
 
@@ -160,7 +160,7 @@ TLS 配置, 参阅 [TLS](/zh/configuration/shared/tls/#出站)。
 
 #### bbr_profile
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 BBR 拥塞控制算法配置，可选 `conservative` `standard` `aggressive`。
 
@@ -172,7 +172,7 @@ BBR 拥塞控制算法配置，可选 `conservative` `standard` `aggressive`。
 
 #### realm
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 通过 Hysteria Realm 会合服务连接 Hysteria2 服务器。
 

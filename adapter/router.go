@@ -23,11 +23,14 @@ type Router interface {
 	NeedFindNeighbor() bool
 	NeighborResolver() NeighborResolver
 	AppendTracker(tracker ConnectionTracker)
+	RemoveTracker(tracker ConnectionTracker)
 	ResetNetwork()
 }
 
 type ConnectionTracker interface {
+	// Returning nil means the tracker rejected the connection and routing must stop.
 	RoutedConnection(ctx context.Context, conn net.Conn, metadata InboundContext, matchedRule Rule, matchOutbound Outbound) net.Conn
+	// Returning nil means the tracker rejected the packet connection and routing must stop.
 	RoutedPacketConnection(ctx context.Context, conn N.PacketConn, metadata InboundContext, matchedRule Rule, matchOutbound Outbound) N.PacketConn
 }
 

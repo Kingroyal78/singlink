@@ -4,9 +4,9 @@ import (
 	"context"
 	"os"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/tls"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"

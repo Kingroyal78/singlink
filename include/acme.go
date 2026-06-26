@@ -3,8 +3,8 @@
 package include
 
 import (
-	"github.com/sagernet/sing-box/adapter/certificate"
-	"github.com/sagernet/sing-box/service/acme"
+	"github.com/singlink/singlink/adapter/certificate"
+	"github.com/singlink/singlink/service/acme"
 )
 
 func registerACMECertificateProvider(registry *certificate.Registry) {

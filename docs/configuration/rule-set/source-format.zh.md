@@ -2,23 +2,23 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: version `5`
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: version `4`
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-plus: version `3`
 
-!!! quote "sing-box 1.10.0 中的更改"
+!!! quote "singlink 1.10.0 中的更改"
 
     :material-plus: version `2`
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 ### 结构
 
@@ -31,7 +31,7 @@ icon: material/new-box
 
 ### 编译
 
-使用 `sing-box rule-set compile [--output <file-name>.srs] <file-name>.json` 以编译源文件为二进制规则集。
+使用 `singlink rule-set compile [--output <file-name>.srs] <file-name>.json` 以编译源文件为二进制规则集。
 
 ### 字段
 
@@ -41,11 +41,11 @@ icon: material/new-box
 
 规则集版本。
 
-* 1: sing-box 1.8.0: 初始规则集版本。
-* 2: sing-box 1.10.0: 优化了二进制规则集中 `domain_suffix` 规则的内存使用。
-* 3: sing-box 1.11.0: 添加了 `network_type`、 `network_is_expensive` 和 `network_is_constrainted` 规则项。
-* 4: sing-box 1.13.0: 添加了 `network_interface_address` 和 `default_interface_address` 规则项。
-* 5: sing-box 1.14.0: 添加了 `package_name_regex` 规则项。
+* 1: singlink 1.8.0: 初始规则集版本。
+* 2: singlink 1.10.0: 优化了二进制规则集中 `domain_suffix` 规则的内存使用。
+* 3: singlink 1.11.0: 添加了 `network_type`、 `network_is_expensive` 和 `network_is_constrainted` 规则项。
+* 4: singlink 1.13.0: 添加了 `network_interface_address` 和 `default_interface_address` 规则项。
+* 5: singlink 1.14.0: 添加了 `package_name_regex` 规则项。
 
 #### rules
 

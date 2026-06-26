@@ -57,7 +57,7 @@ The client will choose randomly and the server will verify if not empty.
 
     V2Ray's documentation says that the path between the server and the client must be consistent, 
     but the actual code allows the client to add any suffix to the path.
-    sing-box uses the same behavior as V2Ray, but note that the behavior does not exist in `WebSocket` and `HTTPUpgrade` transport.
+    singlink uses the same behavior as V2Ray, but note that the behavior does not exist in `WebSocket` and `HTTPUpgrade` transport.
 
 Path of HTTP request.
 

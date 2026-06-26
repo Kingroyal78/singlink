@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ### 结构
 
@@ -43,8 +43,8 @@ icon: material/new-box
 
     **运行时要求：**
 
-    - **Linux purego**：`libcronet.so` 必须位于 sing-box 二进制文件相同目录或系统库路径中
-    - **Windows**：`libcronet.dll` 必须位于 `sing-box.exe` 相同目录或 `PATH` 中的任意目录
+    - **Linux purego**：`libcronet.so` 必须位于 singlink 二进制文件相同目录或系统库路径中
+    - **Windows**：`libcronet.dll` 必须位于 `singlink.exe` 相同目录或 `PATH` 中的任意目录
 
     自行构建请参阅 [从源代码构建](/zh/installation/build-from-source/#with_naive_outbound)。
 

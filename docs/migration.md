@@ -9,7 +9,7 @@ icon: material/arrange-bring-forward
 Inline ACME options in TLS are deprecated and can be replaced by certificate providers.
 
 Most `tls.acme` fields can be moved into the ACME certificate provider unchanged.
-See [ACME](/configuration/shared/certificate-provider/acme/) for fields newly added in sing-box 1.14.0.
+See [ACME](/configuration/shared/certificate-provider/acme/) for fields newly added in singlink 1.14.0.
 
 !!! info "References"
 
@@ -86,7 +86,7 @@ along with the Legacy `rule_set_ip_cidr_accept_empty` DNS rule item. A DNS rule 
 containing only `ip_cidr` items (for example, a GeoIP rule-set) without `match_response` is also rejected
 at startup when legacy DNS mode is disabled.
 
-In sing-box 1.14.0, use the [`evaluate`](/configuration/dns/rule_action/#evaluate) action
+In singlink 1.14.0, use the [`evaluate`](/configuration/dns/rule_action/#evaluate) action
 to fetch a DNS response, then match against it explicitly with `match_response`.
 
 !!! info "References"
@@ -203,7 +203,7 @@ which persists the full DNS cache to the cache file.
 
 ### ip_version and query_type behavior changes in DNS rules
 
-In sing-box 1.14.0, the behavior of
+In singlink 1.14.0, the behavior of
 [`ip_version`](/configuration/dns/rule/#ip_version) and
 [`query_type`](/configuration/dns/rule/#query_type) in DNS rules, together with
 [`query_type`](/configuration/rule-set/headless-rule/#query_type) in referenced
@@ -845,7 +845,7 @@ The legacy outbound DNS rules are deprecated and can be replaced by new domain r
 
 The `domain_strategy` option in Dial Fields has been deprecated and can be replaced with the new domain resolver option.
 
-Note that due to the use of Dial Fields by some of the new DNS servers introduced in sing-box 1.12,
+Note that due to the use of Dial Fields by some of the new DNS servers introduced in singlink 1.12,
 some people mistakenly believe that `domain_strategy` is the same feature as in the legacy DNS servers.
 
 === ":material-card-remove: Deprecated"
@@ -1223,7 +1223,7 @@ WireGuard outbound is deprecated and can be replaced by endpoint.
 ### Bundle Identifier updates in Apple platform clients
 
 Due to problems with our old Apple developer account,
-we can only change Bundle Identifiers to re-list sing-box apps,
+we can only change Bundle Identifiers to re-list singlink apps,
 which means the data will not be automatically inherited.
 
 For iOS, you need to back up your old data yourself (if you still have access to it);  
@@ -1239,18 +1239,18 @@ cd ~/Library/Group\ Containers && \
 
 ### `domain_suffix` behavior update
 
-For historical reasons, sing-box's `domain_suffix` rule matches literal prefixes instead of the same as other projects.
+For historical reasons, singlink's `domain_suffix` rule matches literal prefixes instead of the same as other projects.
 
-sing-box 1.9.0 modifies the behavior of `domain_suffix`: If the rule value is prefixed with `.`,
+singlink 1.9.0 modifies the behavior of `domain_suffix`: If the rule value is prefixed with `.`,
 the behavior is unchanged, otherwise it matches `(domain|.+\.domain)` instead.
 
 ### `process_path` format update on Windows
 
-The `process_path` rule of sing-box is inherited from Clash,
+The `process_path` rule of singlink is inherited from Clash,
 the original code uses the local system's path format (e.g. `\Device\HarddiskVolume1\folder\program.exe`),
 but when the device has multiple disks, the HarddiskVolume serial number is not stable.
 
-sing-box 1.9.0 make QueryFullProcessImageNameW output a Win32 path (such as `C:\folder\program.exe`),
+singlink 1.9.0 make QueryFullProcessImageNameW output a Win32 path (such as `C:\folder\program.exe`),
 which will disrupt the existing `process_path` use cases in Windows.
 
 ## 1.8.0
@@ -1305,7 +1305,7 @@ which will disrupt the existing `process_path` use cases in Windows.
 
 !!! tip
 
-    `sing-box geoip` commands can help you convert custom GeoIP into rule-sets.
+    `singlink geoip` commands can help you convert custom GeoIP into rule-sets.
 
 === ":material-card-remove: Deprecated"
 
@@ -1390,7 +1390,7 @@ which will disrupt the existing `process_path` use cases in Windows.
 
 !!! tip
 
-    `sing-box geosite` commands can help you convert custom Geosite into rule-sets.
+    `singlink geosite` commands can help you convert custom Geosite into rule-sets.
 
 === ":material-card-remove: Deprecated"
 

@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [account_key](#account_key)  
     :material-plus: [key_type](#key_type)  
@@ -76,13 +76,13 @@ ACME 数据存储目录。
 | `https://...`      | 自定义           |
 
 当 `provider` 为 `zerossl` 时，如果设置了 `email` 且未设置 `external_account`，
-sing-box 会自动向 ZeroSSL 请求 EAB 凭据。
+singlink 会自动向 ZeroSSL 请求 EAB 凭据。
 
 当 `provider` 为 `zerossl` 时，必须至少设置 `external_account`、`email` 或 `account_key` 之一。
 
 #### account_key
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 现有 ACME 帐户的 PEM 编码私钥。
 
@@ -126,7 +126,7 @@ ACME DNS01 质询字段。如果配置，将禁用其他质询方法。
 
 #### key_type
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 为新证书生成的私钥类型。
 
@@ -140,7 +140,7 @@ ACME DNS01 质询字段。如果配置，将禁用其他质询方法。
 
 #### profile
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 用于证书签发的 ACME profile。
 
@@ -148,7 +148,7 @@ ACME DNS01 质询字段。如果配置，将禁用其他质询方法。
 
 #### http_client
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 用于所有提供者 HTTP 请求的 HTTP 客户端。
 

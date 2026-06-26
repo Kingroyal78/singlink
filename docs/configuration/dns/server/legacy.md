@@ -2,11 +2,11 @@
 icon: material/note-remove
 ---
 
-!!! failure "Removed in sing-box 1.14.0"
+!!! failure "Removed in singlink 1.14.0"
 
-    Legacy DNS servers are deprecated in sing-box 1.12.0 and removed in sing-box 1.14.0, check [Migration](/migration/#migrate-to-new-dns-server-formats).
+    Legacy DNS servers are deprecated in singlink 1.12.0 and removed in singlink 1.14.0, check [Migration](/migration/#migrate-to-new-dns-server-formats).
 
-!!! quote "Changes in sing-box 1.9.0"
+!!! quote "Changes in singlink 1.9.0"
 
     :material-plus: [client_subnet](#client_subnet)
 
@@ -102,7 +102,7 @@ Default outbound will be used if empty.
 
 #### client_subnet
 
-!!! question "Since sing-box 1.9.0"
+!!! question "Since singlink 1.9.0"
 
 Append a `edns0-subnet` OPT extra record with the specified IP prefix to every query by default.
 

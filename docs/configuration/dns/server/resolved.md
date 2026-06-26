@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 # Resolved
 
@@ -43,7 +43,7 @@ If not enabled, `NXDOMAIN` will be returned for requests that do not match searc
 
 === "Split DNS only"
 
-    === ":material-card-multiple: sing-box 1.14.0"
+    === ":material-card-multiple: singlink 1.14.0"
 
         ```json
         {
@@ -70,7 +70,7 @@ If not enabled, `NXDOMAIN` will be returned for requests that do not match searc
         }
         ```
 
-    === ":material-card-remove: sing-box < 1.14.0"
+    === ":material-card-remove: singlink < 1.14.0"
 
         ```json
         {

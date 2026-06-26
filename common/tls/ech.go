@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/dns"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/dns"
+	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	aTLS "github.com/sagernet/sing/common/tls"
 	"github.com/sagernet/sing/service"

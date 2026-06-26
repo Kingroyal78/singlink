@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/experimental/deprecated"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/experimental/deprecated"
 	F "github.com/sagernet/sing/common/format"
 )
 

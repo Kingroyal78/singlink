@@ -2,17 +2,17 @@
 icon: material/alert-decagram
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-delete-clock: [independent_cache](#independent_cache)  
     :material-plus: [optimistic](#optimistic)  
     :material-plus: [timeout](#timeout)
 
-!!! quote "sing-box 1.12.0 中的更改"
+!!! quote "singlink 1.12.0 中的更改"
 
     :material-decagram: [servers](#servers)
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-plus: [cache_capacity](#cache_capacity)
 
@@ -74,15 +74,15 @@ icon: material/alert-decagram
 
 #### independent_cache
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
-    `independent_cache` 已在 sing-box 1.14.0 废弃，且将在 sing-box 1.16.0 中被移除，参阅[迁移指南](/zh/migration/#迁移-independent-dns-cache)。
+    `independent_cache` 已在 singlink 1.14.0 废弃，且将在 singlink 1.16.0 中被移除，参阅[迁移指南](/zh/migration/#迁移-independent-dns-cache)。
 
 使每个 DNS 服务器的缓存独立，以满足特殊目的。如果启用，将轻微降低性能。
 
 #### cache_capacity
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 LRU 缓存容量。
 
@@ -90,7 +90,7 @@ LRU 缓存容量。
 
 #### optimistic
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 启用乐观 DNS 缓存。当缓存的 DNS 条目已过期但仍在超时窗口内时，
 立即返回过期的响应，同时在后台触发刷新。
@@ -118,7 +118,7 @@ LRU 缓存容量。
 
 #### timeout
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 每次 DNS 查询的默认超时时间。
 
@@ -134,7 +134,7 @@ LRU 缓存容量。
 
 #### client_subnet
 
-!!! question "自 sing-box 1.9.0 起"
+!!! question "自 singlink 1.9.0 起"
 
 默认情况下，将带有指定 IP 前缀的 `edns0-subnet` OPT 附加记录附加到每个查询。
 

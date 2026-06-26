@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-delete-clock: [strategy](#strategy)  
     :material-plus: [evaluate](#evaluate)  
@@ -10,12 +10,12 @@ icon: material/new-box
     :material-plus: [disable_optimistic_cache](#disable_optimistic_cache)  
     :material-plus: [timeout](#timeout)
 
-!!! quote "sing-box 1.12.0 中的更改"
+!!! quote "singlink 1.12.0 中的更改"
 
     :material-plus: [strategy](#strategy)  
     :material-plus: [predefined](#predefined)
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 ### route
 
@@ -42,11 +42,11 @@ icon: material/new-box
 
 #### strategy
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
-    `strategy` 已在 sing-box 1.14.0 废弃，且将在 sing-box 1.16.0 中被移除。
+    `strategy` 已在 singlink 1.14.0 废弃，且将在 singlink 1.16.0 中被移除。
 
 为此查询设置域名策略。
 
@@ -58,7 +58,7 @@ icon: material/new-box
 
 #### disable_optimistic_cache
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 在此查询中禁用乐观 DNS 缓存。
 
@@ -68,7 +68,7 @@ icon: material/new-box
 
 #### timeout
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 覆盖匹配查询的 DNS 查询超时时间。
 
@@ -84,7 +84,7 @@ icon: material/new-box
 
 ### evaluate
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 ```json
 {
@@ -117,7 +117,7 @@ icon: material/new-box
 
 #### disable_optimistic_cache
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 在此查询中禁用乐观 DNS 缓存。
 
@@ -127,7 +127,7 @@ icon: material/new-box
 
 #### timeout
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 覆盖匹配查询的 DNS 查询超时时间。
 
@@ -143,7 +143,7 @@ icon: material/new-box
 
 ### respond
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 ```json
 {
@@ -199,7 +199,7 @@ icon: material/new-box
 
 ### predefined
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 ```json
 {

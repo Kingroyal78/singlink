@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [certificate_provider](#certificate_provider)  
     :material-plus: [handshake_timeout](#handshake_timeout)  
@@ -11,7 +11,7 @@ icon: material/new-box
     :material-plus: [engine](#engine)  
     :material-delete-clock: [acme](#acme-fields)
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: [kernel_tx](#kernel_tx)  
     :material-plus: [kernel_rx](#kernel_rx)  
@@ -25,7 +25,7 @@ icon: material/new-box
     :material-plus: [client_certificate_public_key_sha256](#client_certificate_public_key_sha256)  
     :material-plus: [ech.query_server_name](#query_server_name)
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [fragment](#fragment)  
     :material-plus: [fragment_fallback_delay](#fragment_fallback_delay)  
@@ -33,7 +33,7 @@ icon: material/new-box
     :material-delete-clock: [ech.pq_signature_schemes_enabled](#pq_signature_schemes_enabled)  
     :material-delete-clock: [ech.dynamic_record_sizing_disabled](#dynamic_record_sizing_disabled)
 
-!!! quote "Changes in sing-box 1.10.0"
+!!! quote "Changes in singlink 1.10.0"
 
     :material-alert-decagram: [utls](#utls)
 
@@ -196,7 +196,7 @@ Enable TLS.
 
 #### engine
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 ==Client only==
 
@@ -313,7 +313,7 @@ If empty, a safe default list is used. The default cipher suites might change ov
 
 #### curve_preferences
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 Set of supported key exchange mechanisms. The order of the list is ignored, and key exchange mechanisms are chosen
 from this list using an internal preference order by Golang.
@@ -341,7 +341,7 @@ The path to server certificate chain, in PEM format.
 
 #### certificate_public_key_sha256
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Client only==
 
@@ -359,7 +359,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### client_certificate
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Client only==
 
@@ -367,7 +367,7 @@ Client certificate chain line array, in PEM format.
 
 #### client_certificate_path
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Client only==
 
@@ -375,7 +375,7 @@ The path to client certificate chain, in PEM format.
 
 #### client_key
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Client only==
 
@@ -383,7 +383,7 @@ Client private key line array, in PEM format.
 
 #### client_key_path
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Client only==
 
@@ -407,7 +407,7 @@ The path to the server private key, in PEM format.
 
 #### client_authentication
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Server only==
 
@@ -426,7 +426,7 @@ if this option is set to `verify-if-given`, or `require-and-verify`.
 
 #### client_certificate
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Server only==
 
@@ -434,7 +434,7 @@ Client certificate chain line array, in PEM format.
 
 #### client_certificate_path
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Server only==
 
@@ -446,7 +446,7 @@ List of path to client certificate chain, in PEM format.
 
 #### client_certificate_public_key_sha256
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Server only==
 
@@ -464,7 +464,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### kernel_tx
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 !!! quote ""
 
@@ -482,7 +482,7 @@ Enable kernel TLS transmit support.
 
 #### kernel_rx
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 !!! quote ""
 
@@ -500,7 +500,7 @@ Enable kernel TLS receive support.
 
 #### handshake_timeout
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 TLS handshake timeout, in golang's Duration format.
 
@@ -508,7 +508,7 @@ TLS handshake timeout, in golang's Duration format.
 
 #### certificate_provider
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 ==Server only==
 
@@ -545,7 +545,7 @@ uTLS is a fork of "crypto/tls", which provides ClientHello fingerprinting resist
 
 Available fingerprint values:
 
-!!! warning "Removed since sing-box 1.10.0"
+!!! warning "Removed since singlink 1.10.0"
 
     Some legacy chrome fingerprints have been removed and will fallback to chrome:
 
@@ -573,21 +573,21 @@ Chrome fingerprint will be used if empty.
 ECH (Encrypted Client Hello) is a TLS extension that allows a client to encrypt the first part of its ClientHello
 message.
 
-The ECH key and configuration can be generated by `sing-box generate ech-keypair`.
+The ECH key and configuration can be generated by `singlink generate ech-keypair`.
 
 #### pq_signature_schemes_enabled
 
-!!! failure "Deprecated in sing-box 1.12.0"
+!!! failure "Deprecated in singlink 1.12.0"
 
-    `pq_signature_schemes_enabled` is deprecated in sing-box 1.12.0 and removed in sing-box 1.13.0.
+    `pq_signature_schemes_enabled` is deprecated in singlink 1.12.0 and removed in singlink 1.13.0.
 
 Enable support for post-quantum peer certificate signature schemes.
 
 #### dynamic_record_sizing_disabled
 
-!!! failure "Deprecated in sing-box 1.12.0"
+!!! failure "Deprecated in singlink 1.12.0"
 
-    `dynamic_record_sizing_disabled` is deprecated in sing-box 1.12.0 and removed in sing-box 1.13.0.
+    `dynamic_record_sizing_disabled` is deprecated in singlink 1.12.0 and removed in singlink 1.13.0.
 
 Disables adaptive sizing of TLS records.
 
@@ -628,7 +628,7 @@ If empty, load from DNS will be attempted.
 
 #### query_server_name
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ==Client only==
 
@@ -638,7 +638,7 @@ If empty, `server_name` is used for queries.
 
 #### fragment
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 ==Client only==
 
@@ -658,7 +658,7 @@ because the target is considered to be local or behind a transparent proxy.
 
 #### fragment_fallback_delay
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 ==Client only==
 
@@ -668,7 +668,7 @@ The fallback value used when TLS segmentation cannot automatically determine the
 
 #### record_fragment
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 ==Client only==
 
@@ -676,7 +676,7 @@ Fragment TLS handshake into multiple TLS records to bypass firewalls.
 
 #### spoof
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 ==Client only==
 
@@ -700,7 +700,7 @@ driver on first use. Windows on ARM64 is not supported.
 
 #### spoof_method
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 ==Client only==
 
@@ -716,9 +716,9 @@ How the forged segment is rejected by the real server.
 
 ### ACME Fields
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
-    Inline ACME options are deprecated in sing-box 1.14.0 and will be removed in sing-box 1.16.0, check [Migration](/migration/#migrate-inline-acme-to-certificate-provider).
+    Inline ACME options are deprecated in singlink 1.14.0 and will be removed in singlink 1.16.0, check [Migration](/migration/#migrate-inline-acme-to-certificate-provider).
 
 #### domain
 
@@ -809,7 +809,7 @@ Handshake server address and [Dial Fields](/configuration/shared/dial/).
 
 ==Required==
 
-Private key, generated by `sing-box generate reality-keypair`.
+Private key, generated by `singlink generate reality-keypair`.
 
 #### public_key
 
@@ -817,7 +817,7 @@ Private key, generated by `sing-box generate reality-keypair`.
 
 ==Required==
 
-Public key, generated by `sing-box generate reality-keypair`.
+Public key, generated by `singlink generate reality-keypair`.
 
 #### short_id
 

@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 # Hosts
 
@@ -73,7 +73,7 @@ Example:
 
 === "Use hosts if available"
 
-    === ":material-card-multiple: sing-box 1.14.0"
+    === ":material-card-multiple: singlink 1.14.0"
 
         ```json
         {
@@ -98,7 +98,7 @@ Example:
         }
         ```
 
-    === ":material-card-remove: sing-box < 1.14.0"
+    === ":material-card-remove: singlink < 1.14.0"
 
         ```json
         {

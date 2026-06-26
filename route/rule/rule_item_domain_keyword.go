@@ -3,7 +3,7 @@ package rule
 import (
 	"strings"
 
-	"github.com/sagernet/sing-box/adapter"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ RuleItem = (*DomainKeywordItem)(nil)

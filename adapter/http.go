@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common/logger"
 )
 

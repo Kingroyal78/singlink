@@ -2,11 +2,11 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [ssh_server](#ssh_server)
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: [relay_server_port](#relay_server_port)  
     :material-plus: [relay_server_static_endpoints](#relay_server_static_endpoints)  
@@ -15,7 +15,7 @@ icon: material/new-box
     :material-plus: [system_interface_mtu](#system_interface_mtu)  
     :material-plus: [advertise_tags](#advertise_tags)
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 ### Structure
 
@@ -60,7 +60,7 @@ Example: `$HOME/.tailscale`
 
 !!! note
     
-    Auth key is not required. By default, sing-box will log the login URL (or popup a notification on graphical clients).
+    Auth key is not required. By default, singlink will log the login URL (or popup a notification on graphical clients).
 
 The auth key to create the node. If the node is already created (from state previously stored), then this field is not
 used.
@@ -81,7 +81,7 @@ The hostname of the node.
 
 System hostname is used by default.
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
     On iOS, tvOS and Android, the device name is used by default.
 
@@ -115,7 +115,7 @@ Indicates whether the node should advertise itself as an exit node.
 
 #### advertise_tags
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 Tags to advertise for this node, for ACL enforcement purposes.
 
@@ -123,31 +123,31 @@ Example: `["tag:server"]`
 
 #### relay_server_port
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 The port to listen on for incoming relay connections from other Tailscale nodes.
 
 #### relay_server_static_endpoints
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 Static endpoints to advertise for the relay server.
 
 #### system_interface
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 Create a system TUN interface for Tailscale.
 
 #### system_interface_name
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 Custom TUN interface name. By default, `tailscale` (or `utun` on macOS) will be used.
 
 #### system_interface_mtu
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 Override the TUN MTU. By default, Tailscale's own MTU is used.
 
@@ -159,15 +159,15 @@ UDP NAT expiration time.
 
 #### ssh_server
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Run a Tailscale SSH server on tailnet port 22.
 
 Access is controlled by the SSH ACL in the Tailscale admin console, which maps each connection to a local user. How that user is resolved, and which users are allowed, depends on the platform:
 
-- **Linux** and **macOS**: the user is resolved from the system user database. Switching to a user other than the one sing-box runs as requires running as root; without root, sessions are limited to the current user.
-- **Windows**: sessions run as the sing-box process identity; the mapped user is not impersonated, so a session mapped to a different local account is refused.
-- **Android**: the user is resolved by the app rather than the system user database. `root` is the superuser (UID 0) and `shell` is the ADB shell user (UID 2000); every other name is resolved as the package name of an installed application, running as that application's UID with its data directory as the home directory, so the target application must be installed. `termux` is a shortcut for `com.termux`, and `sing-box` for the app's own package name; when Termux is installed, the `root` and `termux` users load the Termux environment. Running as the sing-box application itself requires no root, while any other user requires granted root access; without root, sessions are limited to the sing-box user.
+- **Linux** and **macOS**: the user is resolved from the system user database. Switching to a user other than the one singlink runs as requires running as root; without root, sessions are limited to the current user.
+- **Windows**: sessions run as the singlink process identity; the mapped user is not impersonated, so a session mapped to a different local account is refused.
+- **Android**: the user is resolved by the app rather than the system user database. `root` is the superuser (UID 0) and `shell` is the ADB shell user (UID 2000); every other name is resolved as the package name of an installed application, running as that application's UID with its data directory as the home directory, so the target application must be installed. `termux` is a shortcut for `com.termux`, and `singlink` for the app's own package name; when Termux is installed, the `root` and `termux` users load the Termux environment. Running as the singlink application itself requires no root, while any other user requires granted root access; without root, sessions are limited to the singlink user.
 - **macOS**: the SSH server is only available in the standalone version and requires the Root Helper; the App Store version is not supported.
 - **iOS**: the SSH server is only available in the jailbreak build; the App Store and TestFlight versions are not supported.
 - **tvOS**: not yet supported.

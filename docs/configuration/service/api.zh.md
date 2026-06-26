@@ -2,13 +2,13 @@
 icon: material/new-box
 ---
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
-# sing-box API
+# singlink API
 
-sing-box API 服务是用于观察与控制正在运行的 sing-box 实例的 gRPC 服务器。
+singlink API 服务是用于观察与控制正在运行的 singlink 实例的 gRPC 服务器。
 
-它可以由 iOS、macOS 和 Android 上的 [sing-box 图形客户端](/zh/clients/)（通过 Remote Control 功能）或 [sing-box dashboard](https://github.com/SagerNet/sing-box-dashboard) 访问。
+它可以由 iOS、macOS 和 Android 上的 [singlink 图形客户端](/zh/clients/)（通过 Remote Control 功能）或 [singlink dashboard](https://github.com/SagerNet/singlink-dashboard) 访问。
 
 服务器同时接受 [gRPC-Web](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md) 请求,
 包括用于双向流方法的 [@improbable-eng/grpc-web](https://github.com/improbable-eng/grpc-web) WebSocket 传输。
@@ -83,7 +83,7 @@ API 密钥。
 
 仪表板压缩包（zip）的下载 URL。
 
-默认使用 `https://github.com/SagerNet/sing-box-dashboard/archive/refs/heads/gh-pages.zip`。
+默认使用 `https://github.com/SagerNet/singlink-dashboard/archive/refs/heads/gh-pages.zip`。
 
 ##### http_client
 
@@ -94,10 +94,10 @@ API 密钥。
 留空时使用默认 HTTP 客户端：即由 [`default_http_client`](/zh/configuration/route/#default_http_client)
 指定的客户端，或当 `default_http_client` 为空时使用顶级 `http_clients` 的第一项。
 
-!!! failure "隐式默认已在 sing-box 1.14.0 废弃"
+!!! failure "隐式默认已在 singlink 1.14.0 废弃"
 
     当 `http_clients` 与 `default_http_client` 均未配置时，将使用通过默认出站连接的隐式 HTTP 客户端。
-    该隐式默认已在 sing-box 1.14.0 废弃，并将在 sing-box 1.16.0 移除；请改为定义 `http_clients`。
+    该隐式默认已在 singlink 1.14.0 废弃，并将在 singlink 1.16.0 移除；请改为定义 `http_clients`。
 
 ##### update_interval
 

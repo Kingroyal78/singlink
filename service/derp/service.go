@@ -15,17 +15,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	boxService "github.com/sagernet/sing-box/adapter/service"
-	"github.com/sagernet/sing-box/common/dialer"
-	"github.com/sagernet/sing-box/common/listener"
-	"github.com/sagernet/sing-box/common/tls"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
-	boxScale "github.com/sagernet/sing-box/protocol/tailscale"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
@@ -45,6 +37,15 @@ import (
 	"github.com/sagernet/tailscale/net/wsconn"
 	"github.com/sagernet/tailscale/tsweb"
 	"github.com/sagernet/tailscale/types/key"
+	"github.com/singlink/singlink/adapter"
+	boxService "github.com/singlink/singlink/adapter/service"
+	"github.com/singlink/singlink/common/dialer"
+	"github.com/singlink/singlink/common/listener"
+	"github.com/singlink/singlink/common/tls"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	boxScale "github.com/singlink/singlink/protocol/tailscale"
 
 	"github.com/coder/websocket"
 	"github.com/go-chi/render"
@@ -59,10 +60,13 @@ func Register(registry *boxService.Registry) {
 type Service struct {
 	boxService.Adapter
 	ctx                  context.Context
+	cancel               context.CancelFunc
 	logger               logger.ContextLogger
 	listener             *listener.Listener
 	stunListener         *listener.Listener
+	stunConn             *net.UDPConn
 	tlsConfig            tls.ServerConfig
+	httpServer           *http.Server
 	server               *derpserver.Server
 	configPath           string
 	verifyClientEndpoint []string
@@ -71,14 +75,18 @@ type Service struct {
 	meshKey              string
 	meshKeyPath          string
 	meshWith             []*option.DERPMeshOptions
+	meshClients          []*derphttp.Client
+	meshWG               sync.WaitGroup
 }
 
 func NewService(ctx context.Context, logger log.ContextLogger, tag string, options option.DERPServiceOptions) (adapter.Service, error) {
 	if options.TLS == nil || !options.TLS.Enabled {
 		return nil, E.New("TLS is required for DERP server")
 	}
+	ctx, cancel := context.WithCancel(ctx)
 	tlsConfig, err := tls.NewServer(ctx, logger, common.PtrValueOrDefault(options.TLS))
 	if err != nil {
+		cancel()
 		return nil, err
 	}
 
@@ -115,6 +123,7 @@ func NewService(ctx context.Context, logger log.ContextLogger, tag string, optio
 	return &Service{
 		Adapter: boxService.NewAdapter(C.TypeDERP, tag),
 		ctx:     ctx,
+		cancel:  cancel,
 		logger:  logger,
 		listener: listener.New(listener.Options{
 			Context: ctx,
@@ -217,16 +226,28 @@ func (d *Service) Start(stage adapter.StartStage) error {
 		}
 		tcpListener = aTLS.NewListener(tcpListener, d.tlsConfig)
 		httpServer := &http.Server{
-			Handler: h2c.NewHandler(derpMux, &http2.Server{}),
+			Handler:           h2c.NewHandler(derpMux, &http2.Server{}),
+			ReadHeaderTimeout: C.TCPTimeout,
+			IdleTimeout:       C.TCPKeepAliveInitial,
+			BaseContext: func(net.Listener) context.Context {
+				return d.ctx
+			},
 		}
-		go httpServer.Serve(tcpListener)
+		d.httpServer = httpServer
+		go func() {
+			serveErr := httpServer.Serve(tcpListener)
+			if serveErr != nil && !E.IsClosed(serveErr) {
+				d.logger.Error("serve error: ", serveErr)
+			}
+		}()
 
 		if d.stunListener != nil {
 			stunConn, err := d.stunListener.ListenUDP()
 			if err != nil {
 				return err
 			}
-			go d.loopSTUNPacket(stunConn.(*net.UDPConn))
+			d.stunConn = stunConn.(*net.UDPConn)
+			go d.loopSTUNPacket(d.stunConn)
 		}
 	case adapter.StartStatePostStart:
 		if len(d.verifyClientEndpoint) > 0 {
@@ -327,18 +348,48 @@ func (d *Service) startMeshWithHost(derpServer *derpserver.Server, server *optio
 	meshClient.SetURLDialer(func(ctx context.Context, network, addr string) (net.Conn, error) {
 		return meshDialer.DialContext(ctx, network, M.ParseSocksaddr(addr))
 	})
+	d.meshClients = append(d.meshClients, meshClient)
 	add := func(m derp.PeerPresentMessage) { derpServer.AddPacketForwarder(m.Key, meshClient) }
 	remove := func(m derp.PeerGoneMessage) { derpServer.RemovePacketForwarder(m.Peer, meshClient) }
 	notifyError := func(err error) { d.logger.Error(err) }
-	go meshClient.RunWatchConnectionLoop(context.Background(), derpServer.PublicKey(), logf, add, remove, notifyError)
+	d.meshWG.Add(1)
+	go func() {
+		defer d.meshWG.Done()
+		meshClient.RunWatchConnectionLoop(d.ctx, derpServer.PublicKey(), logf, add, remove, notifyError)
+	}()
 	return nil
 }
 
 func (d *Service) Close() error {
-	err := common.Close(
+	if d.cancel != nil {
+		d.cancel()
+	}
+	var err error
+	for _, meshClient := range d.meshClients {
+		err = E.Append(err, meshClient.Close(), func(closeErr error) error {
+			return E.Cause(closeErr, "close DERP mesh client")
+		})
+	}
+	meshDone := make(chan struct{})
+	go func() {
+		d.meshWG.Wait()
+		close(meshDone)
+	}()
+	select {
+	case <-meshDone:
+	case <-time.After(C.StopTimeout):
+		err = E.Append(err, E.New("close DERP mesh clients: timeout"), func(closeErr error) error {
+			return closeErr
+		})
+	}
+	err = E.Append(err, common.Close(
+		common.PtrOrNil(d.httpServer),
+		common.PtrOrNil(d.stunListener),
 		common.PtrOrNil(d.listener),
 		d.tlsConfig,
-	)
+	), func(closeErr error) error {
+		return closeErr
+	})
 	return err
 }
 

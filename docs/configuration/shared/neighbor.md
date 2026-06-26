@@ -39,7 +39,7 @@ Only route/DNS rules are supported. TUN include/exclude routes are not supported
 
 ### Hostname Visibility
 
-Hostname is only visible in sing-box if it is visible in VPNHotspot.
+Hostname is only visible in singlink if it is visible in VPNHotspot.
 For Apple devices, change **Private Wi-Fi Address** from **Rotating** to **Fixed** in the Wi-Fi settings
 of the connected network. Non-Apple devices are always visible.
 

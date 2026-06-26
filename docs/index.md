@@ -1,10 +1,10 @@
 ---
-description: Welcome to the wiki page for the sing-box project.
+description: Welcome to the wiki page for the singlink project.
 ---
 
 # :material-home: Home
 
-Welcome to the wiki page for the sing-box project.
+Welcome to the wiki page for the singlink project.
 
 The universal proxy platform.
 

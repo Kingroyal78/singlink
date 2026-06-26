@@ -2,13 +2,13 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [source_mac_address](#source_mac_address)  
     :material-plus: [source_hostname](#source_hostname)  
     :material-plus: [package_name_regex](#package_name_regex)
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [interface_address](#interface_address)  
     :material-plus: [network_interface_address](#network_interface_address)  
@@ -16,7 +16,7 @@ icon: material/new-box
     :material-plus: [preferred_by](#preferred_by)  
     :material-alert: [network](#network)
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-plus: [action](#action)  
     :material-alert: [outbound](#outbound)  
@@ -24,14 +24,14 @@ icon: material/new-box
     :material-plus: [network_is_expensive](#network_is_expensive)  
     :material-plus: [network_is_constrained](#network_is_constrained)
 
-!!! quote "sing-box 1.10.0 中的更改"
+!!! quote "singlink 1.10.0 中的更改"
 
     :material-plus: [client](#client)  
     :material-delete-clock: [rule_set_ipcidr_match_source](#rule_set_ipcidr_match_source)  
     :material-plus: [rule_set_ip_cidr_match_source](#rule_set_ip_cidr_match_source)  
     :material-plus: [process_path_regex](#process_path_regex)
 
-!!! quote "sing-box 1.8.0 中的更改"
+!!! quote "singlink 1.8.0 中的更改"
 
     :material-plus: [rule_set](#rule_set)  
     :material-plus: [rule_set_ipcidr_match_source](#rule_set_ipcidr_match_source)  
@@ -234,15 +234,15 @@ icon: material/new-box
 
 #### client
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 探测到的客户端类型, 参阅 [协议探测](/zh/configuration/route/sniff/)。
 
 #### network
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
-    自 sing-box 1.13.0 起，您可以通过新的 `icmp` 网络匹配 ICMP 回显（ping）请求。
+    自 singlink 1.13.0 起，您可以通过新的 `icmp` 网络匹配 ICMP 回显（ping）请求。
 
     此类流量源自 `TUN`、`WireGuard` 和 `Tailscale` 入站，并可路由至 `Direct`、`WireGuard` 和 `Tailscale` 出站。
 
@@ -268,7 +268,7 @@ icon: material/new-box
 
 #### geosite
 
-!!! failure "已在 sing-box 1.8.0 废弃"
+!!! failure "已在 singlink 1.8.0 废弃"
 
     Geosite 已废弃且可能在不久的将来移除，参阅 [迁移指南](/zh/migration/#迁移-geosite-到规则集)。
 
@@ -276,7 +276,7 @@ icon: material/new-box
 
 #### source_geoip
 
-!!! failure "已在 sing-box 1.8.0 废弃"
+!!! failure "已在 singlink 1.8.0 废弃"
 
     GeoIP 已废弃且可能在不久的将来移除，参阅 [迁移指南](/zh/migration/#迁移-geoip-到规则集)。
 
@@ -284,7 +284,7 @@ icon: material/new-box
 
 #### geoip
 
-!!! failure "已在 sing-box 1.8.0 废弃"
+!!! failure "已在 singlink 1.8.0 废弃"
 
     GeoIP 已废弃且可能在不久的将来移除，参阅 [迁移指南](/zh/migration/#迁移-geoip-到规则集)。
 
@@ -296,7 +296,7 @@ icon: material/new-box
 
 #### source_ip_is_private
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 匹配非公开源 IP。
 
@@ -306,7 +306,7 @@ icon: material/new-box
 
 #### ip_is_private
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 匹配非公开 IP。
 
@@ -344,7 +344,7 @@ icon: material/new-box
 
 #### process_path_regex
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 !!! quote ""
 
@@ -358,7 +358,7 @@ icon: material/new-box
 
 #### package_name_regex
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 使用正则表达式匹配 Android 应用包名。
 
@@ -384,7 +384,7 @@ icon: material/new-box
 
 #### network_type
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -396,7 +396,7 @@ icon: material/new-box
 
 #### network_is_expensive
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -407,7 +407,7 @@ icon: material/new-box
 
 #### network_is_constrained
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -417,7 +417,7 @@ icon: material/new-box
 
 #### interface_address
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -427,7 +427,7 @@ icon: material/new-box
 
 #### network_interface_address
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -437,7 +437,7 @@ icon: material/new-box
 
 #### default_interface_address
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -459,7 +459,7 @@ icon: material/new-box
 
 #### preferred_by
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 匹配制定出站的首选路由。
 
@@ -470,7 +470,7 @@ icon: material/new-box
 
 #### source_mac_address
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 !!! quote ""
 
@@ -480,7 +480,7 @@ icon: material/new-box
 
 #### source_hostname
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 !!! quote ""
 
@@ -490,23 +490,23 @@ icon: material/new-box
 
 #### rule_set
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 匹配[规则集](/zh/configuration/route/#rule_set)。
 
 #### rule_set_ipcidr_match_source
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
-!!! failure "已在 sing-box 1.10.0 废弃"
+!!! failure "已在 singlink 1.10.0 废弃"
 
-    `rule_set_ipcidr_match_source` 已重命名为 `rule_set_ip_cidr_match_source` 且将在 sing-box 1.11.0 中被移除。
+    `rule_set_ipcidr_match_source` 已重命名为 `rule_set_ip_cidr_match_source` 且将在 singlink 1.11.0 中被移除。
 
 使规则集中的 `ip_cidr` 规则匹配源 IP。
 
 #### rule_set_ip_cidr_match_source
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 使规则集中的 `ip_cidr` 规则匹配源 IP。
 
@@ -522,7 +522,7 @@ icon: material/new-box
 
 #### outbound
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
     已移动到 [规则动作](../rule_action#route).
 

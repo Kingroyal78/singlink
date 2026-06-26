@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 # OCM
 

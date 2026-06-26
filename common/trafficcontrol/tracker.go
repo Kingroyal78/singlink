@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
+	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/bufio"
 	N "github.com/sagernet/sing/common/network"

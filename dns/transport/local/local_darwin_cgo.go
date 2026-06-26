@@ -31,7 +31,7 @@ import (
 	"errors"
 	"unsafe"
 
-	"github.com/sagernet/sing-box/dns"
+	"github.com/singlink/singlink/dns"
 	E "github.com/sagernet/sing/common/exceptions"
 
 	mDNS "github.com/miekg/dns"

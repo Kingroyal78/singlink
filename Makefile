@@ -1,15 +1,15 @@
-NAME = sing-box
+NAME = singlink
 COMMIT = $(shell git rev-parse --short HEAD)
 TAGS ?= $(shell cat release/DEFAULT_BUILD_TAGS_OTHERS)
 
 GOHOSTOS = $(shell go env GOHOSTOS)
 GOHOSTARCH = $(shell go env GOHOSTARCH)
-VERSION=$(shell CGO_ENABLED=0 GOOS=$(GOHOSTOS) GOARCH=$(GOHOSTARCH) go run github.com/sagernet/sing-box/cmd/internal/read_tag@latest)
+VERSION=$(shell CGO_ENABLED=0 GOOS=$(GOHOSTOS) GOARCH=$(GOHOSTARCH) go run ./cmd/internal/read_tag)
 
 LDFLAGS_SHARED = $(shell cat release/LDFLAGS)
-PARAMS = -v -trimpath -ldflags "-X 'github.com/sagernet/sing-box/constant.Version=$(VERSION)' $(LDFLAGS_SHARED) -s -w -buildid="
+PARAMS = -v -trimpath -ldflags "-X 'github.com/singlink/singlink/constant.Version=$(VERSION)' $(LDFLAGS_SHARED) -s -w -buildid="
 MAIN_PARAMS = $(PARAMS) -tags "$(TAGS)"
-MAIN = ./cmd/sing-box
+MAIN = ./cmd/singlink
 PREFIX ?= $(shell go env GOPATH)
 SING_FFI ?= sing-ffi
 LIBBOX_FFI_CONFIG ?= ./experimental/libbox/ffi.json
@@ -86,14 +86,14 @@ update_android_version:
 	go run ./cmd/internal/update_android_version
 
 build_android:
-	cd ../sing-box-for-android && ./gradlew :app:clean :app:assembleOtherRelease :app:assembleOtherLegacyRelease && ./gradlew --stop
+	cd ../singlink-for-android && ./gradlew :app:clean :app:assembleOtherRelease :app:assembleOtherLegacyRelease && ./gradlew --stop
 
 upload_android:
 	mkdir -p dist/release_android
-	cp ../sing-box-for-android/app/build/outputs/apk/other/release/*.apk dist/release_android
-	cp ../sing-box-for-android/app/build/outputs/apk/otherLegacy/release/*.apk dist/release_android
-	VERSION_CODE=$$(grep VERSION_CODE ../sing-box-for-android/version.properties | cut -d= -f2); \
-	VERSION_NAME=$$(grep VERSION_NAME ../sing-box-for-android/version.properties | cut -d= -f2); \
+	cp ../singlink-for-android/app/build/outputs/apk/other/release/*.apk dist/release_android
+	cp ../singlink-for-android/app/build/outputs/apk/otherLegacy/release/*.apk dist/release_android
+	VERSION_CODE=$$(grep VERSION_CODE ../singlink-for-android/version.properties | cut -d= -f2); \
+	VERSION_NAME=$$(grep VERSION_NAME ../singlink-for-android/version.properties | cut -d= -f2); \
 	printf '{\n  "version_code": %s,\n  "version_name": "%s"\n}\n' "$$VERSION_CODE" "$$VERSION_NAME" > dist/release_android/SFA-version-metadata.json
 	ghr --replace --draft --prerelease -p 5 "v${VERSION}" dist/release_android
 	rm -rf dist/release_android
@@ -101,94 +101,94 @@ upload_android:
 release_android: build_android upload_android
 
 publish_android:
-	cd ../sing-box-for-android && ./gradlew :app:publishPlayReleaseBundle && ./gradlew --stop
+	cd ../singlink-for-android && ./gradlew :app:publishPlayReleaseBundle && ./gradlew --stop
 
 # TODO: find why and remove `-destination 'generic/platform=iOS'`
 # TODO: remove xcode clean when fix control widget fixed
 build_ios:
-	cd ../sing-box-for-apple && \
+	cd ../singlink-for-apple && \
 	rm -rf build/SFI.xcarchive && \
 	xcodebuild clean -scheme SFI -derivedDataPath build/SFI.dd && \
 	xcodebuild archive -scheme SFI -configuration Release -destination 'generic/platform=iOS' -archivePath build/SFI.xcarchive -derivedDataPath build/SFI.dd -allowProvisioningUpdates | xcbeautify | grep -A 10 -e "Archive Succeeded" -e "ARCHIVE FAILED" -e "❌"
 
 upload_ios_app_store:
-	cd ../sing-box-for-apple && \
+	cd ../singlink-for-apple && \
 	xcodebuild -exportArchive -archivePath build/SFI.xcarchive -exportOptionsPlist SFI/Upload.plist -allowProvisioningUpdates
 
 build_ios_deb:
-	$(MAKE) -C ../sing-box-for-apple build_ios_deb
+	$(MAKE) -C ../singlink-for-apple build_ios_deb
 
 upload_ios_deb:
 	cd dist && \
-	ghr --replace --draft --prerelease "v${VERSION}" ../sing-box-for-apple/build/jailbreak/"SFI-${VERSION}-iphoneos-arm64.deb"
+	ghr --replace --draft --prerelease "v${VERSION}" ../singlink-for-apple/build/jailbreak/"SFI-${VERSION}-iphoneos-arm64.deb"
 
 release_ios: build_ios upload_ios_app_store
 
 release_ios_deb: build_ios_deb upload_ios_deb
 
 build_macos:
-	cd ../sing-box-for-apple && \
+	cd ../singlink-for-apple && \
 	rm -rf build/SFM.xcarchive && \
 	xcodebuild archive -scheme SFM -configuration Release -archivePath build/SFM.xcarchive -derivedDataPath build/SFM.dd -allowProvisioningUpdates | xcbeautify | grep -A 10 -e "Archive Succeeded" -e "ARCHIVE FAILED" -e "❌"
 
 upload_macos_app_store:
-	cd ../sing-box-for-apple && \
+	cd ../singlink-for-apple && \
 	xcodebuild -exportArchive -archivePath build/SFM.xcarchive -exportOptionsPlist SFI/Upload.plist -allowProvisioningUpdates
 
 release_macos: build_macos upload_macos_app_store
 
 build_macos_standalone:
-	$(MAKE) -C ../sing-box-for-apple archive_macos_standalone
+	$(MAKE) -C ../singlink-for-apple archive_macos_standalone
 
 build_macos_dmg:
-	$(MAKE) -C ../sing-box-for-apple build_macos_dmg
+	$(MAKE) -C ../singlink-for-apple build_macos_dmg
 
 build_macos_pkg:
-	$(MAKE) -C ../sing-box-for-apple build_macos_pkg
+	$(MAKE) -C ../singlink-for-apple build_macos_pkg
 
 notarize_macos_dmg:
-	$(MAKE) -C ../sing-box-for-apple notarize_macos_dmg
+	$(MAKE) -C ../singlink-for-apple notarize_macos_dmg
 
 notarize_macos_pkg:
-	$(MAKE) -C ../sing-box-for-apple notarize_macos_pkg
+	$(MAKE) -C ../singlink-for-apple notarize_macos_pkg
 
 upload_macos_dmg:
 	mkdir -p dist/SFM
-	cp ../sing-box-for-apple/build/SFM-Apple.dmg "dist/SFM/SFM-${VERSION}-Apple.dmg"
-	cp ../sing-box-for-apple/build/SFM-Intel.dmg "dist/SFM/SFM-${VERSION}-Intel.dmg"
-	cp ../sing-box-for-apple/build/SFM-Universal.dmg "dist/SFM/SFM-${VERSION}-Universal.dmg"
+	cp ../singlink-for-apple/build/SFM-Apple.dmg "dist/SFM/SFM-${VERSION}-Apple.dmg"
+	cp ../singlink-for-apple/build/SFM-Intel.dmg "dist/SFM/SFM-${VERSION}-Intel.dmg"
+	cp ../singlink-for-apple/build/SFM-Universal.dmg "dist/SFM/SFM-${VERSION}-Universal.dmg"
 	ghr --replace --draft --prerelease "v${VERSION}" "dist/SFM/SFM-${VERSION}-Apple.dmg"
 	ghr --replace --draft --prerelease "v${VERSION}" "dist/SFM/SFM-${VERSION}-Intel.dmg"
 	ghr --replace --draft --prerelease "v${VERSION}" "dist/SFM/SFM-${VERSION}-Universal.dmg"
 
 upload_macos_pkg:
 	mkdir -p dist/SFM
-	cp ../sing-box-for-apple/build/SFM-Apple.pkg "dist/SFM/SFM-${VERSION}-Apple.pkg"
-	cp ../sing-box-for-apple/build/SFM-Intel.pkg "dist/SFM/SFM-${VERSION}-Intel.pkg"
-	cp ../sing-box-for-apple/build/SFM-Universal.pkg "dist/SFM/SFM-${VERSION}-Universal.pkg"
+	cp ../singlink-for-apple/build/SFM-Apple.pkg "dist/SFM/SFM-${VERSION}-Apple.pkg"
+	cp ../singlink-for-apple/build/SFM-Intel.pkg "dist/SFM/SFM-${VERSION}-Intel.pkg"
+	cp ../singlink-for-apple/build/SFM-Universal.pkg "dist/SFM/SFM-${VERSION}-Universal.pkg"
 	ghr --replace --draft --prerelease "v${VERSION}" "dist/SFM/SFM-${VERSION}-Apple.pkg"
 	ghr --replace --draft --prerelease "v${VERSION}" "dist/SFM/SFM-${VERSION}-Intel.pkg"
 	ghr --replace --draft --prerelease "v${VERSION}" "dist/SFM/SFM-${VERSION}-Universal.pkg"
 
 replace_macos_pkg:
 	mkdir -p dist/SFM
-	cp ../sing-box-for-apple/build/SFM-Apple.pkg "dist/SFM/SFM-${VERSION}-Apple.pkg"
-	cp ../sing-box-for-apple/build/SFM-Intel.pkg "dist/SFM/SFM-${VERSION}-Intel.pkg"
-	cp ../sing-box-for-apple/build/SFM-Universal.pkg "dist/SFM/SFM-${VERSION}-Universal.pkg"
+	cp ../singlink-for-apple/build/SFM-Apple.pkg "dist/SFM/SFM-${VERSION}-Apple.pkg"
+	cp ../singlink-for-apple/build/SFM-Intel.pkg "dist/SFM/SFM-${VERSION}-Intel.pkg"
+	cp ../singlink-for-apple/build/SFM-Universal.pkg "dist/SFM/SFM-${VERSION}-Universal.pkg"
 	ghr --replace "v${VERSION}" "dist/SFM/SFM-${VERSION}-Apple.pkg"
 	ghr --replace "v${VERSION}" "dist/SFM/SFM-${VERSION}-Intel.pkg"
 	ghr --replace "v${VERSION}" "dist/SFM/SFM-${VERSION}-Universal.pkg"
 
 upload_macos_dsyms:
 	mkdir -p dist/SFM
-	cd ../sing-box-for-apple/build/SFM.System-universal.xcarchive && zip -r SFM.dSYMs.zip dSYMs
-	cp ../sing-box-for-apple/build/SFM.System-universal.xcarchive/SFM.dSYMs.zip "dist/SFM/SFM-${VERSION}.dSYMs.zip"
+	cd ../singlink-for-apple/build/SFM.System-universal.xcarchive && zip -r SFM.dSYMs.zip dSYMs
+	cp ../singlink-for-apple/build/SFM.System-universal.xcarchive/SFM.dSYMs.zip "dist/SFM/SFM-${VERSION}.dSYMs.zip"
 	ghr --replace --draft --prerelease "v${VERSION}" "dist/SFM/SFM-${VERSION}.dSYMs.zip"
 
 replace_macos_dsyms:
 	mkdir -p dist/SFM
-	cd ../sing-box-for-apple/build/SFM.System-universal.xcarchive && zip -r SFM.dSYMs.zip dSYMs
-	cp ../sing-box-for-apple/build/SFM.System-universal.xcarchive/SFM.dSYMs.zip "dist/SFM/SFM-${VERSION}.dSYMs.zip"
+	cd ../singlink-for-apple/build/SFM.System-universal.xcarchive && zip -r SFM.dSYMs.zip dSYMs
+	cp ../singlink-for-apple/build/SFM.System-universal.xcarchive/SFM.dSYMs.zip "dist/SFM/SFM-${VERSION}.dSYMs.zip"
 	ghr --replace "v${VERSION}" "dist/SFM/SFM-${VERSION}.dSYMs.zip"
 
 release_macos_standalone: build_macos_pkg notarize_macos_pkg upload_macos_pkg upload_macos_dsyms
@@ -196,18 +196,18 @@ release_macos_standalone: build_macos_pkg notarize_macos_pkg upload_macos_pkg up
 replace_macos_standalone: build_macos_pkg notarize_macos_pkg upload_macos_pkg upload_macos_dsyms
 
 build_tvos:
-	cd ../sing-box-for-apple && \
+	cd ../singlink-for-apple && \
 	rm -rf build/SFT.xcarchive && \
 	xcodebuild archive -scheme SFT -configuration Release -archivePath build/SFT.xcarchive -derivedDataPath build/SFT.dd -allowProvisioningUpdates | xcbeautify | grep -A 10 -e "Archive Succeeded" -e "ARCHIVE FAILED" -e "❌"
 
 upload_tvos_app_store:
-	cd ../sing-box-for-apple && \
+	cd ../singlink-for-apple && \
 	xcodebuild -exportArchive -archivePath "build/SFT.xcarchive" -exportOptionsPlist SFI/Upload.plist -allowProvisioningUpdates
 
 export_tvos_ipa:
-	cd ../sing-box-for-apple && \
+	cd ../singlink-for-apple && \
 	xcodebuild -exportArchive -archivePath "build/SFT.xcarchive" -exportOptionsPlist SFI/Export.plist -allowProvisioningUpdates -exportPath build/SFT && \
-	cp build/SFT/sing-box.ipa dist/SFT.ipa
+	cp build/SFT/singlink.ipa dist/SFT.ipa
 
 upload_tvos_ipa:
 	cd dist && \
@@ -277,8 +277,8 @@ docs_install:
 	source ./venv/bin/activate && pip install --force-reinstall mkdocs-material=="9.7.2" mkdocs-static-i18n=="1.2.*"
 
 clean:
-	rm -rf bin dist sing-box
-	rm -f $(shell go env GOPATH)/sing-box
+	rm -rf bin dist singlink
+	rm -f $(shell go env GOPATH)/singlink
 
 update:
 	git fetch

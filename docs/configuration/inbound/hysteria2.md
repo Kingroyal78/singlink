@@ -2,13 +2,13 @@
 icon: material/alert-decagram
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [bbr_profile](#bbr_profile)  
     :material-plus: [realm](#realm)  
     :material-alert: [obfs](#obfstype)
 
-!!! quote "Changes in sing-box 1.11.0"
+!!! quote "Changes in singlink 1.11.0"
 
     :material-alert: [masquerade](#masquerade)  
     :material-alert: [ignore_client_bandwidth](#ignore_client_bandwidth)
@@ -57,8 +57,8 @@ icon: material/alert-decagram
 
     The official program supports an authentication method called **userpass**,
     which essentially uses a combination of `<username>:<password>` as the actual password,
-    while sing-box does not provide this alias.
-    To use sing-box with the official program, you need to fill in that combination as the actual password.
+    while singlink does not provide this alias.
+    To use singlink with the official program, you need to fill in that combination as the actual password.
 
 ### Listen Fields
 
@@ -86,7 +86,7 @@ QUIC traffic obfuscator password.
 
 #### obfs.min_packet_size
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Minimum on-wire packet size in bytes. Gecko only.
 
@@ -94,7 +94,7 @@ Minimum on-wire packet size in bytes. Gecko only.
 
 #### obfs.max_packet_size
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Maximum on-wire packet size in bytes. Gecko only.
 
@@ -181,7 +181,7 @@ Fixed response content.
 
 #### bbr_profile
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 BBR congestion control algorithm profile, one of `conservative` `standard` `aggressive`.
 
@@ -193,7 +193,7 @@ Enable debug information logging for Hysteria Brutal CC.
 
 #### realm
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Register this inbound to a Hysteria Realm rendezvous service to enable NAT traversal.
 

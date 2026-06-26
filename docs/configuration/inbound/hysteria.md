@@ -95,24 +95,24 @@ See [QUIC Fields](/configuration/shared/quic/) for details.
 
 #### recv_window_conn
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
     Use QUIC fields `stream_receive_window` instead.
 
 #### recv_window_client
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
     Use QUIC fields `connection_receive_window` instead.
 
 #### max_conn_client
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
     Use QUIC fields `max_concurrent_streams` instead.
 
 #### disable_mtu_discovery
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
     Use QUIC fields `disable_path_mtu_discovery` instead.

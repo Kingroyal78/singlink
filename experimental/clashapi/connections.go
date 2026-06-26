@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/trafficcontrol"
-	C "github.com/sagernet/sing-box/constant"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/trafficcontrol"
+	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common"
 	F "github.com/sagernet/sing/common/format"
 	"github.com/sagernet/sing/common/json"

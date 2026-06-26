@@ -3,7 +3,7 @@ package adapter
 import (
 	"net/netip"
 
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common/logger"
 )

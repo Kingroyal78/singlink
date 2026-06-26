@@ -2,13 +2,13 @@
 icon: material/alert-decagram
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [bbr_profile](#bbr_profile)  
     :material-plus: [realm](#realm)  
     :material-alert: [obfs](#obfstype)
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-alert: [masquerade](#masquerade)  
     :material-alert: [ignore_client_bandwidth](#ignore_client_bandwidth)
@@ -56,8 +56,8 @@ icon: material/alert-decagram
 !!! warning "与官方 Hysteria2 的区别"
 
     官方程序支持一种名为 **userpass** 的验证方式，
-    本质上是将用户名与密码的组合 `<username>:<password>` 作为实际上的密码，而 sing-box 不提供此别名。
-    要将 sing-box 与官方程序一起使用， 您需要填写该组合作为实际密码。
+    本质上是将用户名与密码的组合 `<username>:<password>` 作为实际上的密码，而 singlink 不提供此别名。
+    要将 singlink 与官方程序一起使用， 您需要填写该组合作为实际密码。
 
 ### 监听字段
 
@@ -83,7 +83,7 @@ QUIC 流量混淆器密码。
 
 #### obfs.min_packet_size
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 最小线上数据包大小（字节）。仅限 Gecko。
 
@@ -91,7 +91,7 @@ QUIC 流量混淆器密码。
 
 #### obfs.max_packet_size
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 最大线上数据包大小（字节）。仅限 Gecko。
 
@@ -178,7 +178,7 @@ HTTP3 服务器认证失败时的行为 （对象配置）。
 
 #### bbr_profile
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 BBR 拥塞控制算法配置，可选 `conservative` `standard` `aggressive`。
 
@@ -190,7 +190,7 @@ BBR 拥塞控制算法配置，可选 `conservative` `standard` `aggressive`。
 
 #### realm
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 将此入站注册到 Hysteria Realm 会合服务，以启用 NAT 穿透。
 

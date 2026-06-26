@@ -6,16 +6,16 @@ icon: material/file-code
 
 ## :material-graph: 要求
 
-### sing-box 1.11
+### singlink 1.11
 
 * Go 1.23.1 - ~
 
-### sing-box 1.10
+### singlink 1.10
 
 * Go 1.20.0 - ~
 * Go 1.21.0 - ~ with tag `with_ech` enabled
 
-### sing-box 1.9
+### singlink 1.9
 
 * Go 1.18.5 - 1.22.x
 * Go 1.20.0 - 1.22.x with tag `with_quic`, or `with_utls` enabled
@@ -44,7 +44,7 @@ TAGS="tag_a tag_b" make
 or
 
 ```bash
-go build -tags "tag_a tag_b" ./cmd/sing-box
+go build -tags "tag_a tag_b" ./cmd/singlink
 ```
 
 ## :material-folder-settings: 构建标记
@@ -77,7 +77,7 @@ go build -tags "tag_a tag_b" ./cmd/sing-box
 
 | 标志                                                          | 说明                                                                                                                                                         |
 |-------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `-X 'internal/godebug.defaultGODEBUG=multipathtcp=0'`      | Go 1.24 默认为监听器启用 Multipath TCP（`multipathtcp=2`）。这可能在底层 socket 上导致错误，且 sing-box 有自己的 MPTCP 控制（`tcp_multi_path` 选项）。此标志禁用 Go 的默认行为。                             |
+| `-X 'internal/godebug.defaultGODEBUG=multipathtcp=0'`      | Go 1.24 默认为监听器启用 Multipath TCP（`multipathtcp=2`）。这可能在底层 socket 上导致错误，且 singlink 有自己的 MPTCP 控制（`tcp_multi_path` 选项）。此标志禁用 Go 的默认行为。                             |
 | `-checklinkname=0`                                          | Go 1.23+ 链接器拒绝未授权的 `go:linkname` 使用。此标志禁用该检查，需要与 `badlinkname` 构建标记一起使用。                                                                                   |
 
 ## :material-package-variant: 下游打包者
@@ -110,13 +110,13 @@ NaiveProxy 出站需要根据目标平台进行特殊的构建配置。
 
 使用 `with_purego` 标记。
 
-官方发布版本已包含 `libcronet.dll`。自行构建时，从 [cronet-go releases](https://github.com/sagernet/cronet-go/releases) 下载并放置在 `sing-box.exe` 相同目录或 `PATH` 中的任意目录。
+官方发布版本已包含 `libcronet.dll`。自行构建时，从 [cronet-go releases](https://github.com/sagernet/cronet-go/releases) 下载并放置在 `singlink.exe` 相同目录或 `PATH` 中的任意目录。
 
 ### Linux (purego, 仅 amd64/arm64)
 
 使用 `with_purego` 标记。
 
-官方发布版本已包含 `libcronet.so`。自行构建时，从 [cronet-go releases](https://github.com/sagernet/cronet-go/releases) 下载并放置在 sing-box 二进制文件相同目录或系统库路径中。
+官方发布版本已包含 `libcronet.so`。自行构建时，从 [cronet-go releases](https://github.com/sagernet/cronet-go/releases) 下载并放置在 singlink 二进制文件相同目录或系统库路径中。
 
 ### Linux (CGO)
 

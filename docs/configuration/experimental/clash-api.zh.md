@@ -1,9 +1,9 @@
-!!! quote "sing-box 1.10.0 中的更改"
+!!! quote "singlink 1.10.0 中的更改"
 
     :material-plus: [access_control_allow_origin](#access_control_allow_origin)  
     :material-plus: [access_control_allow_private_network](#access_control_allow_private_network)
 
-!!! quote "sing-box 1.8.0 中的更改"
+!!! quote "singlink 1.8.0 中的更改"
 
     :material-delete-alert: [store_mode](#store_mode)  
     :material-delete-alert: [store_selected](#store_selected)  
@@ -38,7 +38,7 @@
 
 === "示例 (在线)"
 
-    !!! question "自 sing-box 1.10.0 起"
+    !!! question "自 singlink 1.10.0 起"
 
     ```json
     {
@@ -53,7 +53,7 @@
 
 === "示例 (下载)"
 
-    !!! question "自 sing-box 1.10.0 起"
+    !!! question "自 singlink 1.10.0 起"
 
     ```json
     {
@@ -75,7 +75,7 @@ RESTful web API 监听地址。如果为空，则禁用 Clash API。
 
 #### external_ui
 
-到静态网页资源目录的相对路径或绝对路径。sing-box 会在 `http://{{external-controller}}/ui` 下提供它。
+到静态网页资源目录的相对路径或绝对路径。singlink 会在 `http://{{external-controller}}/ui` 下提供它。
 
 #### external_ui_download_url
 
@@ -103,7 +103,7 @@ Clash 中的默认模式，默认使用 `Rule`。
 
 #### access_control_allow_origin
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 允许的 CORS 来源，默认使用 `*`。
 
@@ -111,7 +111,7 @@ Clash 中的默认模式，默认使用 `Rule`。
 
 #### access_control_allow_private_network
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 允许从私有网络访问。
 
@@ -119,7 +119,7 @@ Clash 中的默认模式，默认使用 `Rule`。
 
 #### store_mode
 
-!!! failure "已在 sing-box 1.8.0 废弃"
+!!! failure "已在 singlink 1.8.0 废弃"
 
     `store_mode` 已在 Clash API 中废弃，且默认启用当 `cache_file.enabled`。
 
@@ -127,7 +127,7 @@ Clash 中的默认模式，默认使用 `Rule`。
 
 #### store_selected
 
-!!! failure "已在 sing-box 1.8.0 废弃"
+!!! failure "已在 singlink 1.8.0 废弃"
 
     `store_selected` 已在 Clash API 中废弃，且默认启用当 `cache_file.enabled`。
 
@@ -139,7 +139,7 @@ Clash 中的默认模式，默认使用 `Rule`。
 
 #### store_fakeip
 
-!!! failure "已在 sing-box 1.8.0 废弃"
+!!! failure "已在 singlink 1.8.0 废弃"
 
     `store_selected` 已在 Clash API 中废弃，且已迁移到 `cache_file.store_fakeip`。
 
@@ -147,7 +147,7 @@ Clash 中的默认模式，默认使用 `Rule`。
 
 #### cache_file
 
-!!! failure "已在 sing-box 1.8.0 废弃"
+!!! failure "已在 singlink 1.8.0 废弃"
  
     `cache_file` 已在 Clash API 中废弃，且已迁移到 `cache_file.enabled` 和 `cache_file.path`。
 
@@ -155,7 +155,7 @@ Clash 中的默认模式，默认使用 `Rule`。
 
 #### cache_id
 
-!!! failure "已在 sing-box 1.8.0 废弃"
+!!! failure "已在 singlink 1.8.0 废弃"
  
     `cache_id` 已在 Clash API 中废弃，且已迁移到 `cache_file.cache_id`。
 

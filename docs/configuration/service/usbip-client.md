@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 # USB/IP Client
 
@@ -11,7 +11,7 @@ exported by the [USB/IP Server](/configuration/service/usbip-server/).
 
 Available on Linux, Windows, and macOS (macOS requires a build with CGO). Not available on iOS.
 
-The server must be a sing-box (or sing-usbip) server.
+The server must be a singlink (or sing-usbip) server.
 
 ### Structure
 
@@ -29,7 +29,7 @@ The server must be a sing-box (or sing-usbip) server.
 
 !!! info "Difference from the official USB/IP protocol"
 
-    sing-box uses [sing-usbip](https://github.com/SagerNet/sing-usbip), which uses an additional
+    singlink uses [sing-usbip](https://github.com/SagerNet/sing-usbip), which uses an additional
     set of protocols to support enhancements such as hotplug, while remaining interoperable with
     the standard USB/IP protocol.
 

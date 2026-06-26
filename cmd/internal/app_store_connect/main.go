@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/sagernet/asc-go/asc"
-	"github.com/sagernet/sing-box/cmd/internal/build_shared"
-	"github.com/sagernet/sing-box/log"
+	"github.com/singlink/singlink/cmd/internal/build_shared"
+	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
@@ -121,7 +121,7 @@ func publishTestflight(ctx context.Context) error {
 	}
 	tag := tagVersion.VersionString()
 
-	releaseNotes := F.ToString("sing-box ", tagVersion.String())
+	releaseNotes := F.ToString("singlink ", tagVersion.String())
 	if len(os.Args) >= 4 {
 		releaseNotes = strings.Join(os.Args[3:], " ")
 	}
@@ -369,8 +369,8 @@ func prepareAppStore(ctx context.Context) error {
 		if localization.Attributes == nil || localization.Attributes.WhatsNew == nil || *localization.Attributes.WhatsNew == "" {
 			log.Info(string(platform), " ", tag, " update localization")
 			_, _, err = client.Apps.UpdateAppStoreVersionLocalization(ctx, localization.ID, &asc.AppStoreVersionLocalizationUpdateRequestAttributes{
-				PromotionalText: common.Ptr("Yet another distribution for sing-box, the universal proxy platform."),
-				WhatsNew:        common.Ptr(F.ToString("sing-box ", tag, ": Fixes and improvements.")),
+				PromotionalText: common.Ptr("Yet another distribution for singlink, the universal proxy platform."),
+				WhatsNew:        common.Ptr(F.ToString("singlink ", tag, ": Fixes and improvements.")),
 			})
 			if err != nil {
 				return err

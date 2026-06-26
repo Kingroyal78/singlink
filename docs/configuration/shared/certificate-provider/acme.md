@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [account_key](#account_key)  
     :material-plus: [key_type](#key_type)  
@@ -75,14 +75,14 @@ The ACME CA provider to use.
 | `zerossl`               | ZeroSSL       |
 | `https://...`           | Custom        |
 
-When `provider` is `zerossl`, sing-box will automatically request ZeroSSL EAB credentials if `email` is set and
+When `provider` is `zerossl`, singlink will automatically request ZeroSSL EAB credentials if `email` is set and
 `external_account` is empty.
 
 When `provider` is `zerossl`, at least one of `external_account`, `email`, or `account_key` is required.
 
 #### account_key
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 The PEM-encoded private key of an existing ACME account.
 
@@ -131,7 +131,7 @@ See [DNS01 Challenge Fields](/configuration/shared/dns01_challenge/) for details
 
 #### key_type
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 The private key type to generate for new certificates.
 
@@ -145,7 +145,7 @@ The private key type to generate for new certificates.
 
 #### profile
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 The ACME profile to use for certificate issuance.
 
@@ -153,7 +153,7 @@ When empty and `provider` is Let's Encrypt, `shortlived` will be used automatica
 
 #### http_client
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 HTTP Client for all provider HTTP requests.
 

@@ -1,21 +1,21 @@
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [http_client](#http_client)  
     :material-delete-clock: [download_detour](#download_detour)
 
-!!! quote "sing-box 1.10.0 中的更改"
+!!! quote "singlink 1.10.0 中的更改"
 
     :material-plus: `type: inline`
 
 # 规则集
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 ### 结构
 
 === "内联"
 
-    !!! question "自 sing-box 1.10.0 起"
+    !!! question "自 singlink 1.10.0 起"
 
     ```json
     {
@@ -73,7 +73,7 @@
 
 ### 内联字段
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 #### rules
 
@@ -99,7 +99,7 @@
 
 !!! note ""
 
-    自 sing-box 1.10.0 起，文件更改时将自动重新加载。
+    自 singlink 1.10.0 起，文件更改时将自动重新加载。
 
 规则集的文件路径。
 
@@ -113,7 +113,7 @@
 
 #### http_client
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 用于下载规则集的 HTTP 客户端。
 
@@ -122,10 +122,10 @@
 留空时使用默认 HTTP 客户端：即由 [`default_http_client`](/zh/configuration/route/#default_http_client)
 指定的客户端，或当 `default_http_client` 为空时使用顶级 `http_clients` 的第一项。
 
-!!! failure "隐式默认已在 sing-box 1.14.0 废弃"
+!!! failure "隐式默认已在 singlink 1.14.0 废弃"
 
     当 `http_clients` 与 `default_http_client` 均未配置时，将使用通过默认出站连接的隐式 HTTP 客户端。
-    该隐式默认已在 sing-box 1.14.0 废弃，并将在 sing-box 1.16.0 移除；请改为定义 `http_clients`。
+    该隐式默认已在 singlink 1.14.0 废弃，并将在 singlink 1.16.0 移除；请改为定义 `http_clients`。
 
 #### update_interval
 
@@ -135,8 +135,8 @@
 
 #### download_detour
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
-    `download_detour` 已在 sing-box 1.14.0 废弃且将在 sing-box 1.16.0 中被移除，请使用 `http_client` 代替。
+    `download_detour` 已在 singlink 1.14.0 废弃且将在 singlink 1.16.0 中被移除，请使用 `http_client` 代替。
 
 用于下载规则集的出站的标签。

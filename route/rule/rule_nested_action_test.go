@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 
 	"github.com/stretchr/testify/require"
 )

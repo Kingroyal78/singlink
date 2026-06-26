@@ -6,7 +6,7 @@
 
 #### Service
 
-SFA allows you to run sing-box through ForegroundService or VpnService (when TUN is required).
+SFA allows you to run singlink through ForegroundService or VpnService (when TUN is required).
 
 #### TUN
 

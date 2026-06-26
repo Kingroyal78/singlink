@@ -2,19 +2,19 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: [disable_tcp_keep_alive](#disable_tcp_keep_alive)  
     :material-alert: [tcp_keep_alive](#tcp_keep_alive)
 
-!!! quote "Changes in sing-box 1.12.0"
+!!! quote "Changes in singlink 1.12.0"
 
     :material-plus: [netns](#netns)  
     :material-plus: [bind_interface](#bind_interface)  
     :material-plus: [routing_mark](#routing_mark)  
     :material-plus: [reuse_addr](#reuse_addr)
 
-!!! quote "Changes in sing-box 1.11.0"
+!!! quote "Changes in singlink 1.11.0"
 
     :material-delete-clock: [sniff](#sniff)  
     :material-delete-clock: [sniff_override_destination](#sniff_override_destination)  
@@ -65,13 +65,13 @@ Listen port.
 
 #### bind_interface
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 The network interface to bind to.
 
 #### routing_mark
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 !!! quote ""
 
@@ -83,13 +83,13 @@ Integers (e.g. `1234`) and string hexadecimals (e.g. `"0x1234"`) are supported.
 
 #### reuse_addr
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 Reuse listener address.
 
 #### netns
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 !!! quote ""
 
@@ -111,13 +111,13 @@ Enable TCP Multi Path.
 
 #### disable_tcp_keep_alive
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 Disable TCP keep alive.
 
 #### tcp_keep_alive
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
     Default value changed from `10m` to `5m`.
 
@@ -149,9 +149,9 @@ Requires target inbound support, see [Injectable](/configuration/inbound/#fields
 
 #### sniff
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
-    Inbound fields are deprecated and will be removed in sing-box 1.13.0, check [Migration](/migration/#migrate-legacy-inbound-fields-to-rule-actions).
+    Inbound fields are deprecated and will be removed in singlink 1.13.0, check [Migration](/migration/#migrate-legacy-inbound-fields-to-rule-actions).
 
 Enable sniffing.
 
@@ -159,9 +159,9 @@ See [Protocol Sniff](/configuration/route/sniff/) for details.
 
 #### sniff_override_destination
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
-    Inbound fields are deprecated and will be removed in sing-box 1.13.0.
+    Inbound fields are deprecated and will be removed in singlink 1.13.0.
 
 Override the connection destination address with the sniffed domain.
 
@@ -169,9 +169,9 @@ If the domain name is invalid (like tor), this will not work.
 
 #### sniff_timeout
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
-    Inbound fields are deprecated and will be removed in sing-box 1.13.0, check [Migration](/migration/#migrate-legacy-inbound-fields-to-rule-actions).
+    Inbound fields are deprecated and will be removed in singlink 1.13.0, check [Migration](/migration/#migrate-legacy-inbound-fields-to-rule-actions).
 
 Timeout for sniffing.
 
@@ -179,9 +179,9 @@ Timeout for sniffing.
 
 #### domain_strategy
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
-    Inbound fields are deprecated and will be removed in sing-box 1.13.0, check [Migration](/migration/#migrate-legacy-inbound-fields-to-rule-actions).
+    Inbound fields are deprecated and will be removed in singlink 1.13.0, check [Migration](/migration/#migrate-legacy-inbound-fields-to-rule-actions).
 
 One of `prefer_ipv4` `prefer_ipv6` `ipv4_only` `ipv6_only`.
 
@@ -191,9 +191,9 @@ If `sniff_override_destination` is in effect, its value will be taken as a fallb
 
 #### udp_disable_domain_unmapping
 
-!!! failure "Deprecated in sing-box 1.11.0"
+!!! failure "Deprecated in singlink 1.11.0"
 
-    Inbound fields are deprecated and will be removed in sing-box 1.13.0, check [Migration](/migration/#migrate-legacy-inbound-fields-to-rule-actions).
+    Inbound fields are deprecated and will be removed in singlink 1.13.0, check [Migration](/migration/#migrate-legacy-inbound-fields-to-rule-actions).
 
 If enabled, for UDP proxy requests addressed to a domain, 
 the original packet address will be sent in the response instead of the mapped domain.

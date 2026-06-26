@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sagernet/sing-box/cmd/internal/build_shared"
-	"github.com/sagernet/sing-box/log"
+	"github.com/singlink/singlink/cmd/internal/build_shared"
+	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing/common"
 
 	"howett.net/plist"
@@ -27,19 +27,19 @@ func main() {
 	if flagRunInCI {
 		applePath = "clients/apple"
 	} else {
-		applePath = "../sing-box-for-apple"
+		applePath = "../singlink-for-apple"
 	}
 	applePath, err := filepath.Abs(applePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	common.Must(os.Chdir(applePath))
-	projectFile := common.Must1(os.Open("sing-box.xcodeproj/project.pbxproj"))
+	projectFile := common.Must1(os.Open("singlink.xcodeproj/project.pbxproj"))
 	var project map[string]any
 	decoder := plist.NewDecoder(projectFile)
 	common.Must(decoder.Decode(&project))
 	objectsMap := project["objects"].(map[string]any)
-	projectContent := string(common.Must1(os.ReadFile("sing-box.xcodeproj/project.pbxproj")))
+	projectContent := string(common.Must1(os.ReadFile("singlink.xcodeproj/project.pbxproj")))
 	newContent, updated0 := findAndReplace(objectsMap, projectContent, []string{"io.nekohasekai.sfavt"}, newVersion.VersionString())
 	newContent, updated1 := findAndReplace(objectsMap, newContent, []string{"io.nekohasekai.sfavt.standalone", "io.nekohasekai.sfavt.system"}, newVersion.String())
 	if updated0 || updated1 {
@@ -53,7 +53,7 @@ func main() {
 		}
 	}
 	if updated0 || updated1 || updated2 {
-		common.Must(os.WriteFile("sing-box.xcodeproj/project.pbxproj", []byte(newContent), 0o644))
+		common.Must(os.WriteFile("singlink.xcodeproj/project.pbxproj", []byte(newContent), 0o644))
 	}
 }
 

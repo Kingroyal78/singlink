@@ -29,6 +29,7 @@ const (
 	TypeDERP               = "derp"
 	TypeResolved           = "resolved"
 	TypeSSMAPI             = "ssm-api"
+	TypeV2Board            = "v2board"
 	TypeAPI                = "api"
 	TypeCCM                = "ccm"
 	TypeOCM                = "ocm"
@@ -93,6 +94,8 @@ func ProxyDisplayName(proxyType string) string {
 		return "Hysteria2"
 	case TypeAnyTLS:
 		return "AnyTLS"
+	case TypeV2Board:
+		return "V2Board"
 	case TypeTailscale:
 		return "Tailscale"
 	case TypeCloudflared:

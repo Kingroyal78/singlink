@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 # Cloudflare Origin CA
 
@@ -35,7 +35,7 @@ icon: material/new-box
 
 保存签发证书、私钥和元数据的根目录。
 
-如果为空，sing-box 会使用与 ACME 证书提供者相同的默认数据目录：
+如果为空，singlink 会使用与 ACME 证书提供者相同的默认数据目录：
 `$XDG_DATA_HOME/certmagic` 或 `$HOME/.local/share/certmagic`。
 
 #### api_token

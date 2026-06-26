@@ -37,7 +37,7 @@ ROM 自带的「通过 VPN 共享连接」等功能可以共享 VPN，
 
 ### 设备可见性
 
-MAC 地址和主机名仅在 VPNHotspot 中可见时 sing-box 才能读取。
+MAC 地址和主机名仅在 VPNHotspot 中可见时 singlink 才能读取。
 对于 Apple 设备，需要在所连接网络的 Wi-Fi 设置中将**私有无线局域网地址**从**轮替**改为**固定**。
 非 Apple 设备始终可见。
 

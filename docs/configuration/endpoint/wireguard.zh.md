@@ -1,4 +1,4 @@
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 ### 结构
 
@@ -72,7 +72,7 @@ wg genkey
 echo "private key" || wg pubkey
 ```
 
-或 `sing-box generate wg-keypair`.
+或 `singlink generate wg-keypair`.
 
 #### peers
 

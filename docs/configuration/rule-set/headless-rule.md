@@ -2,17 +2,17 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [package_name_regex](#package_name_regex)  
     :material-alert: [query_type](#query_type)
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: [network_interface_address](#network_interface_address)  
     :material-plus: [default_interface_address](#default_interface_address)
 
-!!! quote "Changes in sing-box 1.11.0"
+!!! quote "Changes in singlink 1.11.0"
 
     :material-plus: [network_type](#network_type)  
     :material-plus: [network_is_expensive](#network_is_expensive)  
@@ -20,7 +20,7 @@ icon: material/new-box
 
 ### Structure
 
-!!! question "Since sing-box 1.8.0"
+!!! question "Since singlink 1.8.0"
 
 ```json
 {
@@ -133,7 +133,7 @@ icon: material/new-box
 
 #### query_type
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     When a DNS rule references this rule-set, this field now also applies
     when the DNS rule is matched from an internal domain resolution that
@@ -215,7 +215,7 @@ Match process path.
 
 #### process_path_regex
 
-!!! question "Since sing-box 1.10.0"
+!!! question "Since singlink 1.10.0"
 
 !!! quote ""
 
@@ -229,13 +229,13 @@ Match android package name.
 
 #### package_name_regex
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Match android package name using regular expression.
 
 #### network_type
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -247,7 +247,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### network_is_expensive
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -258,7 +258,7 @@ such as Cellular or a Personal Hotspot (on Apple platforms).
 
 #### network_is_constrained
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 !!! quote ""
 
@@ -268,7 +268,7 @@ Match if network is in Low Data Mode.
 
 #### network_interface_address
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 !!! quote ""
 
@@ -278,7 +278,7 @@ Matches network interface (same values as `network_type`) address.
 
 #### default_interface_address
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 !!! quote ""
 

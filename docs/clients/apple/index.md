@@ -2,14 +2,14 @@
 icon: material/apple
 ---
 
-# sing-box for Apple platforms
+# singlink for Apple platforms
 
-SFI/SFM/SFT allows users to manage and run local or remote sing-box configuration files, and provides
+SFI/SFM/SFT allows users to manage and run local or remote singlink configuration files, and provides
 platform-specific function implementation, such as TUN transparent proxy implementation.
 
 !!! failure ""
 
-    We are temporarily unable to update sing-box apps on the App Store because the reviewer mistakenly found that we violated the rules (TestFlight users are not affected).
+    We are temporarily unable to update singlink apps on the App Store because the reviewer mistakenly found that we violated the rules (TestFlight users are not affected).
 
 ## :material-graph: Requirements
 
@@ -18,7 +18,7 @@ platform-specific function implementation, such as TUN transparent proxy impleme
 
 ## :material-download: Download
 
-* ~~[App Store](https://apps.apple.com/app/sing-box-vt/id6673731168)~~
+* ~~[App Store](https://apps.apple.com/app/singlink-vt/id6673731168)~~
 * TestFlight (Beta)
 
 TestFlight quota is only available to [sponsors](https://github.com/sponsors/nekohasekai)
@@ -28,7 +28,7 @@ or sending us your Apple ID [via email](mailto:contact@sagernet.org).
 
 ## :material-cellphone-arrow-down: Download (iOS jailbreak version)
 
-* [GitHub Releases](https://github.com/SagerNet/sing-box/releases) (`SFI-iphoneos-arm64.deb`)
+* [GitHub Releases](https://github.com/SagerNet/singlink/releases) (`SFI-iphoneos-arm64.deb`)
 
 The jailbroken version of SFI: requires rootless iOS 15.0+
 
@@ -45,8 +45,8 @@ Additional features:
 # brew install sfm
 ```
 
-* [GitHub Releases](https://github.com/SagerNet/sing-box/releases)
+* [GitHub Releases](https://github.com/SagerNet/singlink/releases)
 
 ## :material-source-repository: Source code
 
-* [GitHub](https://github.com/SagerNet/sing-box-for-apple)
+* [GitHub](https://github.com/SagerNet/singlink-for-apple)

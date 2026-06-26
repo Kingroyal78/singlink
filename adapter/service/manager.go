@@ -5,12 +5,12 @@ import (
 	"os"
 	"sync"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/taskmonitor"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/taskmonitor"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
 )
 
 var _ adapter.ServiceManager = (*Manager)(nil)
@@ -75,7 +75,7 @@ func (m *Manager) Close() error {
 		monitor.Finish()
 		done()
 	}
-	return nil
+	return err
 }
 
 func (m *Manager) Services() []adapter.Service {
@@ -128,6 +128,10 @@ func (m *Manager) Create(ctx context.Context, logger log.ContextLogger, tag stri
 			err = adapter.LegacyStart(service, stage)
 			done()
 			if err != nil {
+				closeErr := service.Close()
+				if closeErr != nil {
+					return E.Errors(E.Cause(err, stage, " ", name), E.Cause(closeErr, "close failed ", name))
+				}
 				return E.Cause(err, stage, " ", name)
 			}
 		}
@@ -136,6 +140,13 @@ func (m *Manager) Create(ctx context.Context, logger log.ContextLogger, tag stri
 		if m.started {
 			err = existsService.Close()
 			if err != nil {
+				closeErr := service.Close()
+				if closeErr != nil {
+					return E.Errors(
+						E.Cause(err, "close service/", existsService.Type(), "[", existsService.Tag(), "]"),
+						E.Cause(closeErr, "close failed service/", service.Type(), "[", service.Tag(), "]"),
+					)
+				}
 				return E.Cause(err, "close service/", existsService.Type(), "[", existsService.Tag(), "]")
 			}
 		}

@@ -2,17 +2,17 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [package_name_regex](#package_name_regex)  
     :material-alert: [query_type](#query_type)
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [network_interface_address](#network_interface_address)  
     :material-plus: [default_interface_address](#default_interface_address)
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-plus: [network_type](#network_type)  
     :material-plus: [network_is_expensive](#network_is_expensive)  
@@ -20,7 +20,7 @@ icon: material/new-box
 
 ### 结构
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 ```json
 {
@@ -133,7 +133,7 @@ icon: material/new-box
 
 #### query_type
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     当 DNS 规则引用此规则集时，此字段现在也会在 DNS 规则被未指定具体
     DNS 服务器的内部域名解析匹配时生效。此前只有来自客户端的 DNS 查询
@@ -208,7 +208,7 @@ DNS 查询类型。值可以为整数或者类型名称字符串。
 
 #### process_path_regex
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 !!! quote ""
 
@@ -222,13 +222,13 @@ DNS 查询类型。值可以为整数或者类型名称字符串。
 
 #### package_name_regex
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 使用正则表达式匹配 Android 应用包名。
 
 #### network_type
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -240,7 +240,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### network_is_expensive
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -251,7 +251,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### network_is_constrained
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -261,7 +261,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### network_interface_address
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -271,7 +271,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### default_interface_address
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 

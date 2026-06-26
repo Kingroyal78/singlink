@@ -1,6 +1,6 @@
 # 引言
 
-sing-box 使用 JSON 作为配置文件格式。
+singlink 使用 JSON 作为配置文件格式。
 ### 结构
 
 ```json
@@ -40,17 +40,17 @@ sing-box 使用 JSON 作为配置文件格式。
 ### 检查
 
 ```bash
-sing-box check
+singlink check
 ```
 
 ### 格式化
 
 ```bash
-sing-box format -w -c config.json -D config_directory
+singlink format -w -c config.json -D config_directory
 ```
 
 ### 合并
 
 ```bash
-sing-box merge output.json -c config.json -D config_directory
+singlink merge output.json -c config.json -D config_directory
 ```

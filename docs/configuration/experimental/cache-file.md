@@ -1,11 +1,11 @@
-!!! question "Since sing-box 1.8.0"
+!!! question "Since singlink 1.8.0"
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-delete-clock: [store_rdrc](#store_rdrc)  
     :material-plus: [store_dns](#store_dns)
 
-!!! quote "Changes in sing-box 1.9.0"
+!!! quote "Changes in singlink 1.9.0"
 
     :material-plus: [store_rdrc](#store_rdrc)  
     :material-plus: [rdrc_timeout](#rdrc_timeout)
@@ -48,9 +48,9 @@ Store fakeip in the cache file
 
 #### store_rdrc
 
-!!! failure "Deprecated in sing-box 1.14.0"
+!!! failure "Deprecated in singlink 1.14.0"
 
-    `store_rdrc` is deprecated and will be removed in sing-box 1.16.0, check [Migration](/migration/#migrate-store-rdrc).
+    `store_rdrc` is deprecated and will be removed in singlink 1.16.0, check [Migration](/migration/#migrate-store-rdrc).
 
 Store rejected DNS response cache in the cache file
 
@@ -65,6 +65,6 @@ Timeout of rejected DNS response cache.
 
 #### store_dns
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Store DNS cache in the cache file.

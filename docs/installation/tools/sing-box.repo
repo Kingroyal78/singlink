@@ -1,7 +1,7 @@
-[sing-box]
-name=sing-box
+[singlink]
+name=singlink
 baseurl=https://rpm.sagernet.org/
 enabled=1
 repo_gpgcheck=1
 gpgcheck=1
-gpgkey=https://sing-box.app/gpg.key
+gpgkey=https://singlink.app/gpg.key

@@ -8,7 +8,7 @@
 
 #### Service
 
-SFI/SFM/SFT allows you to run sing-box through NetworkExtension with Application Extension or System Extension.
+SFI/SFM/SFT allows you to run singlink through NetworkExtension with Application Extension or System Extension.
 
 #### TUN
 

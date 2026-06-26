@@ -7,7 +7,7 @@ import (
 	"net"
 	"testing"
 
-	tf "github.com/sagernet/sing-box/common/tlsfragment"
+	tf "github.com/singlink/singlink/common/tlsfragment"
 
 	utls "github.com/metacubex/utls"
 	"github.com/stretchr/testify/require"

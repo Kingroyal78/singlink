@@ -2,11 +2,11 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [accept_search_domain](#accept_search_domain)
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 # Tailscale
 
@@ -45,7 +45,7 @@ icon: material/new-box
 
 #### accept_search_domain
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 启用后，单标签查询（例如 `my-device`）将依次附加 Tailscale 搜索域进行重试，直到其中一个解析成功。
 
@@ -55,7 +55,7 @@ icon: material/new-box
 
 === "仅 MagicDNS"
 
-    === ":material-card-multiple: sing-box 1.14.0"
+    === ":material-card-multiple: singlink 1.14.0"
 
         ```json
         {
@@ -82,7 +82,7 @@ icon: material/new-box
         }
         ```
 
-    === ":material-card-remove: sing-box < 1.14.0"
+    === ":material-card-remove: singlink < 1.14.0"
 
         ```json
         {

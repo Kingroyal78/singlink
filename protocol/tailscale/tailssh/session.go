@@ -5,7 +5,7 @@ package tailssh
 import (
 	"io"
 
-	"github.com/sagernet/sing-box/adapter"
+	"github.com/singlink/singlink/adapter"
 )
 
 type shellBackend interface {

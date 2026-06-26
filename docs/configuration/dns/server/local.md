@@ -2,15 +2,15 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [neighbor_domain](#neighbor_domain)
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: [prefer_go](#prefer_go)
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 # Local
 
@@ -42,11 +42,11 @@ icon: material/new-box
 
 #### prefer_go
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 When enabled, `local` DNS server will resolve DNS by dialing itself whenever possible.
 
-Specifically, it disables following behaviors which was added as features in sing-box 1.13.0:
+Specifically, it disables following behaviors which was added as features in singlink 1.13.0:
 
 1. On Apple platforms: Attempt to resolve A/AAAA requests using `getaddrinfo` in NetworkExtension.
 2. On Linux: Resolve through `systemd-resolvd`'s DBus interface when available.
@@ -63,7 +63,7 @@ it will not be disabled by `prefer_go`.
 
 #### neighbor_domain
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 A list of domain suffixes for which A/AAAA queries are answered from the
 [neighbor resolver](/configuration/shared/neighbor/) instead of the upstream.

@@ -2,15 +2,15 @@
 icon: material/delete-clock
 ---
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
-    WireGuard 出站已被弃用，且将在 sing-box 1.13.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-wireguard-出站到端点)。
+    WireGuard 出站已被弃用，且将在 singlink 1.13.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-wireguard-出站到端点)。
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-delete-alert: [gso](#gso)
 
-!!! quote "sing-box 1.8.0 中的更改"
+!!! quote "singlink 1.8.0 中的更改"
 
     :material-plus: [gso](#gso)
 
@@ -72,11 +72,11 @@ icon: material/delete-clock
 
 #### gso
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
-    自 sing-box 1.11.0 起，GSO 将可用时自动启用。
+    自 singlink 1.11.0 起，GSO 将可用时自动启用。
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 !!! quote ""
 

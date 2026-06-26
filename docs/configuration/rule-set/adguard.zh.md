@@ -1,6 +1,6 @@
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
-sing-box 支持其他项目的一些规则集格式，这些格式无法完全转换为 sing-box，
+singlink 支持其他项目的一些规则集格式，这些格式无法完全转换为 singlink，
 目前只有 AdGuard DNS Filter。
 
 这些格式不直接作为源格式支持，
@@ -8,12 +8,12 @@ sing-box 支持其他项目的一些规则集格式，这些格式无法完全�
 
 ## 转换
 
-使用 `sing-box rule-set convert --type adguard [--output <file-name>.srs] <file-name>.txt` 以转换为二进制规则集。
+使用 `singlink rule-set convert --type adguard [--output <file-name>.srs] <file-name>.txt` 以转换为二进制规则集。
 
 ## 性能
 
 AdGuard 将所有规则保存在内存中并按顺序匹配，
-而 sing-box 选择高性能和较小的内存使用量。
+而 singlink 选择高性能和较小的内存使用量。
 作为权衡，您无法知道匹配了哪个规则项。
 
 ## 兼容性

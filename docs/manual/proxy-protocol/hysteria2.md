@@ -35,8 +35,8 @@ tries to achieve a user-defined bandwidth despite packet loss.
 
 The official program supports an authentication method called **userpass**,
 which essentially uses a combination of `<username>:<password>` as the actual password,
-while sing-box does not provide this alias.
-To use sing-box with the official program, you need to fill in that combination as the actual password.
+while singlink does not provide this alias.
+To use singlink with the official program, you need to fill in that combination as the actual password.
 
 ## :material-server: Server Example
 
@@ -167,7 +167,7 @@ To use sing-box with the official program, you need to fill in that combination 
 
     !!! info "Tip"
         
-        Use `sing-box merge` command to merge configuration and certificate into one file.
+        Use `singlink merge` command to merge configuration and certificate into one file.
 
     ```json
     {

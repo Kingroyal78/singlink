@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 # Hosts
 
@@ -73,7 +73,7 @@ hosts 文件路径列表。
 
 === "如果可用则使用 hosts"
 
-    === ":material-card-multiple: sing-box 1.14.0"
+    === ":material-card-multiple: singlink 1.14.0"
 
         ```json
         {
@@ -98,7 +98,7 @@ hosts 文件路径列表。
         }
         ```
 
-    === ":material-card-remove: sing-box < 1.14.0"
+    === ":material-card-remove: singlink < 1.14.0"
 
         ```json
         {

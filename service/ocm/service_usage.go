@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sagernet/sing-box/log"
+	"github.com/singlink/singlink/log"
 	E "github.com/sagernet/sing/common/exceptions"
 )
 

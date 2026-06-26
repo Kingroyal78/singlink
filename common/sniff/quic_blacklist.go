@@ -3,7 +3,7 @@ package sniff
 import (
 	"slices"
 
-	"github.com/sagernet/sing-box/common/ja3"
+	"github.com/singlink/singlink/common/ja3"
 )
 
 const (

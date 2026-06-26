@@ -6,7 +6,7 @@ package settings
 import (
 	"os"
 
-	"github.com/sagernet/sing-box/adapter"
+	"github.com/singlink/singlink/adapter"
 )
 
 type stubWIFIMonitor struct{}

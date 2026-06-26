@@ -5,14 +5,14 @@ package include
 import (
 	"context"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/adapter/certificate"
-	"github.com/sagernet/sing-box/adapter/endpoint"
-	"github.com/sagernet/sing-box/adapter/service"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/dns"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/adapter/certificate"
+	"github.com/singlink/singlink/adapter/endpoint"
+	"github.com/singlink/singlink/adapter/service"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/dns"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 )
 

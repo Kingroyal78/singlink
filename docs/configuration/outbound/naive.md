@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.13.0"
+!!! question "Since singlink 1.13.0"
 
 ### Structure
 
@@ -43,8 +43,8 @@ icon: material/new-box
 
     **Runtime Requirements:**
 
-    - **Linux purego**: `libcronet.so` must be in the same directory as the sing-box binary or in system library path
-    - **Windows**: `libcronet.dll` must be in the same directory as `sing-box.exe` or in a directory listed in `PATH`
+    - **Linux purego**: `libcronet.so` must be in the same directory as the singlink binary or in system library path
+    - **Windows**: `libcronet.dll` must be in the same directory as `singlink.exe` or in a directory listed in `PATH`
 
     For self-built binaries, see [Build from source](/installation/build-from-source/#with_naive_outbound).
 

@@ -1,4 +1,4 @@
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 # Endpoint
 

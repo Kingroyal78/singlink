@@ -1,6 +1,6 @@
-!!! question "Since sing-box 1.10.0"
+!!! question "Since singlink 1.10.0"
 
-sing-box supports some rule-set formats from other projects which cannot be fully translated to sing-box,
+singlink supports some rule-set formats from other projects which cannot be fully translated to singlink,
 currently only AdGuard DNS Filter.
 
 These formats are not directly supported as source formats,
@@ -8,12 +8,12 @@ instead you need to convert them to binary rule-set.
 
 ## Convert
 
-Use `sing-box rule-set convert --type adguard [--output <file-name>.srs] <file-name>.txt` to convert to binary rule-set.
+Use `singlink rule-set convert --type adguard [--output <file-name>.srs] <file-name>.txt` to convert to binary rule-set.
 
 ## Performance
 
 AdGuard keeps all rules in memory and matches them sequentially,
-while sing-box chooses high performance and smaller memory usage.
+while singlink chooses high performance and smaller memory usage.
 As a trade-off, you cannot know which rule item is matched.
 
 ## Compatibility

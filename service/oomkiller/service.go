@@ -5,11 +5,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	boxService "github.com/sagernet/sing-box/adapter/service"
-	boxConstant "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/adapter"
+	boxService "github.com/singlink/singlink/adapter/service"
+	boxConstant "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/service"
 )
 

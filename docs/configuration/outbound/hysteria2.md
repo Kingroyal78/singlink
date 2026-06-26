@@ -1,11 +1,11 @@
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [hop_interval_max](#hop_interval_max)  
     :material-plus: [bbr_profile](#bbr_profile)  
     :material-plus: [realm](#realm)  
     :material-alert: [obfs](#obfstype)
 
-!!! quote "Changes in sing-box 1.11.0"
+!!! quote "Changes in singlink 1.11.0"
 
     :material-plus: [server_ports](#server_ports)  
     :material-plus: [hop_interval](#hop_interval)
@@ -58,8 +58,8 @@
 
     The official Hysteria2 supports an authentication method called **userpass**,
     which essentially uses a combination of `<username>:<password>` as the actual password,
-    while sing-box does not provide this alias.
-    If you are planning to use sing-box with the official program,
+    while singlink does not provide this alias.
+    If you are planning to use singlink with the official program,
     please note that you will need to fill the combination as the password.
 
 ### Fields
@@ -84,7 +84,7 @@ Conflicts with `realm`.
 
 #### server_ports
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 Server port range list.
 
@@ -92,7 +92,7 @@ Conflicts with `server_port` and `realm`.
 
 #### hop_interval
 
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 Port hopping interval.
 
@@ -100,7 +100,7 @@ Port hopping interval.
 
 #### hop_interval_max
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Maximum port hopping interval, used for randomization.
 
@@ -124,7 +124,7 @@ QUIC traffic obfuscator password.
 
 #### obfs.min_packet_size
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Minimum on-wire packet size in bytes. Gecko only.
 
@@ -132,7 +132,7 @@ Minimum on-wire packet size in bytes. Gecko only.
 
 #### obfs.max_packet_size
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Maximum on-wire packet size in bytes. Gecko only.
 
@@ -162,7 +162,7 @@ See [QUIC Fields](/configuration/shared/quic/) for details.
 
 #### bbr_profile
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 BBR congestion control algorithm profile, one of `conservative` `standard` `aggressive`.
 
@@ -174,7 +174,7 @@ Enable debug information logging for Hysteria Brutal CC.
 
 #### realm
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 Connect to a Hysteria2 server through a Hysteria Realm rendezvous service.
 

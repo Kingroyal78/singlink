@@ -2,7 +2,7 @@
 icon: material/alert-decagram
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [source_mac_address](#source_mac_address)  
     :material-plus: [source_hostname](#source_hostname)  
@@ -17,18 +17,18 @@ icon: material/alert-decagram
     :material-alert: [ip_version](#ip_version)  
     :material-alert: [query_type](#query_type)
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [interface_address](#interface_address)  
     :material-plus: [network_interface_address](#network_interface_address)  
     :material-plus: [default_interface_address](#default_interface_address)
 
-!!! quote "sing-box 1.12.0 中的更改"
+!!! quote "singlink 1.12.0 中的更改"
 
     :material-plus: [ip_accept_any](#ip_accept_any)  
     :material-delete-clock: [outbound](#outbound)
 
-!!! quote "sing-box 1.11.0 中的更改"
+!!! quote "singlink 1.11.0 中的更改"
 
     :material-plus: [action](#action)  
     :material-alert: [server](#server)  
@@ -39,14 +39,14 @@ icon: material/alert-decagram
     :material-plus: [network_is_expensive](#network_is_expensive)  
     :material-plus: [network_is_constrained](#network_is_constrained)
 
-!!! quote "sing-box 1.10.0 中的更改"
+!!! quote "singlink 1.10.0 中的更改"
 
     :material-delete-clock: [rule_set_ipcidr_match_source](#rule_set_ipcidr_match_source)  
     :material-plus: [rule_set_ip_cidr_match_source](#rule_set_ip_cidr_match_source)  
     :material-plus: [rule_set_ip_cidr_accept_empty](#rule_set_ip_cidr_accept_empty)  
     :material-plus: [process_path_regex](#process_path_regex)
 
-!!! quote "sing-box 1.9.0 中的更改"
+!!! quote "singlink 1.9.0 中的更改"
 
     :material-plus: [geoip](#geoip)  
     :material-plus: [ip_cidr](#ip_cidr)  
@@ -54,7 +54,7 @@ icon: material/alert-decagram
     :material-plus: [client_subnet](#client_subnet)  
     :material-plus: [rule_set_ipcidr_match_source](#rule_set_ipcidr_match_source)
 
-!!! quote "sing-box 1.8.0 中的更改"
+!!! quote "singlink 1.8.0 中的更改"
 
     :material-plus: [rule_set](#rule_set)  
     :material-plus: [source_ip_is_private](#source_ip_is_private)  
@@ -250,7 +250,7 @@ icon: material/alert-decagram
 
 #### ip_version
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     此字段现在也会在 DNS 规则被未指定具体 DNS 服务器的内部域名解析匹配时生效，
     例如未设置 `server` 的 [`resolve`](../../route/rule_action/#resolve) 路由规则动作。
@@ -269,7 +269,7 @@ icon: material/alert-decagram
 
 #### query_type
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     此字段现在也会在 DNS 规则被未指定具体 DNS 服务器的内部域名解析匹配时生效，
     例如未设置 `server` 的 [`resolve`](../../route/rule_action/#resolve) 路由规则动作。
@@ -314,17 +314,17 @@ DNS 查询类型。值可以为整数或者类型名称字符串。
 
 #### geosite
 
-!!! failure "已在 sing-box 1.12.0 中被移除"
+!!! failure "已在 singlink 1.12.0 中被移除"
 
-    GeoSite 已在 sing-box 1.8.0 废弃且在 sing-box 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-geosite-到规则集)。
+    GeoSite 已在 singlink 1.8.0 废弃且在 singlink 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-geosite-到规则集)。
 
 匹配 Geosite。
 
 #### source_geoip
 
-!!! failure "已在 sing-box 1.12.0 中被移除"
+!!! failure "已在 singlink 1.12.0 中被移除"
 
-    GeoIP 已在 sing-box 1.8.0 废弃且在 sing-box 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-geoip-到规则集)。
+    GeoIP 已在 singlink 1.8.0 废弃且在 singlink 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-geoip-到规则集)。
 
 匹配源 GeoIP。
 
@@ -334,7 +334,7 @@ DNS 查询类型。值可以为整数或者类型名称字符串。
 
 #### source_ip_is_private
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 匹配非公开源 IP。
 
@@ -372,7 +372,7 @@ DNS 查询类型。值可以为整数或者类型名称字符串。
 
 #### process_path_regex
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 !!! quote ""
 
@@ -386,7 +386,7 @@ DNS 查询类型。值可以为整数或者类型名称字符串。
 
 #### package_name_regex
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 使用正则表达式匹配 Android 应用包名。
 
@@ -412,7 +412,7 @@ DNS 查询类型。值可以为整数或者类型名称字符串。
 
 #### network_type
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -424,7 +424,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### network_is_expensive
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -435,7 +435,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### network_is_constrained
 
-!!! question "自 sing-box 1.11.0 起"
+!!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
@@ -445,7 +445,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### interface_address
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -455,7 +455,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### network_interface_address
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -465,7 +465,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### default_interface_address
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -475,7 +475,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### source_mac_address
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 !!! quote ""
 
@@ -485,7 +485,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### source_hostname
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 !!! quote ""
 
@@ -495,7 +495,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### preferred_by
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 匹配指定 DNS 服务器的首选域名。
 
@@ -525,29 +525,29 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### rule_set
 
-!!! question "自 sing-box 1.8.0 起"
+!!! question "自 singlink 1.8.0 起"
 
 匹配[规则集](/zh/configuration/route/#rule_set)。
 
 #### rule_set_ipcidr_match_source
 
-!!! question "自 sing-box 1.9.0 起"
+!!! question "自 singlink 1.9.0 起"
 
-!!! failure "已在 sing-box 1.10.0 废弃"
+!!! failure "已在 singlink 1.10.0 废弃"
 
-    `rule_set_ipcidr_match_source` 已重命名为 `rule_set_ip_cidr_match_source` 且将在 sing-box 1.11.0 中被移除。
+    `rule_set_ipcidr_match_source` 已重命名为 `rule_set_ip_cidr_match_source` 且将在 singlink 1.11.0 中被移除。
 
 使规则集中的 `ip_cidr` 规则匹配源 IP。
 
 #### rule_set_ip_cidr_match_source
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
 使规则集中的 `ip_cidr` 规则匹配源 IP。
 
 #### match_response
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 启用响应匹配。启用后，此规则将匹配已评估的响应（由前序 [`evaluate`](/zh/configuration/dns/rule_action/#evaluate) 动作设置），而不仅是匹配原始查询。
 
@@ -558,7 +558,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### ip_accept_any
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 当 DNS 查询响应包含至少一个地址时匹配。
 
@@ -568,9 +568,9 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### outbound
 
-!!! failure "已在 sing-box 1.12.0 废弃"
+!!! failure "已在 singlink 1.12.0 废弃"
 
-    `outbound` 规则项已废弃且将在 sing-box 1.14.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-outbound-dns-规则项到域解析选项)。
+    `outbound` 规则项已废弃且将在 singlink 1.14.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-outbound-dns-规则项到域解析选项)。
 
 匹配出站。
 
@@ -584,33 +584,33 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### server
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
     已移动到 [DNS 规则动作](../rule_action#route).
 
 #### disable_cache
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
     已移动到 [DNS 规则动作](../rule_action#route).
 
 #### rewrite_ttl
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
     已移动到 [DNS 规则动作](../rule_action#route).
 
 #### client_subnet
 
-!!! failure "已在 sing-box 1.11.0 废弃"
+!!! failure "已在 singlink 1.11.0 废弃"
 
     已移动到 [DNS 规则动作](../rule_action#route).
 
 ### 旧版地址筛选字段
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
-    旧版地址筛选字段已废弃，且将在 sing-box 1.16.0 中被移除，
+    旧版地址筛选字段已废弃，且将在 singlink 1.16.0 中被移除，
     参阅[迁移指南](/zh/migration/#迁移地址筛选字段到响应匹配)。
 
 仅对地址请求 (A/AAAA/HTTPS) 生效。 当查询结果与地址筛选规则项不匹配时，将跳过当前规则。
@@ -625,16 +625,16 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### geoip
 
-!!! failure "已在 sing-box 1.12.0 中被移除"
+!!! failure "已在 singlink 1.12.0 中被移除"
 
-    GeoIP 已在 sing-box 1.8.0 废弃且在 sing-box 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-geoip-到规则集)。
+    GeoIP 已在 singlink 1.8.0 废弃且在 singlink 1.12.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移-geoip-到规则集)。
 
 
 与查询响应匹配 GeoIP。
 
 #### ip_cidr
 
-!!! question "自 sing-box 1.9.0 起"
+!!! question "自 singlink 1.9.0 起"
 
 与查询响应匹配 IP CIDR。
 
@@ -643,7 +643,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### ip_is_private
 
-!!! question "自 sing-box 1.9.0 起"
+!!! question "自 singlink 1.9.0 起"
 
 与查询响应匹配非公开 IP。
 
@@ -652,18 +652,18 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 #### rule_set_ip_cidr_accept_empty
 
-!!! question "自 sing-box 1.10.0 起"
+!!! question "自 singlink 1.10.0 起"
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
-    `rule_set_ip_cidr_accept_empty` 已废弃且将在 sing-box 1.16.0 中被移除，
+    `rule_set_ip_cidr_accept_empty` 已废弃且将在 singlink 1.16.0 中被移除，
     参阅[迁移指南](/zh/migration/#迁移地址筛选字段到响应匹配)。
 
 使规则集中的 `ip_cidr` 规则接受空查询响应。
 
 ### 响应匹配字段
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 已评估的响应的匹配字段。需要将 `match_response` 设为 `true`，
 且需要前序规则使用 [`evaluate`](/zh/configuration/dns/rule_action/#evaluate) 动作来填充响应。

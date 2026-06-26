@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 # 服务
 
@@ -23,7 +23,7 @@ icon: material/new-box
 
 | 类型              | 格式                                  |
 |-------------------|---------------------------------------|
-| `api`             | [sing-box API](./api)                 |
+| `api`             | [singlink API](./api)                 |
 | `ccm`             | [CCM](./ccm)                          |
 | `derp`            | [DERP](./derp)                        |
 | `hysteria-realm`  | [Hysteria Realm](./hysteria-realm)    |

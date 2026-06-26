@@ -1,12 +1,12 @@
-# sing-box
+# singlink
 
 The universal proxy platform.
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/sing-box.svg)](https://repology.org/project/sing-box/versions)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/singlink.svg)](https://repology.org/project/singlink/versions)
 
 ## Documentation
 
-https://sing-box.sagernet.org
+https://singlink.sagernet.org
 
 ## License
 

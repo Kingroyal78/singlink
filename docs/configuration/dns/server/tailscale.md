@@ -2,11 +2,11 @@
 icon: material/new-box
 ---
 
-!!! quote "Changes in sing-box 1.14.0"
+!!! quote "Changes in singlink 1.14.0"
 
     :material-plus: [accept_search_domain](#accept_search_domain)
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
 # Tailscale
 
@@ -45,7 +45,7 @@ if not enabled, `NXDOMAIN` will be returned for non-Tailscale domain queries.
 
 #### accept_search_domain
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
 When enabled, single-label queries (e.g. `my-device`) are retried against each Tailscale search domain until one resolves.
 
@@ -55,7 +55,7 @@ Default resolvers are not consulted for single-label queries regardless of `acce
 
 === "MagicDNS only"
 
-    === ":material-card-multiple: sing-box 1.14.0"
+    === ":material-card-multiple: singlink 1.14.0"
 
         ```json
         {
@@ -82,7 +82,7 @@ Default resolvers are not consulted for single-label queries regardless of `acce
         }
         ```
 
-    === ":material-card-remove: sing-box < 1.14.0"
+    === ":material-card-remove: singlink < 1.14.0"
 
         ```json
         {

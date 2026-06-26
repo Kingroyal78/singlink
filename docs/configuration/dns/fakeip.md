@@ -2,9 +2,9 @@
 icon: material/note-remove
 ---
 
-!!! failure "Removed in sing-box 1.14.0"
+!!! failure "Removed in singlink 1.14.0"
 
-    Legacy fake-ip configuration is deprecated in sing-box 1.12.0 and removed in sing-box 1.14.0, check [Migration](/migration/#migrate-to-new-dns-server-formats).
+    Legacy fake-ip configuration is deprecated in singlink 1.12.0 and removed in singlink 1.14.0, check [Migration](/migration/#migrate-to-new-dns-server-formats).
 
 ### Structure
 

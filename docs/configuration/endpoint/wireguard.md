@@ -1,4 +1,4 @@
-!!! question "Since sing-box 1.11.0"
+!!! question "Since singlink 1.11.0"
 
 ### Structure
 
@@ -70,7 +70,7 @@ wg genkey
 echo "private key" || wg pubkey
 ```
 
-or `sing-box generate wg-keypair`.
+or `singlink generate wg-keypair`.
 
 #### peers
 

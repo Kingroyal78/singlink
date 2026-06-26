@@ -3,7 +3,7 @@ package box
 import (
 	"runtime/debug"
 
-	"github.com/sagernet/sing-box/option"
+	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 )
 

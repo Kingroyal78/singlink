@@ -2,9 +2,9 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.12.0"
+!!! question "Since singlink 1.12.0"
 
-!!! quote "Changes in sing-box 1.13.0"
+!!! quote "Changes in singlink 1.13.0"
 
     :material-plus: [Chrome Root Store](#store)
 

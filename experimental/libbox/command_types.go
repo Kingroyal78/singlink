@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sagernet/sing-box/daemon"
+	"github.com/singlink/singlink/daemon"
 	M "github.com/sagernet/sing/common/metadata"
 )
 

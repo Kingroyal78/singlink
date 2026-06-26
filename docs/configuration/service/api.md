@@ -2,15 +2,15 @@
 icon: material/new-box
 ---
 
-!!! question "Since sing-box 1.14.0"
+!!! question "Since singlink 1.14.0"
 
-# sing-box API
+# singlink API
 
-The sing-box API service is a gRPC server for observing and controlling the running sing-box instance.
+The singlink API service is a gRPC server for observing and controlling the running singlink instance.
 
-It can be accessed by the [sing-box graphical clients](/clients/) for iOS, macOS, and
+It can be accessed by the [singlink graphical clients](/clients/) for iOS, macOS, and
 Android (via the Remote Control feature), or the
-[sing-box dashboard](https://github.com/SagerNet/sing-box-dashboard).
+[singlink dashboard](https://github.com/SagerNet/singlink-dashboard).
 
 The server also accepts [gRPC-Web](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md) requests,
 including the WebSocket transport of [@improbable-eng/grpc-web](https://github.com/improbable-eng/grpc-web)
@@ -88,7 +88,7 @@ and never updated automatically.
 
 Download URL of the dashboard archive (zip).
 
-`https://github.com/SagerNet/sing-box-dashboard/archive/refs/heads/gh-pages.zip` will be used by default.
+`https://github.com/SagerNet/singlink-dashboard/archive/refs/heads/gh-pages.zip` will be used by default.
 
 ##### http_client
 
@@ -100,11 +100,11 @@ When empty, the default HTTP client is used: the one named by
 [`default_http_client`](/configuration/route/#default_http_client), or the first top-level
 `http_clients` entry when `default_http_client` is empty.
 
-!!! failure "Implicit default deprecated in sing-box 1.14.0"
+!!! failure "Implicit default deprecated in singlink 1.14.0"
 
     When neither `http_clients` nor `default_http_client` is configured, an implicit HTTP
     client connecting through the default outbound is used. This implicit default is
-    deprecated in sing-box 1.14.0 and will be removed in sing-box 1.16.0; define
+    deprecated in singlink 1.14.0 and will be removed in singlink 1.16.0; define
     `http_clients` instead.
 
 ##### update_interval

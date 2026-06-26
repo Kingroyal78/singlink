@@ -4,7 +4,7 @@ icon: material/new-box
 
 # 预匹配
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [bypass](#bypass)
 
@@ -12,7 +12,7 @@ icon: material/new-box
 
 ### 工作原理
 
-当 TUN 收到连接请求时，连接尚未建立，因此无法读取连接数据。在此阶段，sing-box 在预匹配模式下运行路由规则。
+当 TUN 收到连接请求时，连接尚未建立，因此无法读取连接数据。在此阶段，singlink 在预匹配模式下运行路由规则。
 
 由于连接数据不可用，只有不需要连接数据的动作才能执行。当规则匹配到需要已建立连接的动作时，预匹配将在该规则处停止。
 
@@ -32,13 +32,13 @@ icon: material/new-box
 
 #### bypass
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
     仅支持 Linux，且需要启用 `auto_redirect`。
 
-在内核层面绕过 sing-box 直接连接。
+在内核层面绕过 singlink 直接连接。
 
 如果未指定 `outbound`，规则仅在来自 auto redirect 的预匹配中匹配，在其他场景中将被跳过。
 

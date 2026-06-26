@@ -2,7 +2,7 @@
 icon: material/new-box
 ---
 
-!!! quote "sing-box 1.14.0 中的更改"
+!!! quote "singlink 1.14.0 中的更改"
 
     :material-plus: [certificate_provider](#certificate_provider)  
     :material-plus: [handshake_timeout](#handshake_timeout)  
@@ -11,7 +11,7 @@ icon: material/new-box
     :material-plus: [engine](#engine)  
     :material-delete-clock: [acme](#acme-字段)
 
-!!! quote "sing-box 1.13.0 中的更改"
+!!! quote "singlink 1.13.0 中的更改"
 
     :material-plus: [kernel_tx](#kernel_tx)  
     :material-plus: [kernel_rx](#kernel_rx)  
@@ -25,7 +25,7 @@ icon: material/new-box
     :material-plus: [client_certificate_public_key_sha256](#client_certificate_public_key_sha256)  
     :material-plus: [ech.query_server_name](#query_server_name)
 
-!!! quote "sing-box 1.12.0 中的更改"
+!!! quote "singlink 1.12.0 中的更改"
 
     :material-plus: [fragment](#fragment)  
     :material-plus: [fragment_fallback_delay](#fragment_fallback_delay)  
@@ -33,7 +33,7 @@ icon: material/new-box
     :material-delete-clock: [ech.pq_signature_schemes_enabled](#pq_signature_schemes_enabled)  
     :material-delete-clock: [ech.dynamic_record_sizing_disabled](#dynamic_record_sizing_disabled)
 
-!!! quote "sing-box 1.10.0 中的更改"
+!!! quote "singlink 1.10.0 中的更改"
 
     :material-alert-decagram: [utls](#utls)
 
@@ -196,7 +196,7 @@ TLS 版本值：
 
 #### engine
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 ==仅客户端==
 
@@ -310,7 +310,7 @@ TLS 版本值：
 
 #### curve_preferences
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 支持的密钥交换机制集合。列表的顺序被忽略，密钥交换机制通过 Golang 的内部偏好顺序从此列表中选择。
 
@@ -336,7 +336,7 @@ TLS 版本值：
 
 #### certificate_public_key_sha256
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅客户端==
 
@@ -354,7 +354,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### client_certificate
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅客户端==
 
@@ -362,7 +362,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### client_certificate_path
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅客户端==
 
@@ -370,7 +370,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### client_key
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅客户端==
 
@@ -378,7 +378,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### client_key_path
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅客户端==
 
@@ -406,7 +406,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### client_authentication
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅服务器==
 
@@ -425,7 +425,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### client_certificate
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅服务器==
 
@@ -433,7 +433,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### client_certificate_path
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅服务器==
 
@@ -445,7 +445,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### client_certificate_public_key_sha256
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅服务器==
 
@@ -463,7 +463,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### kernel_tx
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -481,7 +481,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### kernel_rx
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 !!! quote ""
 
@@ -499,7 +499,7 @@ echo | openssl s_client -servername example.com -connect example.com:443 2>/dev/
 
 #### handshake_timeout
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 TLS 握手超时，采用 golang 的 Duration 格式。
 
@@ -507,7 +507,7 @@ TLS 握手超时，采用 golang 的 Duration 格式。
 
 #### certificate_provider
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 ==仅服务器==
 
@@ -542,7 +542,7 @@ uTLS 是 "crypto/tls" 的一个分支，它提供了 ClientHello 指纹识别阻
 
 可用的指纹值：
 
-!!! warning "已在 sing-box 1.10.0 移除"
+!!! warning "已在 singlink 1.10.0 移除"
 
     一些旧 chrome 指纹已被删除，并将会退到 chrome：
 
@@ -569,21 +569,21 @@ uTLS 是 "crypto/tls" 的一个分支，它提供了 ClientHello 指纹识别阻
 
 ECH (Encrypted Client Hello) 是一个 TLS 扩展，它允许客户端加密其 ClientHello 的第一部分信息。
 
-ECH 密钥和配置可以通过 `sing-box generate ech-keypair` 生成。
+ECH 密钥和配置可以通过 `singlink generate ech-keypair` 生成。
 
 #### pq_signature_schemes_enabled
 
-!!! failure "已在 sing-box 1.12.0 废弃"
+!!! failure "已在 singlink 1.12.0 废弃"
 
-    `pq_signature_schemes_enabled` 已在 sing-box 1.12.0 废弃且已在 sing-box 1.13.0 中被移除。
+    `pq_signature_schemes_enabled` 已在 singlink 1.12.0 废弃且已在 singlink 1.13.0 中被移除。
 
 启用对后量子对等证书签名方案的支持。
 
 #### dynamic_record_sizing_disabled
 
-!!! failure "已在 sing-box 1.12.0 废弃"
+!!! failure "已在 singlink 1.12.0 废弃"
 
-    `dynamic_record_sizing_disabled` 已在 sing-box 1.12.0 废弃且已在 sing-box 1.13.0 中被移除。
+    `dynamic_record_sizing_disabled` 已在 singlink 1.12.0 废弃且已在 singlink 1.13.0 中被移除。
 
 禁用 TLS 记录的自适应大小调整。
 
@@ -624,7 +624,7 @@ ECH 配置路径，PEM 格式。
 
 #### query_server_name
 
-!!! question "自 sing-box 1.13.0 起"
+!!! question "自 singlink 1.13.0 起"
 
 ==仅客户端==
 
@@ -634,7 +634,7 @@ ECH 配置路径，PEM 格式。
 
 #### fragment
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 ==仅客户端==
 
@@ -653,7 +653,7 @@ ECH 配置路径，PEM 格式。
 
 #### fragment_fallback_delay
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 ==仅客户端==
 
@@ -663,7 +663,7 @@ ECH 配置路径，PEM 格式。
 
 #### record_fragment
 
-!!! question "自 sing-box 1.12.0 起"
+!!! question "自 singlink 1.12.0 起"
 
 ==仅客户端==
 
@@ -671,7 +671,7 @@ ECH 配置路径，PEM 格式。
 
 #### spoof
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 ==仅客户端==
 
@@ -693,7 +693,7 @@ Windows 上首次使用时需要 Administrator 以安装内嵌的 WinDivert 内�
 
 #### spoof_method
 
-!!! question "自 sing-box 1.14.0 起"
+!!! question "自 singlink 1.14.0 起"
 
 ==仅客户端==
 
@@ -709,9 +709,9 @@ Windows 上首次使用时需要 Administrator 以安装内嵌的 WinDivert 内�
 
 ### ACME 字段
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
-    内联 ACME 选项已在 sing-box 1.14.0 废弃且将在 sing-box 1.16.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移内联-acme-到证书提供者)。
+    内联 ACME 选项已在 singlink 1.14.0 废弃且将在 singlink 1.16.0 中被移除，参阅 [迁移指南](/zh/migration/#迁移内联-acme-到证书提供者)。
 
 #### domain
 
@@ -797,7 +797,7 @@ ACME DNS01 验证字段。如果配置，将禁用其他验证方法。
 
 ==必填==
 
-私钥，由 `sing-box generate reality-keypair` 生成。
+私钥，由 `singlink generate reality-keypair` 生成。
 
 #### public_key
 
@@ -805,7 +805,7 @@ ACME DNS01 验证字段。如果配置，将禁用其他验证方法。
 
 ==必填==
 
-公钥，由 `sing-box generate reality-keypair` 生成。
+公钥，由 `singlink generate reality-keypair` 生成。
 
 #### short_id
 

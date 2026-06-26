@@ -7,15 +7,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	"github.com/sagernet/sing-box/common/redir"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing/common/control"
 	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/redir"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
 
 	"github.com/database64128/tfo-go/v2"
 )
@@ -91,6 +91,7 @@ func (l *Listener) loopTCPIn() {
 			//nolint:staticcheck
 			if netError, isNetError := err.(net.Error); isNetError && netError.Temporary() {
 				l.logger.Error(err)
+				time.Sleep(100 * time.Millisecond)
 				continue
 			}
 			if l.shutdown.Load() && E.IsClosed(err) {
@@ -98,7 +99,7 @@ func (l *Listener) loopTCPIn() {
 			}
 			l.tcpListener.Close()
 			l.logger.Error("tcp listener closed: ", err)
-			continue
+			return
 		}
 		//nolint:staticcheck
 		metadata.InboundDetour = l.listenOptions.Detour

@@ -15,14 +15,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	boxService "github.com/sagernet/sing-box/adapter/service"
-	"github.com/sagernet/sing-box/common/dialer"
-	"github.com/sagernet/sing-box/common/listener"
-	"github.com/sagernet/sing-box/common/tls"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/buf"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -30,6 +22,14 @@ import (
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/ntp"
 	aTLS "github.com/sagernet/sing/common/tls"
+	"github.com/singlink/singlink/adapter"
+	boxService "github.com/singlink/singlink/adapter/service"
+	"github.com/singlink/singlink/common/dialer"
+	"github.com/singlink/singlink/common/listener"
+	"github.com/singlink/singlink/common/tls"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/go-chi/chi/v5"
@@ -217,7 +217,11 @@ func (s *Service) Start(stage adapter.StartStage) error {
 	router := chi.NewRouter()
 	router.Mount("/", s)
 
-	s.httpServer = &http.Server{Handler: router}
+	s.httpServer = &http.Server{
+		Handler:           router,
+		ReadHeaderTimeout: C.TCPTimeout,
+		IdleTimeout:       C.TCPKeepAliveInitial,
+	}
 
 	if s.tlsConfig != nil {
 		err = s.tlsConfig.Start()

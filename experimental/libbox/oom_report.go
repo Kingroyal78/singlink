@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sagernet/sing-box/experimental/libbox/internal/oomprofile"
-	"github.com/sagernet/sing-box/service/oomkiller"
+	"github.com/singlink/singlink/experimental/libbox/internal/oomprofile"
+	"github.com/singlink/singlink/service/oomkiller"
 	"github.com/sagernet/sing/common/byteformats"
 	"github.com/sagernet/sing/common/memory"
 )

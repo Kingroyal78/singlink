@@ -95,24 +95,24 @@ TLS 配置, 参阅 [TLS](/zh/configuration/shared/tls/#入站)。
 
 #### recv_window_conn
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
     请使用 QUIC 字段 `stream_receive_window` 代替。
 
 #### recv_window_client
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
     请使用 QUIC 字段 `connection_receive_window` 代替。
 
 #### max_conn_client
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
     请使用 QUIC 字段 `max_concurrent_streams` 代替。
 
 #### disable_mtu_discovery
 
-!!! failure "已在 sing-box 1.14.0 废弃"
+!!! failure "已在 singlink 1.14.0 废弃"
 
     请使用 QUIC 字段 `disable_path_mtu_discovery` 代替。

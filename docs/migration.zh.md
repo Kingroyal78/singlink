@@ -9,7 +9,7 @@ icon: material/arrange-bring-forward
 TLS 中的内联 ACME 选项已废弃，且可以被证书提供者替代。
 
 `tls.acme` 的大多数字段都可以原样迁移到 ACME 证书提供者中。
-sing-box 1.14.0 新增字段参阅 [ACME](/zh/configuration/shared/certificate-provider/acme/) 页面。
+singlink 1.14.0 新增字段参阅 [ACME](/zh/configuration/shared/certificate-provider/acme/) 页面。
 
 !!! info "参考"
 
@@ -86,7 +86,7 @@ sing-box 1.14.0 新增字段参阅 [ACME](/zh/configuration/shared/certificate-p
 引用仅包含 `ip_cidr` 项的规则集（例如 GeoIP 规则集）且未设置 `match_response` 的 DNS 规则
 也将在启动时被拒绝。
 
-在 sing-box 1.14.0 中，请使用 [`evaluate`](/zh/configuration/dns/rule_action/#evaluate) 动作
+在 singlink 1.14.0 中，请使用 [`evaluate`](/zh/configuration/dns/rule_action/#evaluate) 动作
 获取 DNS 响应，然后通过 `match_response` 显式匹配。
 
 !!! info "参考"
@@ -203,7 +203,7 @@ DNS 缓存现在始终按传输名称分离，使 `independent_cache` 不再需�
 
 ### DNS 规则中的 ip_version 和 query_type 行为更改
 
-在 sing-box 1.14.0 中，DNS 规则中的
+在 singlink 1.14.0 中，DNS 规则中的
 [`ip_version`](/zh/configuration/dns/rule/#ip_version) 和
 [`query_type`](/zh/configuration/dns/rule/#query_type)，以及被引用规则集中的
 [`query_type`](/zh/configuration/rule-set/headless-rule/#query_type)，
@@ -832,7 +832,7 @@ DNS 服务器已经重构。
 
 拨号字段中的 `domain_strategy` 选项已被弃用，可以用新的域名解析器选项替代。
 
-请注意，由于 sing-box 1.12 中引入的一些新 DNS 服务器使用了拨号字段，一些人错误地认为 `domain_strategy` 与旧 DNS 服务器中的功能相同。
+请注意，由于 singlink 1.12 中引入的一些新 DNS 服务器使用了拨号字段，一些人错误地认为 `domain_strategy` 与旧 DNS 服务器中的功能相同。
 
 !!! info "参考"
 
@@ -1214,7 +1214,7 @@ WireGuard 出站已被弃用，且可以被端点替代。
 ### Apple 平台客户端的 Bundle Identifier 更新
 
 由于我们旧的苹果开发者账户存在问题，我们只能通过更新 Bundle Identifiers
-来重新上架 sing-box 应用， 这意味着数据不会自动继承。
+来重新上架 singlink 应用， 这意味着数据不会自动继承。
 
 对于 iOS，您需要自行备份旧的数据（如果您仍然可以访问）；  
 对于 Apple tvOS，您需要从 iPhone 或 iPad 重新导入配置或者手动创建；  
@@ -1229,17 +1229,17 @@ cd ~/Library/Group\ Containers && \
 
 ### `domain_suffix` 行为更新
 
-由于历史原因，sing-box 的 `domain_suffix` 规则匹配字面前缀，而不与其他项目相同。
+由于历史原因，singlink 的 `domain_suffix` 规则匹配字面前缀，而不与其他项目相同。
 
-sing-box 1.9.0 修改了 `domain_suffix` 的行为：如果规则值以 `.` 为前缀则行为不变，否则改为匹配 `(domain|.+\.domain)`。
+singlink 1.9.0 修改了 `domain_suffix` 的行为：如果规则值以 `.` 为前缀则行为不变，否则改为匹配 `(domain|.+\.domain)`。
 
 ### 对 Windows 上 `process_path` 格式的更新
 
-sing-box 的 `process_path` 规则继承自Clash，
+singlink 的 `process_path` 规则继承自Clash，
 原始代码使用本地系统的路径格式（例如 `\Device\HarddiskVolume1\folder\program.exe`），
 但是当设备有多个硬盘时，该 HarddiskVolume 系列号并不稳定。
 
-sing-box 1.9.0 使 QueryFullProcessImageNameW 输出 Win32 路径（如 `C:\folder\program.exe`），
+singlink 1.9.0 使 QueryFullProcessImageNameW 输出 Win32 路径（如 `C:\folder\program.exe`），
 这将会破坏现有的 Windows `process_path` 用例。
 
 ## 1.8.0
@@ -1294,7 +1294,7 @@ sing-box 1.9.0 使 QueryFullProcessImageNameW 输出 Win32 路径（如 `C:\fold
 
 !!! tip
 
-    `sing-box geoip` 命令可以帮助您将自定义 GeoIP 转换为规则集。
+    `singlink geoip` 命令可以帮助您将自定义 GeoIP 转换为规则集。
 
 === ":material-card-remove: 弃用的"
 
@@ -1379,7 +1379,7 @@ sing-box 1.9.0 使 QueryFullProcessImageNameW 输出 Win32 路径（如 `C:\fold
 
 !!! tip
 
-    `sing-box geosite` 命令可以帮助您将自定义 Geosite 转换为规则集。
+    `singlink geosite` 命令可以帮助您将自定义 Geosite 转换为规则集。
 
 === ":material-card-remove: 弃用的"
 
