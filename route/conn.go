@@ -11,12 +11,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/dialer"
-	"github.com/singlink/singlink/common/sniff"
-	"github.com/singlink/singlink/common/tlsfragment"
-	"github.com/singlink/singlink/common/tlsspoof"
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
@@ -26,6 +20,12 @@ import (
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/x/list"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/dialer"
+	"github.com/singlink/singlink/common/sniff"
+	"github.com/singlink/singlink/common/tlsfragment"
+	"github.com/singlink/singlink/common/tlsspoof"
+	C "github.com/singlink/singlink/constant"
 )
 
 var _ adapter.ConnectionManager = (*ConnectionManager)(nil)

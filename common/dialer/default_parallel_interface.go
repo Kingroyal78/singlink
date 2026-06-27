@@ -5,12 +5,12 @@ import (
 	"net"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/control"
 	E "github.com/sagernet/sing/common/exceptions"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 )
 
 func (d *DefaultDialer) dialParallelInterface(ctx context.Context, dialer net.Dialer, network string, addr string, strategy C.NetworkStrategy, interfaceType []C.InterfaceType, fallbackInterfaceType []C.InterfaceType, fallbackDelay time.Duration) (net.Conn, bool, error) {

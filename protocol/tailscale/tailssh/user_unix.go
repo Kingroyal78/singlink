@@ -6,8 +6,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/tailscale/util/osuser"
+	"github.com/singlink/singlink/adapter"
 )
 
 func resolveLocalUserNative(username string) (*adapter.PlatformUser, error) {

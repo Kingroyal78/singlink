@@ -12,11 +12,11 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/singlink/singlink/common/badtls"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	N "github.com/sagernet/sing/common/network"
 	aTLS "github.com/sagernet/sing/common/tls"
+	"github.com/singlink/singlink/common/badtls"
 
 	"golang.org/x/sys/unix"
 )

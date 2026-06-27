@@ -3,11 +3,11 @@ package option
 import (
 	"strings"
 
-	C "github.com/singlink/singlink/constant"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
 	"github.com/sagernet/sing/common/json"
 	N "github.com/sagernet/sing/common/network"
+	C "github.com/singlink/singlink/constant"
 
 	mDNS "github.com/miekg/dns"
 )

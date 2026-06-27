@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing/common/control"
 	F "github.com/sagernet/sing/common/format"
+	"github.com/singlink/singlink/log"
 
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"

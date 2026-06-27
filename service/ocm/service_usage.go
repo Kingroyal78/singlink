@@ -1195,10 +1195,7 @@ func (u *AggregatedUsage) scheduleSaveLocked() {
 	}
 
 	saveInterval := u.saveIntervalDuration()
-	remainingTime := saveInterval - time.Since(u.lastSaveTime)
-	if remainingTime < 0 {
-		remainingTime = 0
-	}
+	remainingTime := max(saveInterval-time.Since(u.lastSaveTime), 0)
 
 	u.pendingSave = true
 	u.saveTimer = time.AfterFunc(remainingTime, u.runScheduledSave)

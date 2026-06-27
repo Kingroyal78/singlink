@@ -5,8 +5,8 @@ import (
 	"net/netip"
 	"sync"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common/logger"
+	"github.com/singlink/singlink/adapter"
 )
 
 type platformNeighborResolver struct {

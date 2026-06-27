@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common/logger"
+	"github.com/singlink/singlink/option"
 )
 
 type HTTPTransport interface {

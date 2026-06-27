@@ -13,8 +13,6 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/dialer"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -25,6 +23,8 @@ import (
 	"github.com/sagernet/sing/service/pause"
 	"github.com/sagernet/wireguard-go/conn"
 	"github.com/sagernet/wireguard-go/device"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/dialer"
 
 	"go4.org/netipx"
 )

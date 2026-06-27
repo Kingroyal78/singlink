@@ -5,11 +5,11 @@ package include
 import (
 	"context"
 
+	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/experimental"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	E "github.com/sagernet/sing/common/exceptions"
 )
 
 func init() {

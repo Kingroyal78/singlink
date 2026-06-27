@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/option"
 )
 
 type Options struct {

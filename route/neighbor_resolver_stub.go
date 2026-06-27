@@ -5,8 +5,8 @@ package route
 import (
 	"os"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common/logger"
+	"github.com/singlink/singlink/adapter"
 )
 
 func newNeighborResolver(_ logger.ContextLogger, _ []string) (adapter.NeighborResolver, error) {

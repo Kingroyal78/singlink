@@ -3,6 +3,12 @@ package transport
 import (
 	"context"
 
+	"github.com/sagernet/sing/common"
+	"github.com/sagernet/sing/common/bufio/deadline"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/logger"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/dialer"
 	"github.com/singlink/singlink/common/tls"
@@ -10,12 +16,6 @@ import (
 	"github.com/singlink/singlink/dns"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
-	"github.com/sagernet/sing/common/bufio/deadline"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/common/logger"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
 
 	mDNS "github.com/miekg/dns"
 )

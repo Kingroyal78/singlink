@@ -3,11 +3,11 @@ package oomkiller
 import (
 	"context"
 
+	"github.com/sagernet/sing/common/memory"
+	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common/memory"
-	"github.com/sagernet/sing/service"
 )
 
 const DefaultAppleNetworkExtensionMemoryLimit = 50 * 1024 * 1024

@@ -18,8 +18,8 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
 )
 
 var (

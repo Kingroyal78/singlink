@@ -7,8 +7,6 @@ import (
 	"encoding/hex"
 	"net"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/auth"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -17,6 +15,8 @@ import (
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/protocol/socks"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/log"
 )
 
 type Bridge struct {

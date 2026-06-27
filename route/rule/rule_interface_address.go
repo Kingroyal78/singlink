@@ -4,11 +4,11 @@ import (
 	"net/netip"
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/control"
 	"github.com/sagernet/sing/common/json/badjson"
 	"github.com/sagernet/sing/common/json/badoption"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ RuleItem = (*InterfaceAddressItem)(nil)

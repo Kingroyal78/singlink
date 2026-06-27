@@ -8,8 +8,6 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/redir"
 	"github.com/sagernet/sing/common/buf"
 	sBufio "github.com/sagernet/sing/common/bufio"
 	"github.com/sagernet/sing/common/control"
@@ -17,6 +15,8 @@ import (
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/redir"
 )
 
 const udpOutputBatchSize = 128

@@ -3,9 +3,9 @@ package rule
 import (
 	"strings"
 
+	"github.com/sagernet/sing/common"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
 )
 
 var _ RuleItem = (*QueryTypeItem)(nil)

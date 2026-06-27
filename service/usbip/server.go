@@ -6,15 +6,15 @@ import (
 	"context"
 	"net"
 
+	"github.com/sagernet/sing-usbip"
+	E "github.com/sagernet/sing/common/exceptions"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	boxService "github.com/singlink/singlink/adapter/service"
 	"github.com/singlink/singlink/common/listener"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing-usbip"
-	E "github.com/sagernet/sing/common/exceptions"
-	N "github.com/sagernet/sing/common/network"
 )
 
 type ServerService struct {

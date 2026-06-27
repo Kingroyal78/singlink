@@ -17,13 +17,13 @@ import (
 	"github.com/sagernet/gvisor/pkg/tcpip/transport/icmp"
 	"github.com/sagernet/gvisor/pkg/tcpip/transport/tcp"
 	"github.com/sagernet/gvisor/pkg/tcpip/transport/udp"
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing-tun/ping"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	"github.com/sagernet/wireguard-go/device"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/log"
 )
 
 var _ Device = (*systemStackDevice)(nil)

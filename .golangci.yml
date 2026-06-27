@@ -50,6 +50,7 @@ formatters:
     gci:
       sections:
         - standard
-        - prefix(github.com/sagernet/)
+        - prefix(github.com/singlink/singlink,github.com/sagernet/)
         - default
       custom-order: true
+      no-lex-order: true

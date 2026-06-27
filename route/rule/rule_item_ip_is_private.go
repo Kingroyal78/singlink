@@ -1,8 +1,8 @@
 package rule
 
 import (
-	"github.com/singlink/singlink/adapter"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ RuleItem = (*IPIsPrivateItem)(nil)

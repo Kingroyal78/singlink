@@ -3,9 +3,9 @@ package local
 import (
 	"strings"
 
+	E "github.com/sagernet/sing/common/exceptions"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/dns"
-	E "github.com/sagernet/sing/common/exceptions"
 
 	mDNS "github.com/miekg/dns"
 )

@@ -3,10 +3,10 @@ package deprecated
 import (
 	"fmt"
 
+	F "github.com/sagernet/sing/common/format"
 	"github.com/singlink/singlink/common/badversion"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/experimental/locale"
-	F "github.com/sagernet/sing/common/format"
 
 	"golang.org/x/mod/semver"
 )

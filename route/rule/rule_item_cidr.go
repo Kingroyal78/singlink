@@ -5,9 +5,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
 
 	"go4.org/netipx"
 )

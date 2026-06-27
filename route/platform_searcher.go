@@ -5,9 +5,9 @@ import (
 	"net/netip"
 	"syscall"
 
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/process"
-	N "github.com/sagernet/sing/common/network"
 )
 
 type platformSearcher struct {

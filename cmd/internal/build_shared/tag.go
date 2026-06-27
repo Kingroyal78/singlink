@@ -1,9 +1,9 @@
 package build_shared
 
 import (
-	"github.com/singlink/singlink/common/badversion"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/shell"
+	"github.com/singlink/singlink/common/badversion"
 )
 
 func ReadTag() (string, error) {

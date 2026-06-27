@@ -515,7 +515,7 @@ func jitterInterval(duration time.Duration, key string, attempt int) time.Durati
 	if duration <= 0 {
 		return duration
 	}
-	seed := sha256.Sum256([]byte(fmt.Sprintf("%s/%d/%d", key, attempt, duration)))
+	seed := sha256.Sum256(fmt.Appendf(nil, "%s/%d/%d", key, attempt, duration))
 	offset := int(binary.BigEndian.Uint16(seed[:2])%41) - 20
 	jittered := duration + duration*time.Duration(offset)/100
 	if jittered < minimumInterval {

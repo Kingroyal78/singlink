@@ -4,14 +4,14 @@ import (
 	"context"
 	"net"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-mux"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 type Router struct {

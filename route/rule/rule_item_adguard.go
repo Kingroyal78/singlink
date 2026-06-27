@@ -3,8 +3,8 @@ package rule
 import (
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common/domain"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ RuleItem = (*AdGuardDomainItem)(nil)

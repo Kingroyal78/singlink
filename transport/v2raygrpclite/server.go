@@ -8,11 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
-	"github.com/singlink/singlink/transport/v2rayhttp"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
@@ -20,6 +15,11 @@ import (
 	N "github.com/sagernet/sing/common/network"
 	aTLS "github.com/sagernet/sing/common/tls"
 	sHttp "github.com/sagernet/sing/protocol/http"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	"github.com/singlink/singlink/transport/v2rayhttp"
 
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"

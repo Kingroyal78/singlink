@@ -3,9 +3,9 @@ package ssmapi
 import (
 	"net/http"
 
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common/logger"
 	sHTTP "github.com/sagernet/sing/protocol/http"
+	C "github.com/singlink/singlink/constant"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"

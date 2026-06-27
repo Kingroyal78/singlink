@@ -4,10 +4,10 @@ import (
 	"context"
 	"net"
 
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
 )
 
 type PluginConstructor func(ctx context.Context, pluginArgs Args, router adapter.Router, dialer N.Dialer, serverAddr M.Socksaddr) (Plugin, error)

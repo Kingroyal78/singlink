@@ -5,12 +5,12 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	boxService "github.com/singlink/singlink/adapter/service"
 	boxConstant "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/service"
 )
 
 type OOMReporter interface {

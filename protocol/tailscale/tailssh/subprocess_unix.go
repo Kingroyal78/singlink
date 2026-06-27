@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"syscall"
 
-	C "github.com/singlink/singlink/constant"
 	E "github.com/sagernet/sing/common/exceptions"
+	C "github.com/singlink/singlink/constant"
 
 	"github.com/creack/pty"
 	"golang.org/x/sys/unix"

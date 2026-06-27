@@ -7,17 +7,17 @@ import (
 	"crypto/tls"
 	"net"
 
+	E "github.com/sagernet/sing/common/exceptions"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
+	"github.com/sagernet/sing/service"
+	"github.com/sagernet/tailscale/client/local"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/certificate"
 	"github.com/singlink/singlink/common/dialer"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	E "github.com/sagernet/sing/common/exceptions"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
-	"github.com/sagernet/sing/service"
-	"github.com/sagernet/tailscale/client/local"
 )
 
 func RegisterCertificateProvider(registry *certificate.Registry) {

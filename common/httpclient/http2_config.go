@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/option"
 
 	"golang.org/x/net/http2"
 )

@@ -5,11 +5,11 @@ import (
 	"net/netip"
 	"os/user"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing-tun"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/log"
 )
 
 type Searcher interface {

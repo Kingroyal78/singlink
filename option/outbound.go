@@ -3,13 +3,13 @@ package option
 import (
 	"context"
 
-	C "github.com/singlink/singlink/constant"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/json"
 	"github.com/sagernet/sing/common/json/badjson"
 	"github.com/sagernet/sing/common/json/badoption"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/service"
+	C "github.com/singlink/singlink/constant"
 )
 
 type OutboundOptionsRegistry interface {

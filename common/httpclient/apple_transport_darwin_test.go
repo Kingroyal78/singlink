@@ -21,17 +21,17 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/sagernet/sing/common/json/badoption"
+	commonLogger "github.com/sagernet/sing/common/logger"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
+	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/proxybridge"
 	boxTLS "github.com/singlink/singlink/common/tls"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
 	"github.com/singlink/singlink/route"
-	"github.com/sagernet/sing/common/json/badoption"
-	commonLogger "github.com/sagernet/sing/common/logger"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
-	"github.com/sagernet/sing/service"
 )
 
 const appleHTTPTestTimeout = 5 * time.Second

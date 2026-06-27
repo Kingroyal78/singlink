@@ -8,10 +8,10 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing-usbip"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

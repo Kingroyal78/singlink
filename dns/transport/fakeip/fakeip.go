@@ -4,13 +4,13 @@ import (
 	"context"
 	"net/netip"
 
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/logger"
 	"github.com/singlink/singlink/adapter"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/dns"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/common/logger"
 
 	mDNS "github.com/miekg/dns"
 )

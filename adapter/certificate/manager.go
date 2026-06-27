@@ -6,13 +6,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
+	F "github.com/sagernet/sing/common/format"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/taskmonitor"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-	F "github.com/sagernet/sing/common/format"
 )
 
 var _ adapter.CertificateProviderManager = (*Manager)(nil)

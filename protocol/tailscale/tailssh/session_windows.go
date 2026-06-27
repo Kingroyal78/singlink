@@ -11,10 +11,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/tailscale/util/winutil"
 	"github.com/sagernet/tailscale/util/winutil/conpty"
+	"github.com/singlink/singlink/adapter"
 
 	"golang.org/x/sys/windows"
 )

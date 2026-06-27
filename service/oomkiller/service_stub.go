@@ -3,8 +3,8 @@
 package oomkiller
 
 import (
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
 )
 
 func (s *Service) Start(stage adapter.StartStage) error {

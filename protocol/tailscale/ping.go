@@ -7,9 +7,9 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/tailscale/ipn/ipnstate"
 	"github.com/sagernet/tailscale/tailcfg"
+	"github.com/singlink/singlink/adapter"
 )
 
 func (t *Endpoint) StartTailscalePing(ctx context.Context, peerIP string, fn func(*adapter.TailscalePingResult)) error {

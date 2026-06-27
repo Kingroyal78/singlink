@@ -5,12 +5,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing-tun/ping"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/logger"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/log"
 )
 
 var _ Device = (*natDeviceWrapper)(nil)

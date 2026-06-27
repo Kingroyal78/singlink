@@ -252,8 +252,8 @@ func (c *CacheFile) Close() error {
 	c.stopCacheCleanup()
 	pendingMetadata := c.stopFakeIPMetadataTimer()
 	c.asyncAccess.Lock()
-	c.asyncAccess.Unlock()
 	c.asyncWG.Wait()
+	c.asyncAccess.Unlock()
 	if pendingMetadata != nil {
 		c.saveMetadataWrite.Lock()
 		err := c.saveFakeIPMetadataOnClose(pendingMetadata)

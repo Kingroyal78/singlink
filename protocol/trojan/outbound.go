@@ -4,6 +4,12 @@ import (
 	"context"
 	"net"
 
+	"github.com/sagernet/sing/common"
+	"github.com/sagernet/sing/common/bufio"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/logger"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/outbound"
 	"github.com/singlink/singlink/common/dialer"
@@ -14,12 +20,6 @@ import (
 	"github.com/singlink/singlink/option"
 	"github.com/singlink/singlink/transport/trojan"
 	"github.com/singlink/singlink/transport/v2ray"
-	"github.com/sagernet/sing/common"
-	"github.com/sagernet/sing/common/bufio"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/common/logger"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
 )
 
 func RegisterOutbound(registry *outbound.Registry) {

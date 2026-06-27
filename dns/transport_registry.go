@@ -4,10 +4,10 @@ import (
 	"context"
 	"sync"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/log"
 )
 
 type TransportConstructorFunc[T any] func(ctx context.Context, logger log.ContextLogger, tag string, options T) (adapter.DNSTransport, error)

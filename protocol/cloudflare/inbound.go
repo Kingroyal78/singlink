@@ -7,13 +7,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/adapter/inbound"
-	"github.com/singlink/singlink/common/dialer"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
-	"github.com/singlink/singlink/route/rule"
 	"github.com/sagernet/sing-cloudflared"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common/bufio"
@@ -22,6 +15,13 @@ import (
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/pipe"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/adapter/inbound"
+	"github.com/singlink/singlink/common/dialer"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	"github.com/singlink/singlink/route/rule"
 )
 
 func RegisterInbound(registry *inbound.Registry) {

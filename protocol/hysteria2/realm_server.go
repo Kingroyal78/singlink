@@ -15,8 +15,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/singlink/singlink/log"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/log"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"

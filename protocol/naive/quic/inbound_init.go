@@ -9,11 +9,6 @@ import (
 	"github.com/sagernet/quic-go"
 	"github.com/sagernet/quic-go/congestion"
 	"github.com/sagernet/quic-go/http3"
-	"github.com/singlink/singlink/common/listener"
-	"github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
-	"github.com/singlink/singlink/protocol/naive"
 	"github.com/sagernet/sing-quic"
 	"github.com/sagernet/sing-quic/congestion_bbr1"
 	"github.com/sagernet/sing-quic/congestion_bbr2"
@@ -23,6 +18,11 @@ import (
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	"github.com/sagernet/sing/common/ntp"
+	"github.com/singlink/singlink/common/listener"
+	"github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	"github.com/singlink/singlink/protocol/naive"
 )
 
 func init() {

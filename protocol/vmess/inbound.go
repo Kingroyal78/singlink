@@ -5,16 +5,6 @@ import (
 	"net"
 	"os"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/adapter/inbound"
-	"github.com/singlink/singlink/common/listener"
-	"github.com/singlink/singlink/common/mux"
-	"github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/common/uot"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
-	"github.com/singlink/singlink/transport/v2ray"
 	"github.com/sagernet/sing-vmess"
 	"github.com/sagernet/sing-vmess/packetaddr"
 	"github.com/sagernet/sing/common"
@@ -26,6 +16,16 @@ import (
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/ntp"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/adapter/inbound"
+	"github.com/singlink/singlink/common/listener"
+	"github.com/singlink/singlink/common/mux"
+	"github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/common/uot"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	"github.com/singlink/singlink/transport/v2ray"
 )
 
 func RegisterInbound(registry *inbound.Registry) {

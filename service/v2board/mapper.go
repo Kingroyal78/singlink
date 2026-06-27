@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/netip"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -327,13 +328,14 @@ func anyTLSTLS(config *ServerConfig, mapperOptions MapperOptions) (*option.Inbou
 		tlsOptions *option.InboundTLSOptions
 		err        error
 	)
-	if config.TLS == SecurityREALITY {
+	switch config.TLS {
+	case SecurityREALITY:
 		tlsOptions, err = realityTLS(config)
-	} else if config.TLS == SecurityTLS {
+	case SecurityTLS:
 		tlsOptions, err = requiredTLS(config, mapperOptions)
-	} else if config.TLS == SecurityNone {
+	case SecurityNone:
 		tlsOptions, err = requiredTLS(config, mapperOptions)
-	} else {
+	default:
 		return nil, fmt.Errorf("unsupported security value %d", config.TLS)
 	}
 	if err != nil {
@@ -839,10 +841,8 @@ func cloneMultiplex(multiplex *option.InboundMultiplexOptions) *option.InboundMu
 }
 
 func ensureALPN(tlsOptions *option.InboundTLSOptions, protocol string) {
-	for _, existing := range tlsOptions.ALPN {
-		if existing == protocol {
-			return
-		}
+	if slices.Contains(tlsOptions.ALPN, protocol) {
+		return
 	}
 	tlsOptions.ALPN = append(tlsOptions.ALPN, protocol)
 }

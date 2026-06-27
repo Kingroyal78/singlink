@@ -5,8 +5,8 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/singlink/singlink/service/oomkiller"
 	"github.com/sagernet/sing/common/memory"
+	"github.com/singlink/singlink/service/oomkiller"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

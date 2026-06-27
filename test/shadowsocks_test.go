@@ -6,12 +6,12 @@ import (
 	"net/netip"
 	"testing"
 
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-shadowsocks/shadowaead_2022"
 	"github.com/sagernet/sing/common"
 	F "github.com/sagernet/sing/common/format"
 	"github.com/sagernet/sing/common/json/badoption"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 
 	"github.com/stretchr/testify/require"
 )

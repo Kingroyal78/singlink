@@ -6,14 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/adapter/inbound"
-	"github.com/singlink/singlink/common/listener"
-	"github.com/singlink/singlink/common/mux"
-	"github.com/singlink/singlink/common/uot"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-shadowsocks/shadowaead_2022"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/auth"
@@ -23,6 +15,14 @@ import (
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/adapter/inbound"
+	"github.com/singlink/singlink/common/listener"
+	"github.com/singlink/singlink/common/mux"
+	"github.com/singlink/singlink/common/uot"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 var _ adapter.TCPInjectableInbound = (*RelayInbound)(nil)

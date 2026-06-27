@@ -11,11 +11,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/dns"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/buf"
@@ -27,6 +22,11 @@ import (
 	"github.com/sagernet/sing/common/task"
 	"github.com/sagernet/sing/common/x/list"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/dns"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 
 	"github.com/insomniacslk/dhcp/dhcpv4"
 	mDNS "github.com/miekg/dns"

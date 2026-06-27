@@ -7,8 +7,8 @@ import (
 	"net/netip"
 	"syscall"
 
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
 
 	"golang.org/x/net/route"
 	"golang.org/x/sys/unix"

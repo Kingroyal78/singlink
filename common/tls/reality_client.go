@@ -27,15 +27,15 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/debug"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	"github.com/sagernet/sing/common/ntp"
 	aTLS "github.com/sagernet/sing/common/tls"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 
 	utls "github.com/metacubex/utls"
 	"golang.org/x/crypto/hkdf"

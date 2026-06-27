@@ -11,6 +11,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/logger"
+	M "github.com/sagernet/sing/common/metadata"
+	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/dialer"
 	"github.com/singlink/singlink/common/tls"
@@ -19,11 +24,6 @@ import (
 	"github.com/singlink/singlink/dns/transport"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/common/logger"
-	M "github.com/sagernet/sing/common/metadata"
-	"github.com/sagernet/sing/service"
 
 	mDNS "github.com/miekg/dns"
 )

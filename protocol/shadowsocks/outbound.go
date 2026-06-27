@@ -4,14 +4,6 @@ import (
 	"context"
 	"net"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/adapter/outbound"
-	"github.com/singlink/singlink/common/dialer"
-	"github.com/singlink/singlink/common/mux"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
-	"github.com/singlink/singlink/transport/sip003"
 	"github.com/sagernet/sing-shadowsocks2"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/bufio"
@@ -20,6 +12,14 @@ import (
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/uot"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/adapter/outbound"
+	"github.com/singlink/singlink/common/dialer"
+	"github.com/singlink/singlink/common/mux"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	"github.com/singlink/singlink/transport/sip003"
 )
 
 func RegisterOutbound(registry *outbound.Registry) {

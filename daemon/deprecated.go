@@ -3,8 +3,8 @@ package daemon
 import (
 	"sync"
 
-	"github.com/singlink/singlink/experimental/deprecated"
 	"github.com/sagernet/sing/common"
+	"github.com/singlink/singlink/experimental/deprecated"
 )
 
 var _ deprecated.Manager = (*deprecatedManager)(nil)

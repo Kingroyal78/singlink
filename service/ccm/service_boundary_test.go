@@ -64,30 +64,30 @@ func TestReadUsageTrackingResponseBodyCopiesLargeBody(t *testing.T) {
 }
 
 func TestAggregatedUsageScheduleSaveCoalescesConcurrentAdds(t *testing.T) {
-	var activeSaves int32
-	var maxActiveSaves int32
-	var saveCount int32
+	var activeSaves atomic.Int32
+	var maxActiveSaves atomic.Int32
+	var saveCount atomic.Int32
 
 	usage := &AggregatedUsage{
 		Combinations: make([]CostCombination, 0),
 		saveInterval: time.Hour,
 		saveHandler: func() error {
-			active := atomic.AddInt32(&activeSaves, 1)
+			active := activeSaves.Add(1)
 			for {
-				maxActive := atomic.LoadInt32(&maxActiveSaves)
-				if active <= maxActive || atomic.CompareAndSwapInt32(&maxActiveSaves, maxActive, active) {
+				maxActive := maxActiveSaves.Load()
+				if active <= maxActive || maxActiveSaves.CompareAndSwap(maxActive, active) {
 					break
 				}
 			}
-			atomic.AddInt32(&saveCount, 1)
+			saveCount.Add(1)
 			time.Sleep(50 * time.Millisecond)
-			atomic.AddInt32(&activeSaves, -1)
+			activeSaves.Add(-1)
 			return nil
 		},
 	}
 
 	var wg sync.WaitGroup
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -101,16 +101,16 @@ func TestAggregatedUsageScheduleSaveCoalescesConcurrentAdds(t *testing.T) {
 
 	deadline := time.Now().Add(time.Second)
 	for time.Now().Before(deadline) {
-		if atomic.LoadInt32(&saveCount) > 0 && atomic.LoadInt32(&activeSaves) == 0 {
+		if saveCount.Load() > 0 && activeSaves.Load() == 0 {
 			break
 		}
 		time.Sleep(time.Millisecond)
 	}
 
-	if got := atomic.LoadInt32(&maxActiveSaves); got != 1 {
+	if got := maxActiveSaves.Load(); got != 1 {
 		t.Fatalf("max concurrent saves = %d, want 1", got)
 	}
-	if got := atomic.LoadInt32(&saveCount); got != 1 {
+	if got := saveCount.Load(); got != 1 {
 		t.Fatalf("save count = %d, want 1", got)
 	}
 }
@@ -156,12 +156,12 @@ func TestAggregatedUsageCancelPendingSaveWaitsForRunningScheduledSave(t *testing
 }
 
 func TestAggregatedUsageCancelPendingSaveIgnoresFiredCallbackAfterClose(t *testing.T) {
-	var saveCount int32
+	var saveCount atomic.Int32
 
 	usage := &AggregatedUsage{
 		Combinations: make([]CostCombination, 0),
 		saveHandler: func() error {
-			atomic.AddInt32(&saveCount, 1)
+			saveCount.Add(1)
 			return nil
 		},
 	}
@@ -169,7 +169,7 @@ func TestAggregatedUsageCancelPendingSaveIgnoresFiredCallbackAfterClose(t *testi
 	usage.cancelPendingSave()
 	usage.runScheduledSave()
 
-	if got := atomic.LoadInt32(&saveCount); got != 0 {
+	if got := saveCount.Load(); got != 0 {
 		t.Fatalf("save count after scheduler close = %d, want 0", got)
 	}
 }

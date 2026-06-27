@@ -4,9 +4,9 @@ import (
 	"context"
 	"strings"
 
+	F "github.com/sagernet/sing/common/format"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/experimental/deprecated"
-	F "github.com/sagernet/sing/common/format"
 )
 
 var _ RuleItem = (*OutboundItem)(nil)

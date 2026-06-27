@@ -6,6 +6,12 @@ import (
 	"os"
 
 	"github.com/sagernet/quic-go"
+	sQUIC "github.com/sagernet/sing-quic"
+	"github.com/sagernet/sing/common"
+	"github.com/sagernet/sing/common/bufio"
+	E "github.com/sagernet/sing/common/exceptions"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/dialer"
 	"github.com/singlink/singlink/common/tls"
@@ -14,12 +20,6 @@ import (
 	"github.com/singlink/singlink/dns/transport"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	sQUIC "github.com/sagernet/sing-quic"
-	"github.com/sagernet/sing/common"
-	"github.com/sagernet/sing/common/bufio"
-	E "github.com/sagernet/sing/common/exceptions"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
 
 	mDNS "github.com/miekg/dns"
 )

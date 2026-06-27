@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/urltest"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/protocol/group"
 	"github.com/sagernet/sing/common"
 	F "github.com/sagernet/sing/common/format"
 	"github.com/sagernet/sing/common/json/badjson"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/urltest"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/protocol/group"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"

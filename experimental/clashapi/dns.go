@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/sagernet/sing/common"
 	"github.com/singlink/singlink/adapter"
 	C "github.com/singlink/singlink/constant"
-	"github.com/sagernet/sing/common"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"

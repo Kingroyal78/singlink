@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/urltest"
-	"github.com/singlink/singlink/protocol/group"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/batch"
 	"github.com/sagernet/sing/common/json/badjson"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/urltest"
+	"github.com/singlink/singlink/protocol/group"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"

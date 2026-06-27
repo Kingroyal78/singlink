@@ -6,14 +6,14 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/experimental/deprecated"
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/experimental/deprecated"
+	"github.com/singlink/singlink/option"
 )
 
 type Options struct {

@@ -210,7 +210,7 @@ func TestSyncStableConfigWithoutETagDoesNotRebuildRepeatedly(t *testing.T) {
 		options: effectiveNodeOptions{Tag: "node", NodeID: 23},
 	}
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		if err := controller.sync(); err != nil {
 			t.Fatal(err)
 		}

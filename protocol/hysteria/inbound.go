@@ -5,6 +5,11 @@ import (
 	"net"
 	"time"
 
+	"github.com/sagernet/sing-quic/hysteria"
+	"github.com/sagernet/sing/common"
+	"github.com/sagernet/sing/common/auth"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/inbound"
 	"github.com/singlink/singlink/common/listener"
@@ -12,11 +17,6 @@ import (
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing-quic/hysteria"
-	"github.com/sagernet/sing/common"
-	"github.com/sagernet/sing/common/auth"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
 )
 
 func RegisterInbound(registry *inbound.Registry) {

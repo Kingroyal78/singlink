@@ -3,11 +3,11 @@ package option
 import (
 	"net/url"
 
-	C "github.com/singlink/singlink/constant"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/json"
 	"github.com/sagernet/sing/common/json/badjson"
 	"github.com/sagernet/sing/common/json/badoption"
+	C "github.com/singlink/singlink/constant"
 )
 
 type Hysteria2InboundOptions struct {

@@ -8,15 +8,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/singlink/singlink/common/badtls"
-	"github.com/singlink/singlink/common/tlsspoof"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	aTLS "github.com/sagernet/sing/common/tls"
+	"github.com/singlink/singlink/common/badtls"
+	"github.com/singlink/singlink/common/tlsspoof"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 )
 
 var errMissingServerName = E.New("missing server_name or insecure=true")

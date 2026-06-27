@@ -15,14 +15,14 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/dns"
-	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
 	M "github.com/sagernet/sing/common/metadata"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/dns"
+	"github.com/singlink/singlink/log"
 
 	"github.com/godbus/dbus/v5"
 	mDNS "github.com/miekg/dns"

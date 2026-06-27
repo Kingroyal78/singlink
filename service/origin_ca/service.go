@@ -24,15 +24,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/ntp"
+	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/certificate"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/common/ntp"
-	"github.com/sagernet/sing/service"
 
 	"github.com/caddyserver/certmagic"
 )

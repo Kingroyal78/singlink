@@ -4,10 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
 
 	mDNS "github.com/miekg/dns"
 )

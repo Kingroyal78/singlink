@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -237,8 +238,8 @@ func (m *tailscaleGlobalHookManager) controlFunc(network string, address string,
 }
 
 func latestHook[T any](order []uint64, hooks map[uint64]T) T {
-	for i := len(order) - 1; i >= 0; i-- {
-		if hook, ok := hooks[order[i]]; ok {
+	for _, id := range slices.Backward(order) {
+		if hook, ok := hooks[id]; ok {
 			return hook
 		}
 	}

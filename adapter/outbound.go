@@ -5,10 +5,10 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-tun"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 // Note: for proxy protocols, outbound creates early connections by default.

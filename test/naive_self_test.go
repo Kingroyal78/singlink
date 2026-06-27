@@ -8,14 +8,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/singlink/singlink/common/tls"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
-	"github.com/singlink/singlink/protocol/naive"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/auth"
 	"github.com/sagernet/sing/common/json/badoption"
 	"github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/common/tls"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
+	"github.com/singlink/singlink/protocol/naive"
 
 	"github.com/stretchr/testify/require"
 )

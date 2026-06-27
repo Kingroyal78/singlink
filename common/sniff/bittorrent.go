@@ -7,9 +7,9 @@ import (
 	"io"
 	"os"
 
+	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/singlink/singlink/adapter"
 	C "github.com/singlink/singlink/constant"
-	E "github.com/sagernet/sing/common/exceptions"
 )
 
 const (

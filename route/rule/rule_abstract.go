@@ -4,10 +4,10 @@ import (
 	"io"
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common"
 	F "github.com/sagernet/sing/common/format"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 )
 
 type abstractDefaultRule struct {

@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/sagernet/sing/common/logger"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/route/rule"
-	"github.com/sagernet/sing/common/logger"
 
 	"github.com/stretchr/testify/require"
 )

@@ -6,10 +6,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/rw"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 )
 
 func RDP(_ context.Context, metadata *adapter.InboundContext, reader io.Reader) error {

@@ -3,9 +3,9 @@ package rule
 import (
 	"reflect"
 
+	E "github.com/sagernet/sing/common/exceptions"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/option"
-	E "github.com/sagernet/sing/common/exceptions"
 )
 
 func ValidateNoNestedRuleActions(rule option.Rule) error {

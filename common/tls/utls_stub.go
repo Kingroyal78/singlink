@@ -5,10 +5,10 @@ package tls
 import (
 	"context"
 
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 func NewUTLSClient(ctx context.Context, logger logger.ContextLogger, serverAddress string, options option.OutboundTLSOptions) (Config, error) {

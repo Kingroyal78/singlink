@@ -5,11 +5,11 @@ import (
 	"net"
 	"os"
 
+	aTLS "github.com/sagernet/sing/common/tls"
 	"github.com/singlink/singlink/common/badtls"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	aTLS "github.com/sagernet/sing/common/tls"
 )
 
 type ServerOptions struct {

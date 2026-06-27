@@ -3,8 +3,8 @@
 package networkquality
 
 import (
-	C "github.com/singlink/singlink/constant"
 	N "github.com/sagernet/sing/common/network"
+	C "github.com/singlink/singlink/constant"
 )
 
 func NewHTTP3MeasurementClientFactory(dialer N.Dialer) (MeasurementClientFactory, error) {

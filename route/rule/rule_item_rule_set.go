@@ -3,10 +3,10 @@ package rule
 import (
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ RuleItem = (*RuleSetItem)(nil)

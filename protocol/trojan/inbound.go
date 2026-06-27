@@ -5,6 +5,12 @@ import (
 	"net"
 	"os"
 
+	"github.com/sagernet/sing/common"
+	"github.com/sagernet/sing/common/auth"
+	E "github.com/sagernet/sing/common/exceptions"
+	F "github.com/sagernet/sing/common/format"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/inbound"
 	"github.com/singlink/singlink/common/listener"
@@ -15,12 +21,6 @@ import (
 	"github.com/singlink/singlink/option"
 	"github.com/singlink/singlink/transport/trojan"
 	"github.com/singlink/singlink/transport/v2ray"
-	"github.com/sagernet/sing/common"
-	"github.com/sagernet/sing/common/auth"
-	E "github.com/sagernet/sing/common/exceptions"
-	F "github.com/sagernet/sing/common/format"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
 )
 
 func RegisterInbound(registry *inbound.Registry) {

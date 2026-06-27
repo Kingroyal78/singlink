@@ -4,12 +4,12 @@ import (
 	"context"
 	"net"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/transport/simple-obfs"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/transport/simple-obfs"
 )
 
 var _ Plugin = (*ObfsLocal)(nil)

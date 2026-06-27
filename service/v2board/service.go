@@ -114,7 +114,6 @@ func (s *Service) Start(stage adapter.StartStage) error {
 		return nil
 	}
 	for _, controller := range s.controllers {
-		controller := controller
 		s.wg.Add(1)
 		go func() {
 			defer s.wg.Done()

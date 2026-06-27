@@ -6,11 +6,11 @@ import (
 	"net/netip"
 	"time"
 
+	M "github.com/sagernet/sing/common/metadata"
 	"github.com/singlink/singlink/common/tlsspoof"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	M "github.com/sagernet/sing/common/metadata"
 
 	"github.com/miekg/dns"
 )

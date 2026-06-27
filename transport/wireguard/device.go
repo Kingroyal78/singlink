@@ -5,12 +5,12 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common/logger"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/wireguard-go/device"
 	wgTun "github.com/sagernet/wireguard-go/tun"
+	"github.com/singlink/singlink/adapter"
 )
 
 type Device interface {

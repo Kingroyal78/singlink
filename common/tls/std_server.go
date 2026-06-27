@@ -11,15 +11,15 @@ import (
 	"time"
 
 	"github.com/sagernet/fswatch"
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/ntp"
+	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/experimental/deprecated"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/common/ntp"
-	"github.com/sagernet/sing/service"
 )
 
 var errInsecureUnused = E.New("tls: insecure unused")

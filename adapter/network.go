@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common/control"
+	C "github.com/singlink/singlink/constant"
 )
 
 type NetworkManager interface {

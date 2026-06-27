@@ -15,15 +15,15 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/certificate"
 	boxtls "github.com/singlink/singlink/common/tls"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/service"
 
 	"github.com/caddyserver/certmagic"
 	"github.com/caddyserver/zerossl"

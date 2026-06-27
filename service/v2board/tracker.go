@@ -3,10 +3,12 @@ package v2board
 import (
 	"context"
 	"fmt"
+	"maps"
 	"net"
 	"net/netip"
 	"reflect"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -342,10 +344,6 @@ func (n *nodeTraffic) updatedUserLimit(key string, user UserInfo) userLimit {
 	return nextLimit
 }
 
-func (n *nodeTraffic) updateAliveList(alive map[int]int) {
-	n.updateAliveListWithState(alive, time.Now(), defaultAliveListTTL)
-}
-
 func (n *nodeTraffic) updateAliveListWithState(alive map[int]int, aliveAt time.Time, aliveTTL time.Duration) {
 	n.access.Lock()
 	defer n.access.Unlock()
@@ -556,10 +554,8 @@ func (r nodeRules) blocks(destination M.Socksaddr, protocol string) bool {
 			return true
 		}
 	}
-	for _, full := range r.domainFull {
-		if domain == full {
-			return true
-		}
+	if slices.Contains(r.domainFull, domain) {
+		return true
 	}
 	for _, suffix := range r.domainSuffix {
 		if domain == suffix || strings.HasSuffix(domain, "."+suffix) {
@@ -590,12 +586,7 @@ func (r nodeRules) blocks(destination M.Socksaddr, protocol string) bool {
 		return false
 	}
 	protocol = strings.TrimSpace(protocol)
-	for _, blockedProtocol := range r.protocol {
-		if blockedProtocol == protocol {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(r.protocol, protocol)
 }
 
 func (n *nodeTraffic) markOnline(user string, ip string) bool {
@@ -774,9 +765,7 @@ func cloneAliveList(alive map[int]int) map[int]int {
 		return nil
 	}
 	cloned := make(map[int]int, len(alive))
-	for uid, count := range alive {
-		cloned[uid] = count
-	}
+	maps.Copy(cloned, alive)
 	return cloned
 }
 

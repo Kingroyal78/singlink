@@ -3,10 +3,10 @@
 package usbip
 
 import (
+	"github.com/sagernet/sing-usbip"
 	boxService "github.com/singlink/singlink/adapter/service"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing-usbip"
 )
 
 func RegisterService(registry *boxService.Registry) {

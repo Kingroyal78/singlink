@@ -5,10 +5,10 @@ import (
 	"os"
 	"testing"
 
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/json/badoption"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 
 	"github.com/spyzhov/ajson"
 	"github.com/stretchr/testify/require"

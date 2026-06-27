@@ -45,7 +45,7 @@ func TestRestoreAliveCapsRestoredAddresses(t *testing.T) {
 		UUID: user,
 	}}, nil, nodeRules{})
 	alive := make(map[int][]string)
-	for i := 0; i < maxRestoredAliveIPsPerUser+50; i++ {
+	for i := range maxRestoredAliveIPsPerUser + 50 {
 		alive[7] = append(alive[7], M.ParseSocksaddrHostPort("192.0.2.1", uint16(i+1)).String()+"_23")
 	}
 

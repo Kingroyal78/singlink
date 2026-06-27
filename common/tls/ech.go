@@ -13,12 +13,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/dns"
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	aTLS "github.com/sagernet/sing/common/tls"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/dns"
+	"github.com/singlink/singlink/option"
 
 	mDNS "github.com/miekg/dns"
 	"golang.org/x/crypto/cryptobyte"

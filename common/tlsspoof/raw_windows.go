@@ -11,9 +11,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/singlink/singlink/common/windivert"
 	"github.com/sagernet/sing-tun/gtcpip/header"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/common/windivert"
 
 	"golang.org/x/sys/windows"
 )

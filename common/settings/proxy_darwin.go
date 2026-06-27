@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common/control"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -13,6 +12,7 @@ import (
 	"github.com/sagernet/sing/common/shell"
 	"github.com/sagernet/sing/common/x/list"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
 )
 
 type DarwinSystemProxy struct {

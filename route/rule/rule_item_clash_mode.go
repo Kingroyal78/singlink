@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ RuleItem = (*ClashModeItem)(nil)

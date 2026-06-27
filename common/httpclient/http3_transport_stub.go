@@ -5,10 +5,10 @@ package httpclient
 import (
 	"time"
 
-	"github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/option"
 )
 
 func newHTTP3FallbackTransport(

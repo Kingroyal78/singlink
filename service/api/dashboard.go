@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/service"
 	"github.com/sagernet/sing/service/filemanager"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 const (

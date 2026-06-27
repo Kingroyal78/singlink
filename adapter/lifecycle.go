@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/singlink/singlink/log"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
+	"github.com/singlink/singlink/log"
 )
 
 type SimpleLifecycle interface {

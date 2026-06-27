@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
+	slogger "github.com/sagernet/sing/common/logger"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/convertor/adguard"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/option"
-	slogger "github.com/sagernet/sing/common/logger"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
 
 	mDNS "github.com/miekg/dns"
 	"github.com/stretchr/testify/require"

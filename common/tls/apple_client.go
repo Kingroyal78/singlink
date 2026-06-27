@@ -5,10 +5,10 @@ package tls
 import (
 	"context"
 
+	"github.com/sagernet/sing/common/logger"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/certificate"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common/logger"
 )
 
 const appleTLSEngineName = "Apple TLS engine"

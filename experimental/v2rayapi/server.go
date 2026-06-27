@@ -5,11 +5,11 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/sagernet/sing/common"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/experimental"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

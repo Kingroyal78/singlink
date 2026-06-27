@@ -8,13 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/taskmonitor"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/experimental/deprecated"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
-	R "github.com/singlink/singlink/route/rule"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -25,6 +18,13 @@ import (
 	"github.com/sagernet/sing/contrab/freelru"
 	"github.com/sagernet/sing/contrab/maphash"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/taskmonitor"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/experimental/deprecated"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	R "github.com/singlink/singlink/route/rule"
 
 	mDNS "github.com/miekg/dns"
 )

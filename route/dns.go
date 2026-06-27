@@ -5,17 +5,17 @@ import (
 	"net"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/dns"
-	dnsOutbound "github.com/singlink/singlink/protocol/dns"
-	R "github.com/singlink/singlink/route/rule"
 	"github.com/sagernet/sing/common/buf"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/udpnat2"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/dns"
+	dnsOutbound "github.com/singlink/singlink/protocol/dns"
+	R "github.com/singlink/singlink/route/rule"
 
 	mDNS "github.com/miekg/dns"
 )

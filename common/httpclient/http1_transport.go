@@ -5,9 +5,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/singlink/singlink/common/tls"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/common/tls"
 )
 
 type http1Transport struct {

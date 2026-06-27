@@ -6,9 +6,9 @@ import (
 	"context"
 	"slices"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/tailscale/ipn"
 	"github.com/sagernet/tailscale/ipn/ipnstate"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ adapter.TailscaleEndpoint = (*Endpoint)(nil)

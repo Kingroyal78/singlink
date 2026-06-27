@@ -5,11 +5,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/compatible"
 	"github.com/sagernet/sing/common/cleanup"
 	"github.com/sagernet/sing/common/observable"
 	"github.com/sagernet/sing/common/x/list"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/compatible"
 
 	"github.com/gofrs/uuid/v5"
 )

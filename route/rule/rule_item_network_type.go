@@ -3,10 +3,10 @@ package rule
 import (
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common"
 	F "github.com/sagernet/sing/common/format"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 )
 
 var _ RuleItem = (*NetworkTypeItem)(nil)

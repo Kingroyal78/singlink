@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
+	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/log"
-	E "github.com/sagernet/sing/common/exceptions"
 )
 
 var _ Searcher = (*linuxSearcher)(nil)

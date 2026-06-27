@@ -6,8 +6,8 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common"
+	"github.com/singlink/singlink/adapter"
 )
 
 type platformShellBackend struct {

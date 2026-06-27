@@ -4,10 +4,10 @@ import (
 	"context"
 	"net"
 
-	"github.com/singlink/singlink/common/ktls"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	aTLS "github.com/sagernet/sing/common/tls"
+	"github.com/singlink/singlink/common/ktls"
 )
 
 type KTLSClientConfig struct {

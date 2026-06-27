@@ -10,12 +10,12 @@ import (
 	"io"
 	"os"
 
+	"github.com/sagernet/sing/common/buf"
+	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/ja3"
 	"github.com/singlink/singlink/common/sniff/internal/qtls"
 	C "github.com/singlink/singlink/constant"
-	"github.com/sagernet/sing/common/buf"
-	E "github.com/sagernet/sing/common/exceptions"
 
 	"golang.org/x/crypto/hkdf"
 )

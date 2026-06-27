@@ -11,8 +11,8 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/singlink/singlink/adapter"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
 
 	"golang.org/x/sys/unix"
 )

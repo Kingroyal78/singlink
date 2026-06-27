@@ -7,13 +7,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/adapter/outbound"
-	"github.com/singlink/singlink/common/interrupt"
-	"github.com/singlink/singlink/common/urltest"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/batch"
@@ -23,6 +16,13 @@ import (
 	"github.com/sagernet/sing/common/x/list"
 	"github.com/sagernet/sing/service"
 	"github.com/sagernet/sing/service/pause"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/adapter/outbound"
+	"github.com/singlink/singlink/common/interrupt"
+	"github.com/singlink/singlink/common/urltest"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 func RegisterURLTest(registry *outbound.Registry) {

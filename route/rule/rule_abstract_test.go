@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/sagernet/sing/common/x/list"
 	"github.com/singlink/singlink/adapter"
 	C "github.com/singlink/singlink/constant"
-	"github.com/sagernet/sing/common/x/list"
 
 	"github.com/stretchr/testify/require"
 	"go4.org/netipx"

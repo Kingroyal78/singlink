@@ -5,10 +5,10 @@ import (
 	"net/netip"
 	"sync"
 
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ adapter.FakeIPStore = (*Store)(nil)

@@ -6,10 +6,10 @@ import (
 	"errors"
 	"io"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common/bufio"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 )
 
 func TLSClientHello(ctx context.Context, metadata *adapter.InboundContext, reader io.Reader) error {

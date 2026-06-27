@@ -445,7 +445,7 @@ func TestLegacyDeepbworkConfigUsersAndSubmit(t *testing.T) {
 	if alive != nil {
 		t.Fatalf("legacy deepbwork should not report alivelist: %#v", alive)
 	}
-	alivePayload := map[int][]string{7: []string{"192.0.2.1_23"}}
+	alivePayload := map[int][]string{7: {"192.0.2.1_23"}}
 	if err := client.ReportNodeOnlineUsers(context.Background(), &alivePayload); err != nil {
 		t.Fatal(err)
 	}

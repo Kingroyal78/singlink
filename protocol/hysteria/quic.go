@@ -1,8 +1,8 @@
 package hysteria
 
 import (
-	"github.com/singlink/singlink/option"
 	qtls "github.com/sagernet/sing-quic"
+	"github.com/singlink/singlink/option"
 )
 
 func buildBaseQUICOptions(options option.QUICOptions) qtls.QUICOptions {

@@ -7,15 +7,15 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/compatible"
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	"github.com/sagernet/sing/common/task"
 	"github.com/sagernet/sing/contrab/freelru"
 	"github.com/sagernet/sing/contrab/maphash"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/compatible"
+	C "github.com/singlink/singlink/constant"
 
 	"github.com/miekg/dns"
 )

@@ -11,14 +11,14 @@ import (
 	"syscall"
 	"time"
 
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/include"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/json"
 	"github.com/sagernet/sing/common/shell"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/include"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 var iperf3Path string

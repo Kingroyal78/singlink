@@ -5,9 +5,9 @@ import (
 	"net/netip"
 	"syscall"
 
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/winiphlpapi"
+	"github.com/singlink/singlink/adapter"
 
 	"golang.org/x/sys/windows"
 )

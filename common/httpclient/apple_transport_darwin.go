@@ -25,16 +25,16 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/certificate"
-	"github.com/singlink/singlink/common/proxybridge"
-	boxTLS "github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/ntp"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/certificate"
+	"github.com/singlink/singlink/common/proxybridge"
+	boxTLS "github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/option"
 )
 
 const applePinnedHashSize = sha256.Size

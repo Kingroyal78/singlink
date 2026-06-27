@@ -7,6 +7,9 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/sagernet/sing/common/logger"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/inbound"
 	"github.com/singlink/singlink/adapter/outbound"
@@ -19,9 +22,6 @@ import (
 	"github.com/singlink/singlink/option"
 	"github.com/singlink/singlink/protocol/naive"
 	"github.com/singlink/singlink/transport/v2ray"
-	"github.com/sagernet/sing/common/logger"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
 )
 
 func init() {

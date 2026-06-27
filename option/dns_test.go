@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common/json"
 	"github.com/sagernet/sing/service"
+	C "github.com/singlink/singlink/constant"
 
 	"github.com/stretchr/testify/require"
 )

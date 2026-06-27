@@ -8,6 +8,7 @@ import (
 	"github.com/sagernet/sing/common/bufio"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+
 	"golang.org/x/time/rate"
 )
 
@@ -136,10 +137,7 @@ func waitRate(ctx context.Context, limiter *rateLimiter, bytes int) error {
 		return nil
 	}
 	for bytes > 0 {
-		chunk := bytes
-		if chunk > burst {
-			chunk = burst
-		}
+		chunk := min(bytes, burst)
 		if err := limiter.WaitN(ctx, chunk); err != nil {
 			return err
 		}

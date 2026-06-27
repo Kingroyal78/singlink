@@ -5,6 +5,7 @@ package include
 import (
 	"context"
 
+	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/certificate"
 	"github.com/singlink/singlink/adapter/endpoint"
@@ -13,7 +14,6 @@ import (
 	"github.com/singlink/singlink/dns"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	E "github.com/sagernet/sing/common/exceptions"
 )
 
 func registerTailscaleEndpoint(registry *endpoint.Registry) {

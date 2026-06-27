@@ -9,8 +9,8 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common/winwlanapi"
+	"github.com/singlink/singlink/adapter"
 
 	"golang.org/x/sys/windows"
 )

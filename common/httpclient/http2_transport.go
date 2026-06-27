@@ -6,10 +6,10 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/option"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/option"
 
 	"golang.org/x/net/http2"
 )

@@ -5,12 +5,12 @@ import (
 	"net"
 	"net/netip"
 
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/common/uot"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ adapter.ConnectionRouterEx = (*Router)(nil)

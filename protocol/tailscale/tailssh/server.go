@@ -23,8 +23,6 @@ import (
 	"time"
 
 	gliderssh "github.com/sagernet/gliderssh"
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
@@ -33,6 +31,8 @@ import (
 	"github.com/sagernet/tailscale/tsnet"
 	"github.com/sagernet/tailscale/wgengine/router"
 	"github.com/sagernet/tailscale/wgengine/wgcfg"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/option"
 
 	"github.com/pkg/sftp"
 	gossh "golang.org/x/crypto/ssh"

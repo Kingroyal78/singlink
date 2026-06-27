@@ -3,8 +3,8 @@ package rule
 import (
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	F "github.com/sagernet/sing/common/format"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ RuleItem = (*WIFIBSSIDItem)(nil)

@@ -5,9 +5,9 @@ package local
 import (
 	"context"
 
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/dns"
 	"github.com/singlink/singlink/log"
-	N "github.com/sagernet/sing/common/network"
 )
 
 func newDHCPTransport(transportAdapter dns.TransportAdapter, ctx context.Context, dialer N.Dialer, logger log.ContextLogger) dhcpTransport {

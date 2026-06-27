@@ -8,12 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/dialer"
-	"github.com/singlink/singlink/common/sniff"
-	"github.com/singlink/singlink/common/tlsspoof"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -21,6 +15,12 @@ import (
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/dialer"
+	"github.com/singlink/singlink/common/sniff"
+	"github.com/singlink/singlink/common/tlsspoof"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 
 	"github.com/miekg/dns"
 )

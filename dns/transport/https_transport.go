@@ -8,10 +8,10 @@ import (
 	"net/url"
 	"sync/atomic"
 
-	"github.com/singlink/singlink/common/tls"
 	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/common/tls"
 
 	"golang.org/x/net/http2"
 )

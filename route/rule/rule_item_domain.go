@@ -4,9 +4,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common/domain"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
 )
 
 var _ RuleItem = (*DomainItem)(nil)

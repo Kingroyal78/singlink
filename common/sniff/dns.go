@@ -6,10 +6,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common/buf"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 
 	mDNS "github.com/miekg/dns"
 )

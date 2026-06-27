@@ -5,14 +5,14 @@ package usbip
 import (
 	"context"
 
+	"github.com/sagernet/sing-usbip"
+	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/singlink/singlink/adapter"
 	boxService "github.com/singlink/singlink/adapter/service"
 	"github.com/singlink/singlink/common/dialer"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing-usbip"
-	E "github.com/sagernet/sing/common/exceptions"
 )
 
 type ClientService struct {

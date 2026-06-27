@@ -3,8 +3,8 @@ package box
 import (
 	"runtime/debug"
 
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/option"
 )
 
 func applyDebugOptions(options option.DebugOptions) error {

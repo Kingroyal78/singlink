@@ -1,9 +1,9 @@
 package option
 
 import (
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common/json"
 	"github.com/sagernet/sing/common/json/badoption"
+	C "github.com/singlink/singlink/constant"
 )
 
 type _CertificateOptions struct {

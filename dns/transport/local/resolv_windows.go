@@ -10,9 +10,9 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/singlink/singlink/adapter"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
 
 	"golang.org/x/sys/windows"
 )

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	C "github.com/singlink/singlink/constant"
 	N "github.com/sagernet/sing/common/network"
+	C "github.com/singlink/singlink/constant"
 
 	"golang.org/x/net/publicsuffix"
 )

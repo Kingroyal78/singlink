@@ -4,10 +4,10 @@ import (
 	"context"
 	"net"
 
-	"github.com/singlink/singlink/adapter"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
 )
 
 type DefaultOutboundDialer struct {

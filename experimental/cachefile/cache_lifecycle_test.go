@@ -51,7 +51,7 @@ func TestFakeIPMetadataClosePersistsPendingMetadataAfterAsyncBackpressure(t *tes
 	options := option.CacheFileOptions{StoreFakeIP: true}
 	cacheFile := newStartedTestCacheFile(t, options)
 
-	for i := 0; i < cacheFileMaxAsyncWrites; i++ {
+	for range cacheFileMaxAsyncWrites {
 		require.True(t, cacheFile.beginAsyncWrite())
 	}
 
@@ -59,7 +59,7 @@ func TestFakeIPMetadataClosePersistsPendingMetadataAfterAsyncBackpressure(t *tes
 	cacheFile.FakeIPSaveMetadataAsync(metadata)
 	cacheFile.flushFakeIPMetadata()
 
-	for i := 0; i < cacheFileMaxAsyncWrites; i++ {
+	for range cacheFileMaxAsyncWrites {
 		cacheFile.endAsyncWrite()
 	}
 
