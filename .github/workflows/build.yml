@@ -33,11 +33,11 @@ jobs:
       version: ${{ steps.outputs.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ~1.25.11
       - name: Check input version
@@ -104,18 +104,18 @@ jobs:
           - { os: windows, arch: "386", legacy_win7: true, legacy_name: "windows-7" }
     steps:
       - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setup Go
         if: ${{ ! matrix.legacy_win7 }}
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ~1.25.11
       - name: Cache Go for Windows 7
         if: matrix.legacy_win7
         id: cache-go-for-windows7
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/go/go_win7
@@ -129,8 +129,8 @@ jobs:
       - name: Setup Go for Windows 7
         if: matrix.legacy_win7
         run: |-
-          echo "PATH=$HOME/go/go_win7/bin:$PATH" >> $GITHUB_ENV
-          echo "GOROOT=$HOME/go/go_win7" >> $GITHUB_ENV
+          echo "PATH=$HOME/go/go_win7/bin:$PATH" >> "$GITHUB_ENV"
+          echo "GOROOT=$HOME/go/go_win7" >> "$GITHUB_ENV"
       - name: Clone cronet-go
         if: matrix.naive
         run: |
@@ -151,7 +151,7 @@ jobs:
       - name: Cache Chromium toolchain
         if: matrix.naive
         id: cache-chromium-toolchain
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/cronet-go/naiveproxy/src/third_party/llvm-build/
@@ -175,9 +175,9 @@ jobs:
           set -xeuo pipefail
           cd ~/cronet-go
           if [[ "${{ matrix.variant }}" == "musl" ]]; then
-            go run ./cmd/build-naive --target=linux/${{ matrix.arch }} --libc=musl env >> $GITHUB_ENV
+            go run ./cmd/build-naive --target=linux/${{ matrix.arch }} --libc=musl env >> "$GITHUB_ENV"
           else
-            go run ./cmd/build-naive --target=linux/${{ matrix.arch }} env >> $GITHUB_ENV
+            go run ./cmd/build-naive --target=linux/${{ matrix.arch }} env >> "$GITHUB_ENV"
           fi
       - name: Set tag
         run: |-
@@ -222,7 +222,7 @@ jobs:
         run: |
           cd ~/cronet-go
           CGO_ENABLED=0 go build -v -o "$RUNNER_TEMP/build-naive" ./cmd/build-naive
-          GOPROXY=direct GOSUMDB=off "$RUNNER_TEMP/build-naive" extract-lib --target ${{ matrix.os }}/${{ matrix.arch }} -o $GITHUB_WORKSPACE/dist
+          GOPROXY=direct GOSUMDB=off "$RUNNER_TEMP/build-naive" extract-lib --target ${{ matrix.os }}/${{ matrix.arch }} -o "$GITHUB_WORKSPACE/dist"
       - name: Build (glibc)
         if: matrix.variant == 'glibc'
         run: |
@@ -309,8 +309,8 @@ jobs:
             --architecture ${{ matrix.debian }} \
             dist/sing-box=/usr/bin/sing-box
           curl -Lo '/tmp/debsigs.diff' 'https://gitlab.com/debsigs/debsigs/-/commit/160138f5de1ec110376d3c807b60a37388bc7c90.diff'
-          sudo patch /usr/bin/debsigs < '/tmp/debsigs.diff'
-          rm -rf $HOME/.gnupg
+          sudo patch /usr/bin/debsigs -i '/tmp/debsigs.diff'
+          rm -rf "$HOME/.gnupg"
           gpg --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" --import <<EOF
           ${{ secrets.GPG_KEY }}
           EOF
@@ -326,7 +326,7 @@ jobs:
             -p "dist/sing-box_${{ needs.calculate_version.outputs.version }}_${{ matrix.os }}_${{ matrix.rpm }}.rpm" \
             --architecture ${{ matrix.rpm }} \
             dist/sing-box=/usr/bin/sing-box
-          cat > $HOME/.rpmmacros <<EOF
+          cat > "$HOME/.rpmmacros" <<EOF
           %_gpg_name ${{ secrets.GPG_KEY_ID }}
           %_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase ${{ secrets.GPG_PASSPHRASE }}
           EOF
@@ -406,7 +406,7 @@ jobs:
       - name: Cleanup
         run: rm -f dist/sing-box dist/libcronet.so
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: binary-${{ matrix.os }}_${{ matrix.arch }}${{ matrix.goarm && format('v{0}', matrix.goarm) }}${{ matrix.go386 && format('_{0}', matrix.go386) }}${{ matrix.gomips && format('_{0}', matrix.gomips) }}${{ matrix.legacy_name && format('-legacy-{0}', matrix.legacy_name) }}${{ matrix.variant && format('-{0}', matrix.variant) }}
           path: "dist"
@@ -424,18 +424,18 @@ jobs:
           - { arch: amd64, legacy_osx: true, legacy_name: "macos-10.13" }
     steps:
       - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setup Go
         if: ${{ ! matrix.legacy_osx }}
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ^1.25.3
       - name: Cache Go for macOS 10.13
         if: matrix.legacy_osx
         id: cache-go-for-macos1013
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/go/go_osx
@@ -449,8 +449,8 @@ jobs:
       - name: Setup Go for macOS 10.13
         if: matrix.legacy_osx
         run: |-
-          echo "PATH=$HOME/go/go_osx/bin:$PATH" >> $GITHUB_ENV
-          echo "GOROOT=$HOME/go/go_osx" >> $GITHUB_ENV
+          echo "PATH=$HOME/go/go_osx/bin:$PATH" >> "$GITHUB_ENV"
+          echo "GOROOT=$HOME/go/go_osx" >> "$GITHUB_ENV"
       - name: Set tag
         run: |-
           git ls-remote --exit-code --tags origin v${{ needs.calculate_version.outputs.version }} || echo "PUBLISHED=false" >> "$GITHUB_ENV"
@@ -499,7 +499,7 @@ jobs:
       - name: Cleanup
         run: rm dist/sing-box
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: binary-darwin_${{ matrix.arch }}${{ matrix.legacy_name && format('-legacy-{0}', matrix.legacy_name) }}
           path: "dist"
@@ -517,11 +517,11 @@ jobs:
           - { arch: arm64, naive: true }
     steps:
       - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ^1.25.4
       - name: Set tag
@@ -595,7 +595,7 @@ jobs:
         if: ${{ !matrix.naive }}
         run: Remove-Item dist/sing-box.exe
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: binary-windows_${{ matrix.arch }}
           path: "dist"
@@ -610,11 +610,11 @@ jobs:
       - build_windows
     steps:
       - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Cache ghr
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         id: cache-ghr
         with:
           path: |
@@ -623,7 +623,7 @@ jobs:
       - name: Setup ghr
         if: steps.cache-ghr.outputs.cache-hit != 'true'
         run: |-
-          cd $HOME
+          cd "$HOME"
           git clone https://github.com/nekohasekai/ghr ghr
           cd ghr
           go install -v .
@@ -633,7 +633,7 @@ jobs:
           git tag v${{ needs.calculate_version.outputs.version }} -f
           echo "VERSION=${{ needs.calculate_version.outputs.version }}" >> "$GITHUB_ENV"
       - name: Download builds
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true
