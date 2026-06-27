@@ -48,17 +48,11 @@ icon: material/new-box
 
 具体来说，它禁用了在 singlink 1.13.0 中作为功能添加的以下行为：
 
-1. 在 Apple 平台上：尝试在 NetworkExtension 中使用 `getaddrinfo` 解析 A/AAAA 请求。
-2. 在 Linux 上：当可用时通过 `systemd-resolvd` 的 DBus 接口进行解析。
+1. 在 Linux 上：当可用时通过 `systemd-resolvd` 的 DBus 接口进行解析。
 
 作为唯一的例外，它无法禁用以下行为：
 
-1. 在 Android 图形客户端中，
-`local` 将始终通过平台接口解析 DNS，
-因为没有其他方法来获取上游 DNS 服务器；
-在运行 Android 10 以下版本的设备上，此接口只能解析 A/AAAA 请求。
-
-2. 在 macOS 上，`local` 会在 Network Extension 中首先尝试 DHCP，由于 DHCP 遵循拨号字段，
+1. 在 macOS 上，`local` 可能会先尝试 DHCP，因为 DHCP 遵循拨号字段，
 它不会被 `prefer_go` 禁用。
 
 #### neighbor_domain

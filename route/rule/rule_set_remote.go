@@ -5,16 +5,12 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/srs"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/experimental/deprecated"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
@@ -23,11 +19,21 @@ import (
 	"github.com/sagernet/sing/common/x/list"
 	"github.com/sagernet/sing/service"
 	"github.com/sagernet/sing/service/pause"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/srs"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/experimental/deprecated"
+	"github.com/singlink/singlink/option"
 
 	"go4.org/netipx"
 )
 
 var _ adapter.RuleSet = (*RemoteRuleSet)(nil)
+
+const (
+	remoteRuleSetDownloadTimeout  = 30 * time.Second
+	remoteRuleSetMaxDownloadBytes = 32 * 1024 * 1024
+)
 
 type RemoteRuleSet struct {
 	ctx            context.Context
@@ -46,6 +52,8 @@ type RemoteRuleSet struct {
 	pauseManager   pause.Manager
 	callbacks      list.List[adapter.RuleSetUpdateCallback]
 	refs           atomic.Int32
+	fetchWG        sync.WaitGroup
+	closed         bool
 }
 
 func NewRemoteRuleSet(ctx context.Context, logger logger.ContextLogger, options option.RuleSet) (*RemoteRuleSet, error) {
@@ -72,7 +80,8 @@ func (s *RemoteRuleSet) Name() string {
 }
 
 func (s *RemoteRuleSet) String() string {
-	return strings.Join(F.MapToString(s.rules), " ")
+	rules := s.ruleList()
+	return strings.Join(F.MapToString(rules), " ")
 }
 
 func (s *RemoteRuleSet) StartContext(ctx context.Context, startContext *adapter.HTTPStartContext) error {
@@ -89,12 +98,14 @@ func (s *RemoteRuleSet) StartContext(ctx context.Context, startContext *adapter.
 			if err != nil {
 				s.logger.Warn(E.Cause(err, "restore cached rule-set, will refetch"))
 			} else {
+				s.access.Lock()
 				s.lastUpdated = savedSet.LastUpdated
 				s.lastEtag = savedSet.LastEtag
+				s.access.Unlock()
 			}
 		}
 	}
-	if s.lastUpdated.IsZero() {
+	if s.lastUpdatedTime().IsZero() {
 		err = s.fetch(ctx, true)
 		if err != nil {
 			return E.Cause(err, "initial rule-set: ", s.options.Tag)
@@ -110,9 +121,8 @@ func (s *RemoteRuleSet) Metadata() adapter.RuleSetMetadata {
 }
 
 func (s *RemoteRuleSet) ExtractIPSet() []*netipx.IPSet {
-	s.access.RLock()
-	defer s.access.RUnlock()
-	return common.FlatMap(s.rules, extractIPSetFromRule)
+	rules := s.ruleList()
+	return common.FlatMap(rules, extractIPSetFromRule)
 }
 
 func (s *RemoteRuleSet) IncRef() {
@@ -127,7 +137,9 @@ func (s *RemoteRuleSet) DecRef() {
 
 func (s *RemoteRuleSet) Cleanup() {
 	if s.refs.Load() == 0 {
+		s.access.Lock()
 		s.rules = nil
+		s.access.Unlock()
 	}
 }
 
@@ -179,6 +191,10 @@ func (s *RemoteRuleSet) loadBytes(content []byte) error {
 		return err
 	}
 	s.access.Lock()
+	if s.closed {
+		s.access.Unlock()
+		return os.ErrClosed
+	}
 	s.metadata = metadata
 	s.rules = rules
 	callbacks := s.callbacks.Array()
@@ -189,28 +205,41 @@ func (s *RemoteRuleSet) loadBytes(content []byte) error {
 	return nil
 }
 
-func (s *RemoteRuleSet) updateOnce() {
-	err := s.fetch(s.ctx, false)
+func (s *RemoteRuleSet) updateOnce(ctx context.Context) {
+	err := s.fetch(ctx, false)
 	if err != nil {
 		s.logger.Error("fetch rule-set ", s.options.Tag, ": ", err)
 	} else if s.refs.Load() == 0 {
+		s.access.Lock()
 		s.rules = nil
+		s.access.Unlock()
 	}
 }
 
 func (s *RemoteRuleSet) fetch(ctx context.Context, isStart bool) error {
+	if !s.beginFetch() {
+		return os.ErrClosed
+	}
+	defer s.fetchWG.Done()
+	ctx, cancel := context.WithTimeout(ctx, remoteRuleSetDownloadTimeout)
+	defer cancel()
+	if s.ctx != nil {
+		stopRuleSetCancel := context.AfterFunc(s.ctx, cancel)
+		defer stopRuleSetCancel()
+	}
 	s.logger.Debug("updating rule-set ", s.options.Tag, " from URL: ", s.options.RemoteOptions.URL)
-	request, err := http.NewRequest("GET", s.options.RemoteOptions.URL, nil)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, s.options.RemoteOptions.URL, nil)
 	if err != nil {
 		return err
 	}
-	if s.lastEtag != "" {
-		request.Header.Set("If-None-Match", s.lastEtag)
+	lastEtag := s.lastEtagValue()
+	if lastEtag != "" {
+		request.Header.Set("If-None-Match", lastEtag)
 	}
 	if !isStart {
 		defer s.httpClient.CloseIdleConnections()
 	}
-	response, err := s.httpClient.Do(request.WithContext(ctx))
+	response, err := s.httpClient.Do(request)
 	if err != nil {
 		return err
 	}
@@ -218,11 +247,18 @@ func (s *RemoteRuleSet) fetch(ctx context.Context, isStart bool) error {
 	switch response.StatusCode {
 	case http.StatusOK:
 	case http.StatusNotModified:
-		s.lastUpdated = time.Now()
+		lastUpdated := time.Now()
+		s.access.Lock()
+		if s.closed {
+			s.access.Unlock()
+			return os.ErrClosed
+		}
+		s.lastUpdated = lastUpdated
+		s.access.Unlock()
 		if s.cacheFile != nil {
 			savedRuleSet := s.cacheFile.LoadRuleSet(s.options.Tag)
 			if savedRuleSet != nil {
-				savedRuleSet.LastUpdated = s.lastUpdated
+				savedRuleSet.LastUpdated = lastUpdated
 				err = s.cacheFile.SaveRuleSet(s.options.Tag, savedRuleSet)
 				if err != nil {
 					s.logger.Error("save rule-set updated time: ", err)
@@ -235,7 +271,7 @@ func (s *RemoteRuleSet) fetch(ctx context.Context, isStart bool) error {
 	default:
 		return E.New("unexpected status: ", response.Status)
 	}
-	content, err := io.ReadAll(response.Body)
+	content, err := readLimitedRuleSetBody(response)
 	if err != nil {
 		return err
 	}
@@ -244,15 +280,23 @@ func (s *RemoteRuleSet) fetch(ctx context.Context, isStart bool) error {
 		return err
 	}
 	eTagHeader := response.Header.Get("Etag")
+	lastUpdated := time.Now()
+	s.access.Lock()
+	if s.closed {
+		s.access.Unlock()
+		return os.ErrClosed
+	}
 	if eTagHeader != "" {
 		s.lastEtag = eTagHeader
 	}
-	s.lastUpdated = time.Now()
+	lastEtag = s.lastEtag
+	s.lastUpdated = lastUpdated
+	s.access.Unlock()
 	if s.cacheFile != nil {
 		err = s.cacheFile.SaveRuleSet(s.options.Tag, &adapter.SavedBinary{
-			LastUpdated: s.lastUpdated,
+			LastUpdated: lastUpdated,
 			Content:     content,
-			LastEtag:    s.lastEtag,
+			LastEtag:    lastEtag,
 		})
 		if err != nil {
 			s.logger.Error("save rule-set cache: ", err)
@@ -287,8 +331,21 @@ func (s *RemoteRuleSet) resolveTransport() (adapter.HTTPTransport, error) {
 }
 
 func (s *RemoteRuleSet) Close() error {
+	s.access.Lock()
+	if s.closed {
+		s.access.Unlock()
+		return nil
+	}
+	s.closed = true
 	s.rules = nil
-	s.cancel()
+	s.access.Unlock()
+	if s.cancel != nil {
+		s.cancel()
+	}
+	if s.httpClient != nil {
+		s.httpClient.CloseIdleConnections()
+	}
+	s.fetchWG.Wait()
 	return nil
 }
 
@@ -301,11 +358,54 @@ func (s *RemoteRuleSet) matchStates(metadata *adapter.InboundContext) ruleMatchS
 }
 
 func (s *RemoteRuleSet) matchStatesWithBase(metadata *adapter.InboundContext, base ruleMatchState) ruleMatchStateSet {
+	rules := s.ruleList()
 	var stateSet ruleMatchStateSet
-	for _, rule := range s.rules {
+	for _, rule := range rules {
 		nestedMetadata := *metadata
 		nestedMetadata.ResetRuleMatchCache()
 		stateSet = stateSet.merge(matchHeadlessRuleStatesWithBase(rule, &nestedMetadata, base))
 	}
 	return stateSet
+}
+
+func (s *RemoteRuleSet) ruleList() []adapter.HeadlessRule {
+	s.access.RLock()
+	defer s.access.RUnlock()
+	return append([]adapter.HeadlessRule(nil), s.rules...)
+}
+
+func (s *RemoteRuleSet) lastUpdatedTime() time.Time {
+	s.access.RLock()
+	defer s.access.RUnlock()
+	return s.lastUpdated
+}
+
+func (s *RemoteRuleSet) lastEtagValue() string {
+	s.access.RLock()
+	defer s.access.RUnlock()
+	return s.lastEtag
+}
+
+func (s *RemoteRuleSet) beginFetch() bool {
+	s.access.Lock()
+	defer s.access.Unlock()
+	if s.closed {
+		return false
+	}
+	s.fetchWG.Add(1)
+	return true
+}
+
+func readLimitedRuleSetBody(response *http.Response) ([]byte, error) {
+	if response.ContentLength > remoteRuleSetMaxDownloadBytes {
+		return nil, E.New("rule-set download size exceeds limit: ", response.ContentLength, " > ", remoteRuleSetMaxDownloadBytes)
+	}
+	content, err := io.ReadAll(io.LimitReader(response.Body, remoteRuleSetMaxDownloadBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(content)) > remoteRuleSetMaxDownloadBytes {
+		return nil, E.New("rule-set download size exceeds limit: ", remoteRuleSetMaxDownloadBytes)
+	}
+	return content, nil
 }

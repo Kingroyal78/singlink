@@ -9,10 +9,6 @@ import (
 	"sync/atomic"
 
 	"github.com/sagernet/fswatch"
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/srs"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	F "github.com/sagernet/sing/common/format"
@@ -20,6 +16,10 @@ import (
 	"github.com/sagernet/sing/common/logger"
 	"github.com/sagernet/sing/common/x/list"
 	"github.com/sagernet/sing/service/filemanager"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/srs"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 
 	"go4.org/netipx"
 )
@@ -37,6 +37,7 @@ type LocalRuleSet struct {
 	watcher    *fswatch.Watcher
 	callbacks  list.List[adapter.RuleSetUpdateCallback]
 	refs       atomic.Int32
+	closed     bool
 }
 
 func NewLocalRuleSet(ctx context.Context, logger logger.Logger, options option.RuleSet) (*LocalRuleSet, error) {
@@ -83,7 +84,8 @@ func (s *LocalRuleSet) Name() string {
 }
 
 func (s *LocalRuleSet) String() string {
-	return strings.Join(F.MapToString(s.rules), " ")
+	rules := s.ruleList()
+	return strings.Join(F.MapToString(rules), " ")
 }
 
 func (s *LocalRuleSet) StartContext(ctx context.Context, startContext *adapter.HTTPStartContext) error {
@@ -114,6 +116,7 @@ func (s *LocalRuleSet) reloadFile(path string) error {
 		if err != nil {
 			return err
 		}
+		defer setFile.Close()
 		ruleSet, err = srs.Read(setFile, false)
 		if err != nil {
 			return err
@@ -143,6 +146,10 @@ func (s *LocalRuleSet) reloadRules(headlessRules []option.HeadlessRule) error {
 		return err
 	}
 	s.access.Lock()
+	if s.closed {
+		s.access.Unlock()
+		return os.ErrClosed
+	}
 	s.rules = rules
 	s.metadata = metadata
 	callbacks := s.callbacks.Array()
@@ -160,9 +167,8 @@ func (s *LocalRuleSet) Metadata() adapter.RuleSetMetadata {
 }
 
 func (s *LocalRuleSet) ExtractIPSet() []*netipx.IPSet {
-	s.access.RLock()
-	defer s.access.RUnlock()
-	return common.FlatMap(s.rules, extractIPSetFromRule)
+	rules := s.ruleList()
+	return common.FlatMap(rules, extractIPSetFromRule)
 }
 
 func (s *LocalRuleSet) IncRef() {
@@ -177,7 +183,9 @@ func (s *LocalRuleSet) DecRef() {
 
 func (s *LocalRuleSet) Cleanup() {
 	if s.refs.Load() == 0 {
+		s.access.Lock()
 		s.rules = nil
+		s.access.Unlock()
 	}
 }
 
@@ -194,7 +202,10 @@ func (s *LocalRuleSet) UnregisterCallback(element *list.Element[adapter.RuleSetU
 }
 
 func (s *LocalRuleSet) Close() error {
+	s.access.Lock()
+	s.closed = true
 	s.rules = nil
+	s.access.Unlock()
 	return common.Close(common.PtrOrNil(s.watcher))
 }
 
@@ -207,11 +218,18 @@ func (s *LocalRuleSet) matchStates(metadata *adapter.InboundContext) ruleMatchSt
 }
 
 func (s *LocalRuleSet) matchStatesWithBase(metadata *adapter.InboundContext, base ruleMatchState) ruleMatchStateSet {
+	rules := s.ruleList()
 	var stateSet ruleMatchStateSet
-	for _, rule := range s.rules {
+	for _, rule := range rules {
 		nestedMetadata := *metadata
 		nestedMetadata.ResetRuleMatchCache()
 		stateSet = stateSet.merge(matchHeadlessRuleStatesWithBase(rule, &nestedMetadata, base))
 	}
 	return stateSet
+}
+
+func (s *LocalRuleSet) ruleList() []adapter.HeadlessRule {
+	s.access.RLock()
+	defer s.access.RUnlock()
+	return append([]adapter.HeadlessRule(nil), s.rules...)
 }

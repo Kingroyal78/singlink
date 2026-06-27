@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
 )
 
 var _ RuleItem = (*ProcessPathItem)(nil)
@@ -31,13 +30,6 @@ func (r *ProcessPathItem) Match(metadata *adapter.InboundContext) bool {
 	}
 	if metadata.ProcessInfo.ProcessPath != "" && r.processMap[metadata.ProcessInfo.ProcessPath] {
 		return true
-	}
-	if C.IsAndroid {
-		for _, packageName := range metadata.ProcessInfo.AndroidPackageNames {
-			if r.processMap[packageName] {
-				return true
-			}
-		}
 	}
 	return false
 }

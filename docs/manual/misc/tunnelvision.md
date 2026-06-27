@@ -17,8 +17,8 @@ Android does not handle DHCP option 121 and is not affected.
 
 ### Apple platforms
 
-Update [singlink graphical client](/clients/apple/#download) to `1.9.0-rc.16` or newer,
-then enable `includeAllNetworks` in `Settings` — `Packet Tunnel` and you will be unaffected.
+Client-side Apple platform builds are not maintained in this server-only repository.
+Deploy a version with `includeAllNetworks` support enabled on the client side to avoid this issue.
 
 Note: when `includeAllNetworks` is enabled, the default TUN stack is changed to `gvisor`,
 and the `system` and `mixed` stacks are not available.

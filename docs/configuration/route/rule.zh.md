@@ -6,7 +6,6 @@ icon: material/new-box
 
     :material-plus: [source_mac_address](#source_mac_address)  
     :material-plus: [source_hostname](#source_hostname)  
-    :material-plus: [package_name_regex](#package_name_regex)
 
 !!! quote "singlink 1.13.0 中的更改"
 
@@ -124,12 +123,6 @@ icon: material/new-box
         ],
         "process_path_regex": [
           "^/usr/bin/.+"
-        ],
-        "package_name": [
-          "com.termux"
-        ],
-        "package_name_regex": [
-          "^com\\.termux.*"
         ],
         "user": [
           "sekai"
@@ -352,16 +345,6 @@ icon: material/new-box
 
 使用正则表达式匹配进程路径。
 
-#### package_name
-
-匹配 Android 应用包名。
-
-#### package_name_regex
-
-!!! question "自 singlink 1.14.0 起"
-
-使用正则表达式匹配 Android 应用包名。
-
 #### user
 
 !!! quote ""
@@ -388,7 +371,7 @@ icon: material/new-box
 
 !!! quote ""
 
-    仅在 Android 与 Apple 平台图形客户端中支持。
+    仅在网络类型检测可用时支持。
 
 匹配网络类型。
 
@@ -400,10 +383,9 @@ icon: material/new-box
 
 !!! quote ""
 
-    仅在 Android 与 Apple 平台图形客户端中支持。
+    仅在平台能报告计费或昂贵网络状态时支持。
 
-匹配如果网络被视为计费 (在 Android) 或被视为昂贵，
-像蜂窝网络或个人热点 (在 Apple 平台)。
+匹配网络是否被视为计费或昂贵。
 
 #### network_is_constrained
 
@@ -411,7 +393,7 @@ icon: material/new-box
 
 !!! quote ""
 
-    仅在 Apple 平台图形客户端中支持。
+    仅在平台能报告受限网络状态时支持。
 
 匹配如果网络在低数据模式下。
 
@@ -431,7 +413,7 @@ icon: material/new-box
 
 !!! quote ""
 
-    仅在 Android 与 Apple 平台图形客户端中支持。
+    仅在网络类型检测可用时支持。
 
 匹配网络接口（可用值同 `network_type`）地址。
 
@@ -474,7 +456,7 @@ icon: material/new-box
 
 !!! quote ""
 
-    仅支持 Linux、macOS，或在 Android 和 macOS 图形客户端中支持。参阅 [邻居解析](/configuration/shared/neighbor/) 了解设置方法。
+    仅支持 Linux 和 macOS。参阅 [邻居解析](/zh/configuration/shared/neighbor/) 了解设置方法。
 
 匹配源设备 MAC 地址。
 
@@ -484,7 +466,7 @@ icon: material/new-box
 
 !!! quote ""
 
-    仅支持 Linux、macOS，或在 Android 和 macOS 图形客户端中支持。参阅 [邻居解析](/configuration/shared/neighbor/) 了解设置方法。
+    仅支持 Linux 和 macOS。参阅 [邻居解析](/zh/configuration/shared/neighbor/) 了解设置方法。
 
 匹配源设备从 DHCP 租约获取的主机名。
 

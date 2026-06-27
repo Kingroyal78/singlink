@@ -4,6 +4,14 @@ import (
 	"context"
 	"net"
 
+	"github.com/sagernet/sing-vmess"
+	"github.com/sagernet/sing-vmess/packetaddr"
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/logger"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
+	"github.com/sagernet/sing/common/ntp"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/outbound"
 	"github.com/singlink/singlink/common/dialer"
@@ -13,14 +21,6 @@ import (
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
 	"github.com/singlink/singlink/transport/v2ray"
-	"github.com/sagernet/sing-vmess"
-	"github.com/sagernet/sing-vmess/packetaddr"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/common/logger"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
-	"github.com/sagernet/sing/common/ntp"
 )
 
 func RegisterOutbound(registry *outbound.Registry) {
@@ -173,6 +173,7 @@ func (h *vmessDialer) DialContext(ctx context.Context, network string, destinati
 	case N.NetworkUDP:
 		return h.client.DialEarlyPacketConn(conn, destination), nil
 	default:
+		common.Close(conn)
 		return nil, E.Extend(N.ErrUnknownNetwork, network)
 	}
 }
@@ -195,6 +196,7 @@ func (h *vmessDialer) ListenPacket(ctx context.Context, destination M.Socksaddr)
 	}
 	if h.packetAddr {
 		if destination.IsDomain() {
+			common.Close(conn)
 			return nil, E.New("packetaddr: domain destination is not supported")
 		}
 		return packetaddr.NewConn(h.client.DialEarlyPacketConn(conn, M.Socksaddr{Fqdn: packetaddr.SeqPacketMagicAddress}), destination), nil

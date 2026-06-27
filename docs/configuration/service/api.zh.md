@@ -8,7 +8,7 @@ icon: material/new-box
 
 singlink API 服务是用于观察与控制正在运行的 singlink 实例的 gRPC 服务器。
 
-它可以由 iOS、macOS 和 Android 上的 [singlink 图形客户端](/zh/clients/)（通过 Remote Control 功能）或 [singlink dashboard](https://github.com/SagerNet/singlink-dashboard) 访问。
+它可以由 [singlink dashboard](https://github.com/SagerNet/singlink-dashboard) 访问。
 
 服务器同时接受 [gRPC-Web](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md) 请求,
 包括用于双向流方法的 [@improbable-eng/grpc-web](https://github.com/improbable-eng/grpc-web) WebSocket 传输。

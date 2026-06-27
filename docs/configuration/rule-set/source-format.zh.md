@@ -45,7 +45,7 @@ icon: material/new-box
 * 2: singlink 1.10.0: 优化了二进制规则集中 `domain_suffix` 规则的内存使用。
 * 3: singlink 1.11.0: 添加了 `network_type`、 `network_is_expensive` 和 `network_is_constrainted` 规则项。
 * 4: singlink 1.13.0: 添加了 `network_interface_address` 和 `default_interface_address` 规则项。
-* 5: singlink 1.14.0: 添加了 `package_name_regex` 规则项。
+* 5: singlink 1.14.0: 已从服务端规则项集合中移除。
 
 #### rules
 

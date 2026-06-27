@@ -8,13 +8,15 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/singlink/singlink/common/tls"
 	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/common/tls"
 
 	"golang.org/x/net/idna"
 )
+
+const maxFallbackAuthorityEntries = 1024
 
 func dialTLS(ctx context.Context, rawDialer N.Dialer, baseTLSConfig tls.Config, destination M.Socksaddr, nextProtos []string, expectProto string) (net.Conn, error) {
 	if baseTLSConfig == nil {

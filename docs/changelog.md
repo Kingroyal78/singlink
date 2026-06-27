@@ -17,7 +17,7 @@ icon: material/alert-decagram
 
 **1**:
 
-A new jailbreak build of the iOS [singlink for Apple](/clients/apple/) client is
+A new jailbreak build of the iOS singlink for Apple client is
 available, distributed as a `.deb` for rootless iOS 15.0+ from
 [GitHub Releases](https://github.com/SagerNet/singlink/releases)
 (`SFI-iphoneos-arm64.deb`). Unlike the App Store and TestFlight builds, it can run
@@ -3180,7 +3180,7 @@ Only supported in graphical clients on Android and Apple platforms.
 
 #### 1.6.1
 
-* Our [Android client](/installation/clients/sfa/) is now available in the Google Play Store ▶️
+* Our Android client is now available in the Google Play Store ▶️
 * Fixes and improvements
 
 #### 1.7.0-alpha.6
@@ -3219,7 +3219,7 @@ The new HTTPUpgrade transport has better performance than WebSocket and is bette
 
 Important changes since 1.5:
 
-* Our [Apple tvOS client](/installation/clients/sft/) is now available in the App Store 🍎
+* Our Apple tvOS client is now available in the App Store 🍎
 * Update BBR congestion control for TUIC and Hysteria2 **1**
 * Update brutal congestion control for Hysteria2
 * Add `brutal_debug` option for Hysteria2
@@ -3364,7 +3364,7 @@ introduce new issues.
 
 #### 1.5.2
 
-* Our [Apple tvOS client](/installation/clients/sft/) is now available in the App Store 🍎
+* Our Apple tvOS client is now available in the App Store 🍎
 * Fixes and improvements
 
 #### 1.6.0-alpha.3
@@ -3685,7 +3685,7 @@ and [TUIC outbound](/configuration/outbound/tuic/)
 #### 1.3.5
 
 * Fixes and improvements
-* Introducing our [Apple tvOS](/installation/clients/sft/) client applications **1**
+* Introducing our Apple tvOS client applications **1**
 * Add per app proxy and app installed/updated trigger support for Android client
 * Add profile sharing support for Android/iOS/macOS clients
 
@@ -3712,7 +3712,7 @@ downloaded through TestFlight.
 
 #### 1.3.1-beta.3
 
-* Introducing our [new iOS](/installation/clients/sfi/) and [macOS](/installation/clients/sfm/) client applications **1
+* Introducing our new iOS and macOS client applications **1
   **
 * Fixes and improvements
 
@@ -3897,7 +3897,7 @@ See [FAQ](/faq/fakeip/) for more information.
 
 #### 1.2.3
 
-* Introducing our [new Android client application](/installation/clients/sfa/)
+* Introducing our new Android client application
 * Improve UDP domain destination NAT
 * Update reality protocol
 * Fix TTL calculation for DNS response
@@ -3926,7 +3926,7 @@ to `domain` rule.
 
 Important changes since 1.1:
 
-* Introducing our [new iOS client application](/installation/clients/sfi/)
+* Introducing our new iOS client application
 * Introducing [UDP over TCP protocol version 2](/configuration/shared/udp-over-tcp/)
 * Add [platform options](/configuration/inbound/tun#platform) for tun inbound
 * Add [ShadowTLS protocol v3](https://github.com/ihciah/shadow-tls/blob/master/docs/protocol-v3-en.md)
@@ -3983,7 +3983,7 @@ name.
 
 #### 1.2-beta6
 
-* Introducing our [new iOS client application](/installation/clients/sfi/)
+* Introducing our new iOS client application
 * Add [platform options](/configuration/inbound/tun#platform) for tun inbound
 * Add custom TLS server support for http based v2ray transports
 * Add generate commands

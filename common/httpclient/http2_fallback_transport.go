@@ -8,11 +8,11 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/option"
 
 	"golang.org/x/net/http2"
 )
@@ -24,6 +24,7 @@ type http2FallbackTransport struct {
 	h1Transport       *http1Transport
 	fallbackAccess    sync.RWMutex
 	fallbackAuthority map[string]struct{}
+	fallbackOrder     []string
 }
 
 func newHTTP2FallbackTransport(rawDialer N.Dialer, baseTLSConfig tls.Config, options option.HTTP2Options) (*http2FallbackTransport, error) {
@@ -57,8 +58,42 @@ func (t *http2FallbackTransport) markH2Fallback(authority string) {
 		return
 	}
 	t.fallbackAccess.Lock()
+	if _, found := t.fallbackAuthority[authority]; found {
+		t.fallbackAccess.Unlock()
+		return
+	}
+	t.pruneH2FallbackLocked()
 	t.fallbackAuthority[authority] = struct{}{}
+	t.fallbackOrder = append(t.fallbackOrder, authority)
 	t.fallbackAccess.Unlock()
+}
+
+func (t *http2FallbackTransport) pruneH2FallbackLocked() {
+	if len(t.fallbackAuthority) < maxFallbackAuthorityEntries {
+		return
+	}
+	if len(t.fallbackOrder) == 0 {
+		for authority := range t.fallbackAuthority {
+			delete(t.fallbackAuthority, authority)
+			if len(t.fallbackAuthority) < maxFallbackAuthorityEntries {
+				return
+			}
+		}
+		return
+	}
+	writeAt := 0
+	for _, authority := range t.fallbackOrder {
+		if _, found := t.fallbackAuthority[authority]; !found {
+			continue
+		}
+		if len(t.fallbackAuthority) < maxFallbackAuthorityEntries {
+			t.fallbackOrder[writeAt] = authority
+			writeAt++
+			continue
+		}
+		delete(t.fallbackAuthority, authority)
+	}
+	t.fallbackOrder = t.fallbackOrder[:writeAt]
 }
 
 func (t *http2FallbackTransport) RoundTrip(request *http.Request) (*http.Response, error) {

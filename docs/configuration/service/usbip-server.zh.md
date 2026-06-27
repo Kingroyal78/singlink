@@ -8,7 +8,7 @@ icon: material/new-box
 
 USB/IP Server 服务通过 [USB/IP](https://usbip.sourceforge.net/) 导出本地 USB 设备，供 [USB/IP Client](/zh/configuration/service/usbip-client/) 或标准 USB/IP 客户端导入。
 
-可用于 Linux、Windows 和 macOS（macOS 需要使用 CGO 构建，且导出设备需要禁用系统完整性保护）。不支持 iOS。
+可用于 Linux、Windows 和 macOS（macOS 需要使用 CGO 构建，且导出设备需要禁用系统完整性保护）。
 
 ### 结构
 
@@ -40,7 +40,7 @@ USB/IP Server 服务通过 [USB/IP](https://usbip.sourceforge.net/) 导出本地
 设备来源提供者。
 
 - `default`：导出由 `devices` 匹配的本地设备。默认值。
-- `dynamic`：设备在运行时通过 [singlink API](/zh/configuration/service/api/) 客户端提供，而非来自配置文件，支持的平台包括 [macOS](/zh/clients/apple/) 和 [Android](/zh/clients/android/) 上的 singlink 图形客户端，以及配合 [singlink Dashboard](https://github.com/SagerNet/singlink-dashboard) 的基于 Chromium 的浏览器。
+- `dynamic`：设备在运行时通过 [singlink API](/zh/configuration/service/api/) 客户端提供，而非来自配置文件，例如配合 [singlink Dashboard](https://github.com/SagerNet/singlink-dashboard) 的基于 Chromium 的浏览器。
 
 !!! quote ""
 

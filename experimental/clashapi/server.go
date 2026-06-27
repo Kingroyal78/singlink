@@ -7,10 +7,8 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"runtime"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/sagernet/cors"
@@ -175,10 +173,6 @@ func (s *Server) Start(stage adapter.StartStage) error {
 			)
 			for range 3 {
 				listener, err = net.Listen("tcp", s.httpServer.Addr)
-				if runtime.GOOS == "android" && errors.Is(err, syscall.EADDRINUSE) {
-					time.Sleep(100 * time.Millisecond)
-					continue
-				}
 				break
 			}
 			if err != nil {

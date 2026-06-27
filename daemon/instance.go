@@ -3,7 +3,14 @@ package daemon
 import (
 	"bytes"
 	"context"
+	"os"
+	"sync"
 
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/json"
+	"github.com/sagernet/sing/service"
+	"github.com/sagernet/sing/service/pause"
 	"github.com/singlink/singlink"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/trafficcontrol"
@@ -12,17 +19,13 @@ import (
 	"github.com/singlink/singlink/experimental/deprecated"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/common/json"
-	"github.com/sagernet/sing/service"
-	"github.com/sagernet/sing/service/pause"
 )
 
 type Instance struct {
 	ctx                   context.Context
 	cancel                context.CancelFunc
 	instance              *box.Box
+	boxLifecycle          adapter.SimpleLifecycle
 	connectionManager     adapter.ConnectionManager
 	clashServer           adapter.ClashServer
 	trafficManager        *trafficcontrol.Manager
@@ -32,6 +35,10 @@ type Instance struct {
 	outboundManager       adapter.OutboundManager
 	endpointManager       adapter.EndpointManager
 	logFactory            log.Factory
+	lifecycleAccess       sync.RWMutex
+	closeDone             chan struct{}
+	closeErr              error
+	closed                bool
 }
 
 func (s *StartedService) CheckConfig(configContent string) error {
@@ -67,9 +74,7 @@ func (s *StartedService) FormatConfig(configContent string) (string, error) {
 }
 
 type OverrideOptions struct {
-	AutoRedirect   bool
-	IncludePackage []string
-	ExcludePackage []string
+	AutoRedirect bool
 }
 
 func (s *StartedService) newInstance(profileContent string, overrideOptions *OverrideOptions) (*Instance, error) {
@@ -85,8 +90,6 @@ func (s *StartedService) newInstance(profileContent string, overrideOptions *Ove
 		for _, inbound := range options.Inbounds {
 			if tunInboundOptions, isTUN := inbound.Options.(*option.TunInboundOptions); isTUN {
 				tunInboundOptions.AutoRedirect = overrideOptions.AutoRedirect
-				tunInboundOptions.IncludePackage = append(tunInboundOptions.IncludePackage, overrideOptions.IncludePackage...)
-				tunInboundOptions.ExcludePackage = append(tunInboundOptions.ExcludePackage, overrideOptions.ExcludePackage...)
 				break
 			}
 		}
@@ -122,6 +125,8 @@ func (s *StartedService) newInstance(profileContent string, overrideOptions *Ove
 		return nil, err
 	}
 	i.instance = boxInstance
+	i.boxLifecycle = boxInstance
+	i.closeDone = make(chan struct{})
 	i.connectionManager = service.FromContext[adapter.ConnectionManager](ctx)
 	i.clashServer = service.FromContext[adapter.ClashServer](ctx)
 	i.trafficManager = service.PtrFromContext[trafficcontrol.Manager](ctx)
@@ -146,20 +151,76 @@ func attachInstance(ctx context.Context) *Instance {
 		outboundManager:       service.FromContext[adapter.OutboundManager](ctx),
 		endpointManager:       service.FromContext[adapter.EndpointManager](ctx),
 		logFactory:            service.FromContext[log.Factory](ctx),
+		closeDone:             make(chan struct{}),
 	}
 }
 
 func (i *Instance) Start() error {
-	return i.instance.Start()
+	i.lifecycleAccess.RLock()
+	if i.closed {
+		i.lifecycleAccess.RUnlock()
+		return os.ErrClosed
+	}
+	lifecycle := i.boxLifecycle
+	if lifecycle == nil && i.instance != nil {
+		lifecycle = i.instance
+	}
+	i.lifecycleAccess.RUnlock()
+	if lifecycle == nil {
+		return os.ErrClosed
+	}
+	return lifecycle.Start()
 }
 
 func (i *Instance) Close() error {
-	i.cancel()
-	i.urlTestHistoryStorage.Close()
-	return i.instance.Close()
+	i.lifecycleAccess.Lock()
+	if i.closeDone == nil {
+		i.closeDone = make(chan struct{})
+	}
+	closeDone := i.closeDone
+	if i.closed {
+		i.lifecycleAccess.Unlock()
+		<-closeDone
+		i.lifecycleAccess.RLock()
+		closeErr := i.closeErr
+		i.lifecycleAccess.RUnlock()
+		return closeErr
+	}
+	i.closed = true
+	cancel := i.cancel
+	i.cancel = nil
+	urlTestHistoryStorage := i.urlTestHistoryStorage
+	i.urlTestHistoryStorage = nil
+	lifecycle := i.boxLifecycle
+	if lifecycle == nil && i.instance != nil {
+		lifecycle = i.instance
+	}
+	i.instance = nil
+	i.boxLifecycle = nil
+	i.lifecycleAccess.Unlock()
+	if cancel != nil {
+		cancel()
+	}
+	if urlTestHistoryStorage != nil {
+		urlTestHistoryStorage.Close()
+	}
+	var err error
+	if lifecycle != nil {
+		err = lifecycle.Close()
+		if E.IsClosed(err) {
+			err = nil
+		}
+	}
+	i.lifecycleAccess.Lock()
+	i.closeErr = err
+	close(closeDone)
+	i.lifecycleAccess.Unlock()
+	return err
 }
 
 func (i *Instance) Box() *box.Box {
+	i.lifecycleAccess.RLock()
+	defer i.lifecycleAccess.RUnlock()
 	return i.instance
 }
 

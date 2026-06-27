@@ -55,10 +55,6 @@ DNS 服务器的地址。
 | `DHCP`                               | `dhcp://auto` 或 `dhcp://en0` |
 | [FakeIP](/zh/configuration/dns/fakeip/) | `fakeip`                     |
 
-!!! warning ""
-
-    为了确保 Android 系统 DNS 生效，而不是 Go 的内置默认解析器，请在编译时启用 CGO。
-
 !!! info ""
 
     RCode 传输层传输层常用于屏蔽请求. 与 DNS 规则和 `disable_cache` 规则选项一起使用。

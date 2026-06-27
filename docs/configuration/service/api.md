@@ -8,8 +8,7 @@ icon: material/new-box
 
 The singlink API service is a gRPC server for observing and controlling the running singlink instance.
 
-It can be accessed by the [singlink graphical clients](/clients/) for iOS, macOS, and
-Android (via the Remote Control feature), or the
+It can be accessed by the
 [singlink dashboard](https://github.com/SagerNet/singlink-dashboard).
 
 The server also accepts [gRPC-Web](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md) requests,

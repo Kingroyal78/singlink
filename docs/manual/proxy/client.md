@@ -21,8 +21,6 @@ which are essentially ordinary HTTP proxies that only support TCP.
 | Windows                                      | :material-check:                     | :material-check:    |
 | macOS                                        | :material-check:                     | :material-check:    |
 | GNOME/KDE                                    | :material-check:                     | :material-check:    |
-| Android                                      | ROOT or adb (permission) is required | :material-check:    |
-| Android/iOS (with singlink graphical client) | via `tun.platform.http_proxy`        | :material-check:    |
 
 As one of the most well-known proxy methods, it has many shortcomings:
 many TCP clients that are not based on HTTP do not check and use the system proxy.
@@ -48,8 +46,7 @@ due to the low technical requirements it imposes on the software.
 
 ### :material-expansion-card: Virtual Interface
 
-All L2/L3 proxies (seriously defined VPNs, such as OpenVPN, WireGuard) are based on virtual network interfaces,
-which is also the only way for all L4 proxies to work as VPNs on mobile platforms like Android, iOS.
+All L2/L3 proxies (seriously defined VPNs, such as OpenVPN, WireGuard) are based on virtual network interfaces.
 
 The singlink inherits and develops clash-premium’s TUN inbound (L3 to L4 conversion)
 as the most reasonable method for performing transparent proxying.

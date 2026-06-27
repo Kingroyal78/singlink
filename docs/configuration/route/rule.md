@@ -6,7 +6,6 @@ icon: material/new-box
 
     :material-plus: [source_mac_address](#source_mac_address)  
     :material-plus: [source_hostname](#source_hostname)  
-    :material-plus: [package_name_regex](#package_name_regex)
 
 !!! quote "Changes in singlink 1.13.0"
 
@@ -126,12 +125,6 @@ icon: material/new-box
         ],
         "process_path_regex": [
           "^/usr/bin/.+"
-        ],
-        "package_name": [
-          "com.termux"
-        ],
-        "package_name_regex": [
-          "^com\\.termux.*"
         ],
         "user": [
           "sekai"
@@ -354,16 +347,6 @@ Match process path.
 
 Match process path using regular expression.
 
-#### package_name
-
-Match android package name.
-
-#### package_name_regex
-
-!!! question "Since singlink 1.14.0"
-
-Match android package name using regular expression.
-
 #### user
 
 !!! quote ""
@@ -390,7 +373,7 @@ Match Clash mode.
 
 !!! quote ""
 
-    Only supported in graphical clients on Android and Apple platforms.
+    Only supported when network type detection is available.
 
 Match network type.
 
@@ -402,10 +385,9 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 !!! quote ""
 
-    Only supported in graphical clients on Android and Apple platforms.
+    Only supported when the platform reports metered or expensive network state.
 
-Match if network is considered Metered (on Android) or considered expensive,
-such as Cellular or a Personal Hotspot (on Apple platforms).
+Match if network is considered metered or expensive.
 
 #### network_is_constrained
 
@@ -413,7 +395,7 @@ such as Cellular or a Personal Hotspot (on Apple platforms).
 
 !!! quote ""
 
-    Only supported in graphical clients on Apple platforms.
+    Only supported when the platform reports constrained network state.
 
 Match if network is in Low Data Mode.
 
@@ -433,7 +415,7 @@ Match interface address.
 
 !!! quote ""
 
-    Only supported in graphical clients on Android and Apple platforms.
+    Only supported when network type detection is available.
 
 Matches network interface (same values as `network_type`) address.
 
@@ -476,7 +458,7 @@ Match specified outbounds' preferred routes.
 
 !!! quote ""
 
-    Only supported on Linux, macOS, or in graphical clients on Android and macOS. See [Neighbor Resolution](/configuration/shared/neighbor/) for setup.
+    Only supported on Linux and macOS. See [Neighbor Resolution](/configuration/shared/neighbor/) for setup.
 
 Match source device MAC address.
 
@@ -486,7 +468,7 @@ Match source device MAC address.
 
 !!! quote ""
 
-    Only supported on Linux, macOS, or in graphical clients on Android and macOS. See [Neighbor Resolution](/configuration/shared/neighbor/) for setup.
+    Only supported on Linux and macOS. See [Neighbor Resolution](/configuration/shared/neighbor/) for setup.
 
 Match source device hostname from DHCP leases.
 

@@ -95,11 +95,20 @@ func (c *CacheFile) SaveRDRC(transportName string, qName string, qType uint16) e
 func (c *CacheFile) SaveRDRCAsync(transportName string, qName string, qType uint16, logger logger.Logger) {
 	saveKey := saveCacheKey{transportName, qName, qType}
 	c.saveRDRCAccess.Lock()
+	if c.saveRDRC[saveKey] {
+		c.saveRDRCAccess.Unlock()
+		return
+	}
+	if !c.beginAsyncWrite() {
+		c.saveRDRCAccess.Unlock()
+		return
+	}
 	c.saveRDRC[saveKey] = true
 	c.saveRDRCAccess.Unlock()
 	go func() {
+		defer c.endAsyncWrite()
 		err := c.SaveRDRC(transportName, qName, qType)
-		if err != nil {
+		if err != nil && !c.closed.Load() {
 			logger.Warn("save RDRC: ", err)
 		}
 		c.saveRDRCAccess.Lock()

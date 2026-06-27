@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/singlink/singlink/log"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/log"
 )
 
 type UsageStats struct {
@@ -40,8 +40,15 @@ type AggregatedUsage struct {
 	logger       log.ContextLogger
 	lastSaveTime time.Time
 	pendingSave  bool
+	saveDirty    bool
+	saveRunning  bool
+	saveClosed   bool
 	saveTimer    *time.Timer
 	saveMutex    sync.Mutex
+	saveWG       sync.WaitGroup
+	writeMutex   sync.Mutex
+	saveInterval time.Duration
+	saveHandler  func() error
 }
 
 type UsageStatsJSON struct {
@@ -593,8 +600,20 @@ func (u *AggregatedUsage) Load() error {
 }
 
 func (u *AggregatedUsage) Save() error {
-	jsonData := u.ToJSON()
+	u.writeMutex.Lock()
+	defer u.writeMutex.Unlock()
 
+	if u.saveHandler != nil {
+		err := u.saveHandler()
+		if err == nil {
+			u.saveMutex.Lock()
+			u.lastSaveTime = time.Now()
+			u.saveMutex.Unlock()
+		}
+		return err
+	}
+
+	jsonData := u.ToJSON()
 	data, err := json.MarshalIndent(jsonData, "", "  ")
 	if err != nil {
 		return err
@@ -613,6 +632,13 @@ func (u *AggregatedUsage) Save() error {
 		u.saveMutex.Unlock()
 	}
 	return err
+}
+
+func (u *AggregatedUsage) saveIntervalDuration() time.Duration {
+	if u.saveInterval > 0 {
+		return u.saveInterval
+	}
+	return time.Minute
 }
 
 func (u *AggregatedUsage) AddUsage(
@@ -645,44 +671,73 @@ func (u *AggregatedUsage) AddUsageWithCycleHint(
 	}
 
 	u.mutex.Lock()
-	defer u.mutex.Unlock()
-
 	u.LastUpdated = observedAt
 	weekStartUnix := deriveWeekStartUnix(cycleHint)
 
 	addUsageToCombinations(&u.Combinations, model, contextWindow, weekStartUnix, messagesCount, inputTokens, outputTokens, cacheReadTokens, cacheCreationTokens, cacheCreation5MinuteTokens, cacheCreation1HourTokens, user)
+	u.mutex.Unlock()
 
-	go u.scheduleSave()
+	u.scheduleSave()
 
 	return nil
 }
 
 func (u *AggregatedUsage) scheduleSave() {
-	const saveInterval = time.Minute
-
 	u.saveMutex.Lock()
 	defer u.saveMutex.Unlock()
 
-	timeSinceLastSave := time.Since(u.lastSaveTime)
+	u.scheduleSaveLocked()
+}
 
-	if timeSinceLastSave >= saveInterval {
-		go u.saveAsync()
+func (u *AggregatedUsage) scheduleSaveLocked() {
+	if u.saveClosed {
 		return
 	}
-
 	if u.pendingSave {
 		return
 	}
+	if u.saveRunning {
+		u.saveDirty = true
+		return
+	}
+
+	saveInterval := u.saveIntervalDuration()
+	remainingTime := saveInterval - time.Since(u.lastSaveTime)
+	if remainingTime < 0 {
+		remainingTime = 0
+	}
 
 	u.pendingSave = true
-	remainingTime := saveInterval - timeSinceLastSave
+	u.saveTimer = time.AfterFunc(remainingTime, u.runScheduledSave)
+}
 
-	u.saveTimer = time.AfterFunc(remainingTime, func() {
-		u.saveMutex.Lock()
+func (u *AggregatedUsage) runScheduledSave() {
+	u.saveMutex.Lock()
+	if u.saveClosed {
 		u.pendingSave = false
+		u.saveTimer = nil
+		u.saveDirty = false
 		u.saveMutex.Unlock()
-		u.saveAsync()
-	})
+		return
+	}
+	u.saveWG.Add(1)
+	u.pendingSave = false
+	u.saveTimer = nil
+	u.saveRunning = true
+	u.saveMutex.Unlock()
+	defer u.saveWG.Done()
+
+	u.saveAsync()
+
+	u.saveMutex.Lock()
+	u.saveRunning = false
+	if u.saveClosed {
+		u.saveDirty = false
+	} else if u.saveDirty {
+		u.saveDirty = false
+		u.scheduleSaveLocked()
+	}
+	u.saveMutex.Unlock()
 }
 
 func (u *AggregatedUsage) saveAsync() {
@@ -696,11 +751,13 @@ func (u *AggregatedUsage) saveAsync() {
 
 func (u *AggregatedUsage) cancelPendingSave() {
 	u.saveMutex.Lock()
-	defer u.saveMutex.Unlock()
-
+	u.saveClosed = true
 	if u.saveTimer != nil {
 		u.saveTimer.Stop()
 		u.saveTimer = nil
 	}
 	u.pendingSave = false
+	u.saveDirty = false
+	u.saveMutex.Unlock()
+	u.saveWG.Wait()
 }

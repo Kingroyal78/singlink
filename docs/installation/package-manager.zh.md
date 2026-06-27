@@ -85,12 +85,6 @@ curl -fsSL https://singlink.app/install.sh | sh -s -- --version <version>
     | Chocolatey | Windows | `choco install singlink`  | [![Chocolatey package](https://repology.org/badge/version-for-repo/chocolatey/singlink.svg)][choco] |
     | winget     | Windows | `winget install singlink` | [![winget package](https://repology.org/badge/version-for-repo/winget/singlink.svg)][winget]        |
 
-=== ":material-android: Android"
-
-    | 类型     | 平台      | 命令                 | 链接                                                                                           |
-    |--------|---------|--------------------|----------------------------------------------------------------------------------------------|
-    | Termux | Android | `pkg add singlink` | [![Termux package](https://repology.org/badge/version-for-repo/termux/singlink.svg)][termux] |
-
 === ":material-freebsd: FreeBSD"
 
     | 类型         | 平台      | 命令                     | 链接                                                                                         |
@@ -103,7 +97,6 @@ curl -fsSL https://singlink.app/install.sh | sh -s -- --version <version>
 |------------|---------|-------------------------------------------------------------------------------------------|-----------------|
 | DEB        | AOSC    | [aosc-os-abbs](https://github.com/AOSC-Dev/aosc-os-abbs/tree/stable/app-network/singlink) | 存在问题的构建标志列表修改   |
 | Homebrew   | /       | [homebrew-core][brew]                                                                     | 存在问题的构建标志列表修改   |
-| Termux     | Android | [termux-packages][termux]                                                                 | 存在问题的构建标志列表修改   |
 | FreshPorts | FreeBSD | [FreeBSD ports][ports]                                                                    | 太旧的 Go (go1.20) |
 
 如果您是其用户，请向他们报告问题：
@@ -140,8 +133,6 @@ curl -fsSL https://singlink.app/install.sh | sh -s -- --version <version>
 [scoop]: https://github.com/ScoopInstaller/Main/blob/master/bucket/singlink.json
 
 [winget]: https://github.com/microsoft/winget-pkgs/tree/master/manifests/s/SagerNet/singlink
-
-[termux]: https://github.com/termux/termux-packages/tree/master/packages/singlink
 
 [ports]: https://www.freshports.org/net/singlink
 

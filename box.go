@@ -8,6 +8,12 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
+	F "github.com/sagernet/sing/common/format"
+	"github.com/sagernet/sing/common/ntp"
+	"github.com/sagernet/sing/service"
+	"github.com/sagernet/sing/service/pause"
 	"github.com/singlink/singlink/adapter"
 	boxCertificate "github.com/singlink/singlink/adapter/certificate"
 	"github.com/singlink/singlink/adapter/endpoint"
@@ -30,12 +36,6 @@ import (
 	"github.com/singlink/singlink/option"
 	"github.com/singlink/singlink/protocol/direct"
 	"github.com/singlink/singlink/route"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-	F "github.com/sagernet/sing/common/format"
-	"github.com/sagernet/sing/common/ntp"
-	"github.com/sagernet/sing/service"
-	"github.com/sagernet/sing/service/pause"
 )
 
 var _ adapter.SimpleLifecycle = (*Box)(nil)
@@ -183,7 +183,7 @@ func New(options Options) (*Box, error) {
 	var internalServices []adapter.LifecycleService
 	routeOptions := common.PtrValueOrDefault(options.Route)
 	certificateOptions := common.PtrValueOrDefault(options.Certificate)
-	if C.IsAndroid || certificateOptions.Store != "" && certificateOptions.Store != C.CertificateStoreSystem ||
+	if certificateOptions.Store != "" && certificateOptions.Store != C.CertificateStoreSystem ||
 		len(certificateOptions.Certificate) > 0 ||
 		len(certificateOptions.CertificatePath) > 0 ||
 		len(certificateOptions.CertificateDirectoryPath) > 0 {

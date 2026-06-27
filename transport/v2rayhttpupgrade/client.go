@@ -7,16 +7,20 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
+	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
+	"github.com/sagernet/sing/common/bufio/deadline"
 	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	sHTTP "github.com/sagernet/sing/protocol/http"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/tls"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 )
 
 var _ adapter.V2RayClientTransport = (*Client)(nil)
@@ -77,6 +81,14 @@ func (c *Client) DialContext(ctx context.Context) (net.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
+	success := false
+	defer func() {
+		if !success {
+			conn.Close()
+		}
+	}()
+	deadlineConn, stopDeadline := armHandshakeDeadline(ctx, conn)
+	defer stopDeadline()
 	request := &http.Request{
 		Method: http.MethodGet,
 		URL:    &c.requestURL,
@@ -85,11 +97,11 @@ func (c *Client) DialContext(ctx context.Context) (net.Conn, error) {
 	}
 	request.Header.Set("Connection", "Upgrade")
 	request.Header.Set("Upgrade", "websocket")
-	err = request.Write(conn)
+	err = request.Write(deadlineConn)
 	if err != nil {
 		return nil, err
 	}
-	bufReader := std_bufio.NewReader(conn)
+	bufReader := std_bufio.NewReader(deadlineConn)
 	response, err := http.ReadResponse(bufReader, request)
 	if err != nil {
 		return nil, err
@@ -107,7 +119,35 @@ func (c *Client) DialContext(ctx context.Context) (net.Conn, error) {
 		}
 		conn = bufio.NewCachedConn(conn, buffer)
 	}
+	success = true
 	return conn, nil
+}
+
+func armHandshakeDeadline(ctx context.Context, conn net.Conn) (net.Conn, func()) {
+	var deadlineConn net.Conn
+	if deadline.NeedAdditionalReadDeadline(conn) {
+		deadlineConn = deadline.NewConn(conn)
+	} else {
+		deadlineConn = conn
+	}
+	deadlineConn.SetDeadline(time.Now().Add(C.TCPTimeout))
+	done := make(chan struct{})
+	var doneOnce sync.Once
+	if ctxDone := ctx.Done(); ctxDone != nil {
+		go func() {
+			select {
+			case <-ctxDone:
+				deadlineConn.SetDeadline(time.Now())
+			case <-done:
+			}
+		}()
+	}
+	return deadlineConn, func() {
+		doneOnce.Do(func() {
+			close(done)
+			deadlineConn.SetDeadline(time.Time{})
+		})
+	}
 }
 
 func (c *Client) Close() error {

@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/singlink/singlink/log"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/baderror"
 	"github.com/sagernet/sing/common/buf"
@@ -20,6 +19,7 @@ import (
 	F "github.com/sagernet/sing/common/format"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/log"
 )
 
 type HTTPConn struct {
@@ -130,10 +130,12 @@ func (c *HTTPConn) Upstream() any {
 }
 
 type HTTP2Conn struct {
-	reader io.Reader
-	writer io.Writer
-	create chan struct{}
-	err    error
+	reader    io.Reader
+	writer    io.Writer
+	create    chan struct{}
+	setupOnce sync.Once
+	cancel    func()
+	err       error
 }
 
 func NewHTTPConn(reader io.Reader, writer io.Writer) HTTP2Conn {
@@ -143,21 +145,36 @@ func NewHTTPConn(reader io.Reader, writer io.Writer) HTTP2Conn {
 	}
 }
 
-func NewLateHTTPConn(writer io.Writer) *HTTP2Conn {
+func NewLateHTTPConn(writer io.Writer, cancel ...func()) *HTTP2Conn {
+	var cancelFunc func()
+	if len(cancel) > 0 {
+		cancelFunc = cancel[0]
+	}
 	return &HTTP2Conn{
 		create: make(chan struct{}),
 		writer: writer,
+		cancel: cancelFunc,
 	}
 }
 
 func (c *HTTP2Conn) Setup(reader io.Reader, err error) {
-	c.reader = reader
-	c.err = err
-	close(c.create)
+	setup := false
+	c.setupOnce.Do(func() {
+		setup = true
+		c.reader = reader
+		c.err = err
+		if c.err == nil && c.reader == nil {
+			c.err = net.ErrClosed
+		}
+		close(c.create)
+	})
+	if !setup {
+		common.Close(reader)
+	}
 }
 
 func (c *HTTP2Conn) Read(b []byte) (n int, err error) {
-	if c.reader == nil {
+	if c.create != nil {
 		<-c.create
 		if c.err != nil {
 			return 0, c.err
@@ -173,6 +190,12 @@ func (c *HTTP2Conn) Write(b []byte) (n int, err error) {
 }
 
 func (c *HTTP2Conn) Close() error {
+	if c.cancel != nil {
+		c.cancel()
+	}
+	if c.create != nil {
+		c.Setup(nil, net.ErrClosed)
+	}
 	return common.Close(c.reader, c.writer)
 }
 

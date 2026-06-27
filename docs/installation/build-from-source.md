@@ -82,7 +82,7 @@ The default build tag lists and linker flags are available as files in the repos
 
 | File | Description |
 |------|-------------|
-| `release/DEFAULT_BUILD_TAGS` | Default for Linux (common architectures), Darwin, and Android. |
+| `release/DEFAULT_BUILD_TAGS` | Default for Linux (common architectures) and Darwin. |
 | `release/DEFAULT_BUILD_TAGS_WINDOWS` | Default for Windows (includes `with_purego`). |
 | `release/DEFAULT_BUILD_TAGS_OTHERS` | Default for other platforms (no `with_naive_outbound`). |
 | `release/LDFLAGS` | Required linker flags (see above). |
@@ -99,8 +99,7 @@ NaiveProxy outbound requires special build configurations depending on your targ
 | Linux           | 386, amd64, arm, arm64, mipsle, mips64le, riscv64, loong64 | CGO    | Chromium toolchain, glibc >= 2.31 (loong64: >= 2.36) at runtime |
 | Linux (musl)    | 386, amd64, arm, arm64, mipsle, riscv64, loong64       | CGO    | Chromium toolchain                                              |
 | Windows         | amd64, arm64                                           | purego | None (library included in official releases)                    |
-| Apple platforms | *                                                      | CGO    | Xcode                                                           |
-| Android         | *                                                      | CGO    | Android NDK                                                     |
+| macOS           | amd64, arm64                                           | CGO    | Xcode                                                           |
 
 ### Windows
 
@@ -121,6 +120,6 @@ See [cronet-go](https://github.com/sagernet/cronet-go#linux-build-instructions).
 - **glibc build**: Requires glibc >= 2.31 at runtime
 - **musl build**: Use `with_musl` tag, statically linked, no runtime requirements
 
-### Apple platforms / Android
+### macOS
 
 See [cronet-go](https://github.com/sagernet/cronet-go).

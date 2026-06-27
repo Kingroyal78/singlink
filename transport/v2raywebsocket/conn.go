@@ -11,7 +11,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/debug"
@@ -19,6 +18,7 @@ import (
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/ws"
 	"github.com/sagernet/ws/wsutil"
+	C "github.com/singlink/singlink/constant"
 )
 
 type WebsocketConn struct {
@@ -139,6 +139,7 @@ type EarlyWebsocketConn struct {
 	conn   atomic.Pointer[WebsocketConn]
 	access sync.Mutex
 	create chan struct{}
+	once   sync.Once
 	err    error
 }
 
@@ -150,8 +151,18 @@ func (c *EarlyWebsocketConn) Read(b []byte) (n int, err error) {
 			return 0, c.err
 		}
 		conn = c.conn.Load()
+		if conn == nil {
+			return 0, net.ErrClosed
+		}
 	}
 	return wrapWsError0(conn.Read(b))
+}
+
+func (c *EarlyWebsocketConn) finishCreate(err error) {
+	c.err = err
+	c.once.Do(func() {
+		close(c.create)
+	})
 }
 
 func (c *EarlyWebsocketConn) writeRequest(content []byte) error {
@@ -187,6 +198,7 @@ func (c *EarlyWebsocketConn) writeRequest(content []byte) error {
 	if len(lateData) > 0 {
 		_, err = conn.Write(lateData)
 		if err != nil {
+			conn.Conn.Close()
 			return err
 		}
 	}
@@ -209,8 +221,7 @@ func (c *EarlyWebsocketConn) Write(b []byte) (n int, err error) {
 		return wrapWsError0(conn.Write(b))
 	}
 	err = c.writeRequest(b)
-	c.err = err
-	close(c.create)
+	c.finishCreate(err)
 	if err != nil {
 		return
 	}
@@ -232,17 +243,25 @@ func (c *EarlyWebsocketConn) WriteBuffer(buffer *buf.Buffer) error {
 		return wrapWsError(conn.WriteBuffer(buffer))
 	}
 	err := c.writeRequest(buffer.Bytes())
-	c.err = err
-	close(c.create)
+	c.finishCreate(err)
 	return err
 }
 
 func (c *EarlyWebsocketConn) Close() error {
 	conn := c.conn.Load()
-	if conn == nil {
-		return nil
+	if conn != nil {
+		return conn.Close()
 	}
-	return conn.Close()
+	c.access.Lock()
+	defer c.access.Unlock()
+	conn = c.conn.Load()
+	if conn != nil {
+		return conn.Close()
+	}
+	if c.err == nil {
+		c.finishCreate(net.ErrClosed)
+	}
+	return nil
 }
 
 func (c *EarlyWebsocketConn) LocalAddr() net.Addr {

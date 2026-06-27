@@ -8,10 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/tls"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
 	"github.com/sagernet/sing/common/bufio/deadline"
@@ -20,6 +16,10 @@ import (
 	N "github.com/sagernet/sing/common/network"
 	sHTTP "github.com/sagernet/sing/protocol/http"
 	"github.com/sagernet/ws"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/tls"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 )
 
 var _ adapter.V2RayClientTransport = (*Client)(nil)
@@ -78,6 +78,12 @@ func (c *Client) dialContext(ctx context.Context, requestURL *url.URL, headers h
 	if err != nil {
 		return nil, err
 	}
+	success := false
+	defer func() {
+		if !success {
+			conn.Close()
+		}
+	}()
 	var deadlineConn net.Conn
 	if deadline.NeedAdditionalReadDeadline(conn) {
 		deadlineConn = deadline.NewConn(conn)
@@ -103,6 +109,7 @@ func (c *Client) dialContext(ctx context.Context, requestURL *url.URL, headers h
 		}
 		conn = bufio.NewCachedConn(conn, buffer)
 	}
+	success = true
 	return NewConn(conn, nil, ws.StateClientSide), nil
 }
 

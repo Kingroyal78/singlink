@@ -38,7 +38,6 @@ icon: material/alert-decagram
     "rule_set": [],
     "final": "",
     "auto_detect_interface": false,
-    "override_android_vpn": false,
     "default_interface": "",
     "default_mark": 0,
     "find_process": false,
@@ -89,14 +88,6 @@ Bind outbound connections to the default NIC by default to prevent routing loops
 
 Takes no effect if `outbound.bind_interface` is set.
 
-#### override_android_vpn
-
-!!! quote ""
-
-    Only supported on Android.
-
-Accept Android VPN as upstream NIC when `auto_detect_interface` enabled.
-
 #### default_interface
 
 !!! quote ""
@@ -123,7 +114,7 @@ Takes no effect if `outbound.routing_mark` is set.
 
     Only supported on Linux, Windows, and macOS.
 
-Enable process search for logging when no `process_name`, `process_path`, `package_name`, `user` or `user_id` rules exist.
+Enable process search for logging when no `process_name`, `process_path`, `user` or `user_id` rules exist.
 
 #### find_neighbor
 

@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/sagernet/sing/common"
@@ -26,6 +27,8 @@ type GunConn struct {
 	writer        io.Writer
 	flusher       http.Flusher
 	create        chan struct{}
+	setupOnce     sync.Once
+	cancel        func()
 	err           error
 	readRemaining int
 }
@@ -39,20 +42,35 @@ func newGunConn(reader io.Reader, writer io.Writer, flusher http.Flusher) *GunCo
 	}
 }
 
-func newLateGunConn(writer io.Writer) *GunConn {
+func newLateGunConn(writer io.Writer, cancel ...func()) *GunConn {
+	var cancelFunc func()
+	if len(cancel) > 0 {
+		cancelFunc = cancel[0]
+	}
 	return &GunConn{
 		create: make(chan struct{}),
 		writer: writer,
+		cancel: cancelFunc,
 	}
 }
 
 func (c *GunConn) setup(reader io.Reader, err error) {
-	if reader != nil {
-		c.rawReader = reader
-		c.reader = std_bufio.NewReader(reader)
+	setup := false
+	c.setupOnce.Do(func() {
+		setup = true
+		if reader != nil {
+			c.rawReader = reader
+			c.reader = std_bufio.NewReader(reader)
+		}
+		c.err = err
+		if c.err == nil && c.reader == nil {
+			c.err = net.ErrClosed
+		}
+		close(c.create)
+	})
+	if !setup {
+		common.Close(reader)
 	}
-	c.err = err
-	close(c.create)
 }
 
 func (c *GunConn) Read(b []byte) (n int, err error) {
@@ -61,7 +79,7 @@ func (c *GunConn) Read(b []byte) (n int, err error) {
 }
 
 func (c *GunConn) read(b []byte) (n int, err error) {
-	if c.reader == nil {
+	if c.create != nil {
 		<-c.create
 		if c.err != nil {
 			return 0, c.err
@@ -141,6 +159,12 @@ func (c *GunConn) FrontHeadroom() int {
 }
 
 func (c *GunConn) Close() error {
+	if c.cancel != nil {
+		c.cancel()
+	}
+	if c.create != nil {
+		c.setup(nil, net.ErrClosed)
+	}
 	return common.Close(c.rawReader, c.writer)
 }
 

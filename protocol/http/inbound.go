@@ -5,6 +5,11 @@ import (
 	"context"
 	"net"
 
+	"github.com/sagernet/sing/common"
+	"github.com/sagernet/sing/common/auth"
+	E "github.com/sagernet/sing/common/exceptions"
+	N "github.com/sagernet/sing/common/network"
+	"github.com/sagernet/sing/protocol/http"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/inbound"
 	"github.com/singlink/singlink/common/listener"
@@ -13,11 +18,6 @@ import (
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
-	"github.com/sagernet/sing/common/auth"
-	E "github.com/sagernet/sing/common/exceptions"
-	N "github.com/sagernet/sing/common/network"
-	"github.com/sagernet/sing/protocol/http"
 )
 
 func RegisterInbound(registry *inbound.Registry) {
@@ -87,6 +87,13 @@ func (h *Inbound) Close() error {
 }
 
 func (h *Inbound) NewConnection(ctx context.Context, conn net.Conn, metadata adapter.InboundContext, onClose N.CloseHandlerFunc) {
+	handshakeConn := conn
+	err := listener.SetHandshakeDeadline(handshakeConn, C.TCPTimeout)
+	if err != nil {
+		N.CloseOnHandshakeFailure(conn, onClose, err)
+		h.logger.ErrorContext(ctx, E.Cause(err, "set handshake deadline for ", metadata.Source))
+		return
+	}
 	if h.tlsConfig != nil {
 		tlsConn, err := tls.ServerHandshake(ctx, conn, h.tlsConfig)
 		if err != nil {
@@ -96,10 +103,12 @@ func (h *Inbound) NewConnection(ctx context.Context, conn net.Conn, metadata ada
 		}
 		conn = tlsConn
 	}
-	err := http.HandleConnectionEx(ctx, conn, std_bufio.NewReader(conn), h.authenticator, adapter.NewUpstreamHandler(metadata, h.newUserConnection, h.streamUserPacketConnection), metadata.Source, onClose)
+	handler := listener.NewHandshakeDeadlineUpstreamHandler(handshakeConn, adapter.NewUpstreamHandler(metadata, h.newUserConnection, h.streamUserPacketConnection))
+	err = http.HandleConnectionEx(ctx, conn, std_bufio.NewReader(conn), h.authenticator, handler, metadata.Source, onClose)
 	if err != nil {
 		N.CloseOnHandshakeFailure(conn, onClose, err)
 		h.logger.ErrorContext(ctx, E.Cause(err, "process connection from ", metadata.Source))
+		return
 	}
 }
 

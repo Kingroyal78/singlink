@@ -8,11 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/tls"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
@@ -22,6 +17,11 @@ import (
 	N "github.com/sagernet/sing/common/network"
 	aTLS "github.com/sagernet/sing/common/tls"
 	sHttp "github.com/sagernet/sing/protocol/http"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/tls"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -63,6 +63,7 @@ func NewServer(ctx context.Context, logger logger.ContextLogger, options option.
 	server.httpServer = &http.Server{
 		Handler:           server,
 		ReadHeaderTimeout: C.TCPTimeout,
+		IdleTimeout:       C.TCPTimeout,
 		MaxHeaderBytes:    http.DefaultMaxHeaderBytes,
 		BaseContext: func(net.Listener) context.Context {
 			return ctx

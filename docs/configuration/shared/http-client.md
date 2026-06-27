@@ -38,12 +38,12 @@ Values:
 * `go` (default)
 * `apple`
 
-`apple` uses NSURLSession, only available on Apple platforms.
+`apple` uses NSURLSession, only available on macOS.
 
 !!! warning ""
 
     Experimental only: due to the high memory overhead of both CGO and Network.framework,
-    do not use in hot paths on iOS and tvOS.
+    do not use in hot paths.
 
 Supported fields:
 

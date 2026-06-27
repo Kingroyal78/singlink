@@ -131,16 +131,6 @@ icon: material/new-box
   "exclude_uid_range": [
     "1000:99999"
   ],
-  "include_android_user": [
-    0,
-    10
-  ],
-  "include_package": [
-    "com.android.chrome"
-  ],
-  "exclude_package": [
-    "com.android.captiveportallogin"
-  ],
   "include_mac_address": [
     "00:11:22:33:44:55"
   ],
@@ -291,10 +281,6 @@ Set the default route to the Tun.
 
     To avoid traffic loopback, set `route.auto_detect_interface` or `route.default_interface` or `outbound.bind_interface`
 
-!!! note "Use with Android VPN"
-
-    By default, VPN takes precedence over tun. To make tun go through VPN, enable `route.override_android_vpn`.
-
 !!! note "Also enable `auto_redirect`"
 
     `auto_redirect` is always recommended on Linux, it provides better routing, higher performance (better than tproxy), and avoids conflicts between TUN and Docker bridge networks.
@@ -328,12 +314,6 @@ Improve TUN routing and performance using nftables.
 `auto_redirect` is always recommended on Linux, it provides better routing,
 higher performance (better than tproxy),
 and avoids conflicts between TUN and Docker bridge networks.
-
-Note that `auto_redirect` also works on Android, 
-but due to the lack of `nftables` and `ip6tables`,
-only simple IPv4 TCP forwarding is performed.
-To share your VPN connection over hotspot or repeater on Android,
-use [VPNHotspot](https://github.com/Mygod/VPNHotspot).
 
 `auto_redirect` also automatically inserts compatibility rules
 into the OpenWrt fw4 table, i.e. 
@@ -498,10 +478,6 @@ Exclude custom routes when `auto_route` is enabled.
     Add the destination IP CIDR rules in the specified rule-sets to routes, equivalent to adding to `route_address`.
     Unmatched traffic will bypass the singlink routes.
 
-    Note that it **doesn't work on the Android graphical client** due to
-    the Android VpnService not being able to handle a large number of routes (DeadSystemException),
-    but otherwise it works fine on all command line clients and Apple platforms.
-
 #### route_exclude_address_set
 
 === "With `auto_redirect` enabled"
@@ -521,10 +497,6 @@ Exclude custom routes when `auto_route` is enabled.
     
     Add the destination IP CIDR rules in the specified rule-sets to routes, equivalent to adding to `route_exclude_address`.
     Matched traffic will bypass the singlink routes.
-
-    Note that it **doesn't work on the Android graphical client** due to
-    the Android VpnService not being able to handle a large number of routes (DeadSystemException),
-    but otherwise it works fine on all command line clients and Apple platforms.
 
 #### endpoint_independent_nat
 
@@ -598,27 +570,6 @@ Exclude users in route.
 
 Exclude users in route, but in range.
 
-#### include_android_user
-
-!!! quote ""
-
-    Android user and package rules are only supported on Android and require auto_route.
-
-Limit android users in route.
-
-| Common user  | ID |
-|--------------|----|
-| Main         | 0  |
-| Work Profile | 10 |
-
-#### include_package
-
-Limit android packages in route.
-
-#### exclude_package
-
-Exclude android packages in route.
-
 #### include_mac_address
 
 !!! question "Since singlink 1.14.0"
@@ -669,17 +620,9 @@ HTTP proxy server port.
 
 #### platform.http_proxy.bypass_domain
 
-!!! note ""
-
-    On Apple platforms, `bypass_domain` items matches hostname **suffixes**.
-
 Hostnames that bypass the HTTP proxy.
 
 #### platform.http_proxy.match_domain
-
-!!! quote ""
-
-    Only supported in graphical clients on Apple platforms.
 
 Hostnames that use the HTTP proxy.
 

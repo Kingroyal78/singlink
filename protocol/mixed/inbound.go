@@ -6,14 +6,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/adapter/inbound"
-	"github.com/singlink/singlink/common/listener"
-	"github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/common/uot"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/auth"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -22,6 +14,14 @@ import (
 	"github.com/sagernet/sing/protocol/socks"
 	"github.com/sagernet/sing/protocol/socks/socks4"
 	"github.com/sagernet/sing/protocol/socks/socks5"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/adapter/inbound"
+	"github.com/singlink/singlink/common/listener"
+	"github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/common/uot"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
 )
 
 func RegisterInbound(registry *inbound.Registry) {
@@ -99,7 +99,13 @@ func (h *Inbound) Close() error {
 }
 
 func (h *Inbound) NewConnection(ctx context.Context, conn net.Conn, metadata adapter.InboundContext, onClose N.CloseHandlerFunc) {
-	err := h.newConnection(ctx, conn, metadata, onClose)
+	err := listener.SetHandshakeDeadline(conn, C.TCPTimeout)
+	if err != nil {
+		N.CloseOnHandshakeFailure(conn, onClose, err)
+		h.logger.ErrorContext(ctx, E.Cause(err, "set handshake deadline for ", metadata.Source))
+		return
+	}
+	err = h.newConnection(ctx, conn, metadata, onClose)
 	N.CloseOnHandshakeFailure(conn, onClose, err)
 	if err != nil {
 		if E.IsClosedOrCanceled(err) {
@@ -107,6 +113,7 @@ func (h *Inbound) NewConnection(ctx context.Context, conn net.Conn, metadata ada
 		} else {
 			h.logger.ErrorContext(ctx, E.Cause(err, "process connection from ", metadata.Source))
 		}
+		return
 	}
 }
 
@@ -123,11 +130,14 @@ func (h *Inbound) newConnection(ctx context.Context, conn net.Conn, metadata ada
 	if err != nil {
 		return E.Cause(err, "peek first byte")
 	}
+	upstreamHandler := adapter.NewUpstreamHandler(metadata, h.newUserConnection, h.streamUserPacketConnection)
 	switch headerBytes[0] {
 	case socks4.Version, socks5.Version:
-		return socks.HandleConnectionEx(ctx, conn, reader, h.authenticator, adapter.NewUpstreamHandler(metadata, h.newUserConnection, h.streamUserPacketConnection), h.listener, h.udpTimeout, metadata.Source, onClose)
+		handler := listener.NewHandshakeSuccessDeadlineUpstreamHandler(conn, upstreamHandler)
+		return socks.HandleConnectionEx(ctx, conn, reader, h.authenticator, handler, listener.NewCloseOnReadErrorPacketListener(h.listener), h.udpTimeout, metadata.Source, onClose)
 	default:
-		return http.HandleConnectionEx(ctx, conn, reader, h.authenticator, adapter.NewUpstreamHandler(metadata, h.newUserConnection, h.streamUserPacketConnection), metadata.Source, onClose)
+		handler := listener.NewHandshakeDeadlineUpstreamHandler(conn, upstreamHandler)
+		return http.HandleConnectionEx(ctx, conn, reader, h.authenticator, handler, metadata.Source, onClose)
 	}
 }
 

@@ -109,6 +109,41 @@ func extractWeeklyCycleHint(headers http.Header) *WeeklyCycleHint {
 	}
 }
 
+const (
+	upstreamIdleConnTimeout     = 90 * time.Second
+	upstreamTLSHandshakeTimeout = 10 * time.Second
+	usageTrackingBodyLimit      = 4 << 20
+)
+
+var errUsageTrackingBodyTooLarge = errors.New("usage tracking body too large")
+
+func readUsageTrackingRequestBody(body io.ReadCloser) ([]byte, io.ReadCloser, error) {
+	bodyBytes, err := io.ReadAll(io.LimitReader(body, usageTrackingBodyLimit+1))
+	restoredBody := io.NopCloser(io.MultiReader(bytes.NewReader(bodyBytes), body))
+	if err != nil {
+		return nil, restoredBody, err
+	}
+	if int64(len(bodyBytes)) > usageTrackingBodyLimit {
+		return nil, restoredBody, errUsageTrackingBodyTooLarge
+	}
+	return bodyBytes, io.NopCloser(bytes.NewReader(bodyBytes)), nil
+}
+
+func readUsageTrackingResponseBody(writer http.ResponseWriter, body io.Reader) ([]byte, bool, error) {
+	bodyBytes, err := io.ReadAll(io.LimitReader(body, usageTrackingBodyLimit+1))
+	if err != nil {
+		return nil, false, err
+	}
+	if int64(len(bodyBytes)) <= usageTrackingBodyLimit {
+		return bodyBytes, false, nil
+	}
+	if _, err = writer.Write(bodyBytes); err != nil {
+		return nil, true, err
+	}
+	_, err = io.Copy(writer, body)
+	return nil, true, err
+}
+
 type Service struct {
 	boxService.Adapter
 	ctx            context.Context
@@ -140,7 +175,12 @@ func NewService(ctx context.Context, logger log.ContextLogger, tag string, optio
 
 	httpClient := &http.Client{
 		Transport: &http.Transport{
-			ForceAttemptHTTP2: true,
+			ForceAttemptHTTP2:     true,
+			MaxIdleConns:          100,
+			MaxIdleConnsPerHost:   16,
+			IdleConnTimeout:       upstreamIdleConnTimeout,
+			TLSHandshakeTimeout:   upstreamTLSHandshakeTimeout,
+			ExpectContinueTimeout: time.Second,
 			TLSClientConfig: &stdTLS.Config{
 				RootCAs: adapter.RootPoolFromContext(ctx),
 				Time:    ntp.TimeFuncFromContext(ctx),
@@ -328,7 +368,8 @@ func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var messagesCount int
 
 	if s.usageTracker != nil && r.Body != nil {
-		bodyBytes, err := io.ReadAll(r.Body)
+		bodyBytes, restoredBody, err := readUsageTrackingRequestBody(r.Body)
+		r.Body = restoredBody
 		if err == nil {
 			var request struct {
 				Model    string                   `json:"model"`
@@ -339,7 +380,8 @@ func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				requestModel = request.Model
 				messagesCount = len(request.Messages)
 			}
-			r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+		} else if !errors.Is(err, errUsageTrackingBodyTooLarge) {
+			s.logger.Debug("read request body for usage tracking: ", err)
 		}
 	}
 
@@ -436,9 +478,12 @@ func (s *Service) handleResponseWithTracking(writer http.ResponseWriter, respons
 	isStreaming := err == nil && mediaType == "text/event-stream"
 
 	if !isStreaming {
-		bodyBytes, err := io.ReadAll(response.Body)
+		bodyBytes, copied, err := readUsageTrackingResponseBody(writer, response.Body)
 		if err != nil {
 			s.logger.Error("read response body: ", err)
+			return
+		}
+		if copied {
 			return
 		}
 
@@ -586,6 +631,9 @@ func (s *Service) Close() error {
 		common.PtrOrNil(s.listener),
 		s.tlsConfig,
 	)
+	if s.httpClient != nil {
+		s.httpClient.CloseIdleConnections()
+	}
 
 	if s.usageTracker != nil {
 		s.usageTracker.cancelPendingSave()

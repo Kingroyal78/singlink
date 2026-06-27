@@ -8,14 +8,14 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/settings"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/settings"
+	"github.com/singlink/singlink/option"
 
 	"github.com/vishvananda/netns"
 )
@@ -125,10 +125,15 @@ func (l *Listener) Close() error {
 	if l.systemProxy != nil && l.systemProxy.IsEnabled() {
 		err = l.systemProxy.Disable()
 	}
-	return E.Errors(err, common.Close(
+	packetOutboundClosed := l.packetOutboundClosed
+	err = E.Errors(err, common.Close(
 		l.tcpListener,
 		common.PtrOrNil(l.udpConn),
 	))
+	if packetOutboundClosed != nil {
+		<-packetOutboundClosed
+	}
+	return err
 }
 
 func (l *Listener) TCPListener() net.Listener {

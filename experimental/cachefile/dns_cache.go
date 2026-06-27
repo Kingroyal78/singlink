@@ -1,7 +1,9 @@
 package cachefile
 
 import (
+	"context"
 	"encoding/binary"
+	"errors"
 	"time"
 
 	"github.com/sagernet/bbolt"
@@ -84,17 +86,27 @@ func (c *CacheFile) SaveDNSCacheAsync(transportName string, qName string, qType 
 func (c *CacheFile) queueDNSCacheSave(saveKey saveCacheKey, rawMessage []byte, expireAt time.Time) bool {
 	c.saveDNSCacheAccess.Lock()
 	defer c.saveDNSCacheAccess.Unlock()
+	if c.closed.Load() {
+		return false
+	}
 	entry := c.saveDNSCache[saveKey]
 	entry.rawMessage = append([]byte(nil), rawMessage...)
 	entry.expireAt = expireAt
 	entry.sequence++
-	startFlush := !entry.saving
-	entry.saving = true
+	startFlush := false
+	if !entry.saving {
+		if !c.beginAsyncWrite() {
+			return false
+		}
+		entry.saving = true
+		startFlush = true
+	}
 	c.saveDNSCache[saveKey] = entry
 	return startFlush
 }
 
 func (c *CacheFile) flushPendingDNSCache(saveKey saveCacheKey, logger logger.Logger) {
+	defer c.endAsyncWrite()
 	c.flushPendingDNSCacheWith(saveKey, logger, func(entry saveDNSCacheEntry) error {
 		return c.SaveDNSCache(saveKey.TransportName, saveKey.QuestionName, saveKey.QType, entry.rawMessage, entry.expireAt)
 	})
@@ -109,7 +121,7 @@ func (c *CacheFile) flushPendingDNSCacheWith(saveKey saveCacheKey, logger logger
 			return
 		}
 		err := save(entry)
-		if err != nil {
+		if err != nil && !c.closed.Load() {
 			logger.Warn("save DNS cache: ", err)
 		}
 		c.saveDNSCacheAccess.Lock()
@@ -148,34 +160,43 @@ func (c *CacheFile) ClearDNSCache() error {
 	})
 }
 
-func (c *CacheFile) loopCacheCleanup(interval time.Duration, cleanupFunc func()) {
+func (c *CacheFile) loopCacheCleanup(ctx context.Context, interval time.Duration, cleanupFunc func(context.Context)) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
 		select {
-		case <-c.ctx.Done():
+		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			cleanupFunc()
+			cleanupFunc(ctx)
 		}
 	}
 }
 
-func (c *CacheFile) cleanupDNSCache() {
+func (c *CacheFile) cleanupDNSCache(ctx context.Context) {
 	now := time.Now()
 	err := c.batch(func(tx *bbolt.Tx) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		bucket := c.bucket(tx, bucketDNSCache)
 		if bucket == nil {
 			return nil
 		}
 		var emptyTransports [][]byte
 		err := bucket.ForEachBucket(func(transportName []byte) error {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
 			transportBucket := bucket.Bucket(transportName)
 			if transportBucket == nil {
 				return nil
 			}
 			var expiredKeys [][]byte
 			err := transportBucket.ForEach(func(key, value []byte) error {
+				if err := ctx.Err(); err != nil {
+					return err
+				}
 				if len(value) < 8 {
 					expiredKeys = append(expiredKeys, append([]byte(nil), key...))
 					return nil
@@ -193,6 +214,9 @@ func (c *CacheFile) cleanupDNSCache() {
 				return err
 			}
 			for _, key := range expiredKeys {
+				if err := ctx.Err(); err != nil {
+					return err
+				}
 				err = transportBucket.Delete(key)
 				if err != nil {
 					return err
@@ -208,6 +232,9 @@ func (c *CacheFile) cleanupDNSCache() {
 			return err
 		}
 		for _, name := range emptyTransports {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
 			err = bucket.DeleteBucket(name)
 			if err != nil {
 				return err
@@ -215,7 +242,7 @@ func (c *CacheFile) cleanupDNSCache() {
 		}
 		return nil
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
 		c.logger.Warn("cleanup DNS cache: ", err)
 	}
 }
@@ -242,21 +269,30 @@ func (c *CacheFile) clearRDRC() {
 	}
 }
 
-func (c *CacheFile) cleanupRDRC() {
+func (c *CacheFile) cleanupRDRC(ctx context.Context) {
 	now := time.Now()
 	err := c.batch(func(tx *bbolt.Tx) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		bucket := c.bucket(tx, bucketRDRC)
 		if bucket == nil {
 			return nil
 		}
 		var emptyTransports [][]byte
 		err := bucket.ForEachBucket(func(transportName []byte) error {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
 			transportBucket := bucket.Bucket(transportName)
 			if transportBucket == nil {
 				return nil
 			}
 			var expiredKeys [][]byte
 			err := transportBucket.ForEach(func(key, value []byte) error {
+				if err := ctx.Err(); err != nil {
+					return err
+				}
 				if len(value) < 8 {
 					expiredKeys = append(expiredKeys, append([]byte(nil), key...))
 					return nil
@@ -271,6 +307,9 @@ func (c *CacheFile) cleanupRDRC() {
 				return err
 			}
 			for _, key := range expiredKeys {
+				if err := ctx.Err(); err != nil {
+					return err
+				}
 				err = transportBucket.Delete(key)
 				if err != nil {
 					return err
@@ -286,6 +325,9 @@ func (c *CacheFile) cleanupRDRC() {
 			return err
 		}
 		for _, name := range emptyTransports {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
 			err = bucket.DeleteBucket(name)
 			if err != nil {
 				return err
@@ -293,7 +335,7 @@ func (c *CacheFile) cleanupRDRC() {
 		}
 		return nil
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
 		c.logger.Warn("cleanup RDRC: ", err)
 	}
 }

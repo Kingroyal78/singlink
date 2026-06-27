@@ -7,6 +7,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sagernet/sing/common"
+	"github.com/sagernet/sing/common/batch"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/common/memory"
+	"github.com/sagernet/sing/common/observable"
+	"github.com/sagernet/sing/common/x/list"
+	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/dialer"
 	"github.com/singlink/singlink/common/networkquality"
@@ -17,12 +24,6 @@ import (
 	"github.com/singlink/singlink/experimental/deprecated"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/protocol/group"
-	"github.com/sagernet/sing/common"
-	"github.com/sagernet/sing/common/batch"
-	"github.com/sagernet/sing/common/memory"
-	"github.com/sagernet/sing/common/observable"
-	"github.com/sagernet/sing/common/x/list"
-	"github.com/sagernet/sing/service"
 
 	"github.com/gofrs/uuid/v5"
 	"google.golang.org/grpc"
@@ -188,9 +189,14 @@ func (s *StartedService) StartOrReloadService(profileContent string, options *Ov
 	oldInstance := s.instance
 	if oldInstance != nil {
 		s.updateStatus(ServiceStatus_STOPPING)
+		s.instance = nil
 		s.serviceAccess.Unlock()
-		_ = oldInstance.Close()
+		err := oldInstance.Close()
 		s.serviceAccess.Lock()
+		if err != nil {
+			s.startedAt = time.Time{}
+			return s.updateStatusError(err)
+		}
 	}
 	s.updateStatus(ServiceStatus_STARTING)
 	s.resetLogs()
@@ -206,11 +212,14 @@ func (s *StartedService) StartOrReloadService(profileContent string, options *Ov
 	s.serviceAccess.Unlock()
 	err = instance.Start()
 	s.serviceAccess.Lock()
-	if s.serviceStatus.Status != ServiceStatus_STARTING {
+	if s.serviceStatus.Status != ServiceStatus_STARTING || s.instance != instance {
 		s.serviceAccess.Unlock()
 		return nil
 	}
 	if err != nil {
+		s.instance = nil
+		closeErr := instance.Close()
+		err = E.Errors(err, closeErr)
 		return s.updateStatusError(err)
 	}
 	s.startedAt = time.Now()
@@ -239,7 +248,9 @@ func (s *StartedService) CloseService() error {
 	instance := s.instance
 	s.instance = nil
 	if instance != nil {
+		s.serviceAccess.Unlock()
 		err := instance.Close()
+		s.serviceAccess.Lock()
 		if err != nil {
 			return s.updateStatusError(err)
 		}
@@ -932,11 +943,10 @@ func buildConnectionProto(metadata *trafficcontrol.TrackerMetadata) *Connection 
 	var processInfo *ProcessInfo
 	if metadata.Metadata.ProcessInfo != nil {
 		processInfo = &ProcessInfo{
-			ProcessId:    metadata.Metadata.ProcessInfo.ProcessID,
-			UserId:       metadata.Metadata.ProcessInfo.UserId,
-			UserName:     metadata.Metadata.ProcessInfo.UserName,
-			ProcessPath:  metadata.Metadata.ProcessInfo.ProcessPath,
-			PackageNames: metadata.Metadata.ProcessInfo.AndroidPackageNames,
+			ProcessId:   metadata.Metadata.ProcessInfo.ProcessID,
+			UserId:      metadata.Metadata.ProcessInfo.UserId,
+			UserName:    metadata.Metadata.ProcessInfo.UserName,
+			ProcessPath: metadata.Metadata.ProcessInfo.ProcessPath,
 		}
 	}
 	return &Connection{

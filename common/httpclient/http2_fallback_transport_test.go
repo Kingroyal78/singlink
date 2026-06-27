@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -33,5 +34,22 @@ func TestHTTP2FallbackEmptyAuthorityNoOp(t *testing.T) {
 	}
 	if transport.isH2Fallback("") {
 		t.Fatal("isH2Fallback must be false for empty authority")
+	}
+}
+
+func TestHTTP2FallbackAuthorityCapacity(t *testing.T) {
+	transport := &http2FallbackTransport{fallbackAuthority: make(map[string]struct{})}
+
+	for index := range maxFallbackAuthorityEntries + 10 {
+		transport.markH2Fallback(fmt.Sprintf("authority-%d.example:443", index))
+	}
+	if len(transport.fallbackAuthority) > maxFallbackAuthorityEntries {
+		t.Fatalf("fallback authority map grew to %d entries, want at most %d", len(transport.fallbackAuthority), maxFallbackAuthorityEntries)
+	}
+	if transport.isH2Fallback("authority-0.example:443") {
+		t.Fatal("oldest fallback authority should be evicted")
+	}
+	if !transport.isH2Fallback(fmt.Sprintf("authority-%d.example:443", maxFallbackAuthorityEntries+9)) {
+		t.Fatal("newest fallback authority should be retained")
 	}
 }

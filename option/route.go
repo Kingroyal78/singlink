@@ -12,7 +12,6 @@ type RouteOptions struct {
 	FindNeighbor               bool                              `json:"find_neighbor,omitempty"`
 	DHCPLeaseFiles             badoption.Listable[string]        `json:"dhcp_lease_files,omitempty"`
 	AutoDetectInterface        bool                              `json:"auto_detect_interface,omitempty"`
-	OverrideAndroidVPN         bool                              `json:"override_android_vpn,omitempty"`
 	DefaultInterface           string                            `json:"default_interface,omitempty"`
 	DefaultMark                FwMark                            `json:"default_mark,omitempty"`
 	DefaultDomainResolver      *DomainResolveOptions             `json:"default_domain_resolver,omitempty"`

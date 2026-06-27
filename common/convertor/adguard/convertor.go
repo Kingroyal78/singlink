@@ -9,12 +9,12 @@ import (
 	"strconv"
 	"strings"
 
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 )
 
 type agdguardRuleLine struct {
@@ -80,7 +80,7 @@ parseLine:
 				if len(paramParts) > 0 && len(paramParts) <= 2 {
 					switch paramParts[0] {
 					case "app", "network":
-						// maybe support by package_name/process_name
+						// maybe support by process_name
 					case "dnstype":
 						// maybe support by query_type
 					case "important":

@@ -4,12 +4,12 @@ import (
 	"context"
 	"reflect"
 
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/json"
 	"github.com/sagernet/sing/common/json/badjson"
 	"github.com/sagernet/sing/common/json/badoption"
+	C "github.com/singlink/singlink/constant"
 )
 
 type _DNSRule struct {
@@ -87,8 +87,6 @@ type RawDefaultDNSRule struct {
 	ProcessName              badoption.Listable[string]                                                  `json:"process_name,omitempty"`
 	ProcessPath              badoption.Listable[string]                                                  `json:"process_path,omitempty"`
 	ProcessPathRegex         badoption.Listable[string]                                                  `json:"process_path_regex,omitempty"`
-	PackageName              badoption.Listable[string]                                                  `json:"package_name,omitempty"`
-	PackageNameRegex         badoption.Listable[string]                                                  `json:"package_name_regex,omitempty"`
 	User                     badoption.Listable[string]                                                  `json:"user,omitempty"`
 	UserID                   badoption.Listable[int32]                                                   `json:"user_id,omitempty"`
 	Outbound                 badoption.Listable[string]                                                  `json:"outbound,omitempty"`

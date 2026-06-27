@@ -7,12 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/tls"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
-	"github.com/singlink/singlink/transport/v2rayhttp"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
@@ -20,6 +14,12 @@ import (
 	N "github.com/sagernet/sing/common/network"
 	aTLS "github.com/sagernet/sing/common/tls"
 	sHttp "github.com/sagernet/sing/protocol/http"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/tls"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	"github.com/singlink/singlink/transport/v2rayhttp"
 )
 
 var _ adapter.V2RayServerTransport = (*Server)(nil)
@@ -51,6 +51,7 @@ func NewServer(ctx context.Context, logger logger.ContextLogger, options option.
 	server.httpServer = &http.Server{
 		Handler:           server,
 		ReadHeaderTimeout: C.TCPTimeout,
+		IdleTimeout:       C.TCPTimeout,
 		MaxHeaderBytes:    http.DefaultMaxHeaderBytes,
 		BaseContext: func(net.Listener) context.Context {
 			return ctx

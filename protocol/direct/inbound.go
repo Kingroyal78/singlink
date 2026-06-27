@@ -6,17 +6,17 @@ import (
 	"os"
 	"time"
 
+	"github.com/sagernet/sing/common/buf"
+	"github.com/sagernet/sing/common/bufio"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
+	"github.com/sagernet/sing/common/udpnat2"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/inbound"
 	"github.com/singlink/singlink/common/listener"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common/buf"
-	"github.com/sagernet/sing/common/bufio"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
-	"github.com/sagernet/sing/common/udpnat2"
 )
 
 func RegisterInbound(registry *inbound.Registry) {
@@ -78,7 +78,11 @@ func (i *Inbound) Start(stage adapter.StartStage) error {
 }
 
 func (i *Inbound) Close() error {
-	return i.listener.Close()
+	err := i.listener.Close()
+	if i.udpNat != nil {
+		i.udpNat.Purge()
+	}
+	return err
 }
 
 func (i *Inbound) NewPacket(buffer *buf.Buffer, source M.Socksaddr) {

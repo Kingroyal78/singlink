@@ -132,16 +132,6 @@ icon: material/new-box
   "exclude_uid_range": [
     "1000:99999"
   ],
-  "include_android_user": [
-    0,
-    10
-  ],
-  "include_package": [
-    "com.android.chrome"
-  ],
-  "exclude_package": [
-    "com.android.captiveportallogin"
-  ],
   "include_mac_address": [
     "00:11:22:33:44:55"
   ],
@@ -291,10 +281,6 @@ singlink DNS 模块，等价于一条
 
     为避免流量环回，请设置 `route.auto_detect_interface` 或 `route.default_interface` 或 `outbound.bind_interface`。
 
-!!! note "与 Android VPN 一起使用"
-
-    VPN 默认优先于 tun。要使 tun 经过 VPN，启用 `route.override_android_vpn`。
-
 !!! note "也启用 `auto_redirect`"
 
   在 Linux 上始终推荐使用 `auto_redirect`，它提供更好的路由， 更高的性能（优于 tproxy）， 并避免 TUN 与 Docker 桥接网络冲突。
@@ -326,9 +312,6 @@ singlink DNS 模块，等价于一条
 通过使用 nftables 改善 TUN 路由和性能。
 
 在 Linux 上始终推荐使用 `auto_redirect`，它提供更好的路由、更高的性能（优于 tproxy），并避免了 TUN 和 Docker 桥接网络之间的冲突。
-
-请注意，`auto_redirect` 也适用于 Android，但由于缺少 `nftables` 和 `ip6tables`，仅执行简单的 IPv4 TCP 转发。  
-若要在 Android 上通过热点或中继器共享 VPN 连接，请使用 [VPNHotspot](https://github.com/Mygod/VPNHotspot)。
 
 `auto_redirect` 还会自动将兼容性规则插入 OpenWrt 的 fw4 表中，即无需额外配置即可在路由器上工作。
 
@@ -484,9 +467,6 @@ singlink DNS 模块，等价于一条
     将指定规则集中的目标 IP CIDR 规则添加到路由，相当于添加到 `route_address`。
     不匹配的流量将绕过 singlink 路由。
 
-    请注意，由于 Android VpnService 无法处理大量路由（DeadSystemException），
-    因此它**在 Android 图形客户端上不起作用**，但除此之外，它在所有命令行客户端和 Apple 平台上都可以正常工作。
-
 #### route_exclude_address_set
 
 === "`auto_redirect` 已启用"
@@ -508,9 +488,6 @@ singlink DNS 模块，等价于一条
 
     将指定规则集中的目标 IP CIDR 规则添加到路由，相当于添加到 `route_exclude_address`。
     匹配的流量将绕过 singlink 路由。
-
-    请注意，由于 Android VpnService 无法处理大量路由（DeadSystemException），
-    因此它**在 Android 图形客户端上不起作用**，但除此之外，它在所有命令行客户端和 Apple 平台上都可以正常工作。
 
 #### endpoint_independent_nat
 
@@ -580,27 +557,6 @@ TCP/IP 栈。
 
 排除路由的用户范围。
 
-#### include_android_user
-
-!!! quote ""
-
-    Android 用户和应用规则仅在 Android 下被支持，并且需要 `auto_route`。
-
-限制被路由的 Android 用户。
-
-| 常用用户 | ID |
-|------|----|
-| 您    | 0  |
-| 工作资料 | 10 |
-
-#### include_package
-
-限制被路由的 Android 应用包名。
-
-#### exclude_package
-
-排除路由的 Android 应用包名。
-
 #### include_mac_address
 
 !!! question "自 singlink 1.14.0 起"
@@ -651,17 +607,9 @@ TCP/IP 栈。
 
 ##### platform.http_proxy.bypass_domain
 
-!!! note ""
-
-    在 Apple 平台，`bypass_domain` 项匹配主机名 **后缀**.
-
 绕过代理的主机名列表。
 
 ##### platform.http_proxy.match_domain
-
-!!! quote ""
-
-    仅在 Apple 平台图形客户端中支持。
 
 代理的主机名列表。
 

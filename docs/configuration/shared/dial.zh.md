@@ -192,7 +192,7 @@ TCP keep alive 间隔。
 
 !!! quote ""
 
-    仅在 Android 与 iOS 平台图形客户端中支持，并且需要 `route.auto_detect_interface`。
+    仅在启用 `route.auto_detect_interface` 且网络类型检测可用时支持。
 
 用于选择网络接口的策略。
 
@@ -214,7 +214,7 @@ TCP keep alive 间隔。
 
 !!! quote ""
 
-    仅在 Android 与 iOS 平台图形客户端中支持，并且需要 `route.auto_detect_interface`。
+    仅在启用 `route.auto_detect_interface` 且网络类型检测可用时支持。
 
 当使用 `default` 或 `hybrid` 网络策略时要使用的网络类型，或当使用 `fallback` 网络策略时要使用的首选网络类型。
 
@@ -228,7 +228,7 @@ TCP keep alive 间隔。
 
 !!! quote ""
 
-    仅在 Android 与 iOS 平台图形客户端中支持，并且需要 `route.auto_detect_interface`。
+    仅在启用 `route.auto_detect_interface` 且网络类型检测可用时支持。
 
 当使用 `fallback` 网络策略时，在首选网络不可用或超时的情况下要使用的回退网络类型。
 

@@ -40,7 +40,6 @@ icon: material/alert-decagram
     "rule_set": [],
     "final": "",
     "auto_detect_interface": false,
-    "override_android_vpn": false,
     "default_interface": "",
     "default_mark": 0,
     "find_process": false,
@@ -88,14 +87,6 @@ icon: material/alert-decagram
 
 如果设置了 `outbound.bind_interface` 设置，则不生效。
 
-#### override_android_vpn
-
-!!! quote ""
-
-    仅支持 Android。
-
-启用 `auto_detect_interface` 时接受 Android VPN 作为上游网卡。
-
 #### default_interface
 
 !!! quote ""
@@ -122,7 +113,7 @@ icon: material/alert-decagram
 
     仅支持 Linux、Windows 和 macOS。
 
-在没有 `process_name`、`process_path`、`package_name`、`user` 或 `user_id` 规则时启用进程搜索以输出日志。
+在没有 `process_name`、`process_path`、`user` 或 `user_id` 规则时启用进程搜索以输出日志。
 
 #### find_neighbor
 

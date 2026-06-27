@@ -13,8 +13,8 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"syscall"
 	"time"
@@ -24,15 +24,6 @@ import (
 	"github.com/sagernet/gvisor/pkg/tcpip/header"
 	"github.com/sagernet/gvisor/pkg/tcpip/stack"
 	"github.com/sagernet/gvisor/pkg/tcpip/transport/icmp"
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/adapter/endpoint"
-	"github.com/singlink/singlink/common/dialer"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/dns"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
-	"github.com/singlink/singlink/protocol/tailscale/tailssh"
-	R "github.com/singlink/singlink/route/rule"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing-tun/ping"
 	"github.com/sagernet/sing/common"
@@ -63,6 +54,15 @@ import (
 	"github.com/sagernet/tailscale/wgengine/filter"
 	"github.com/sagernet/tailscale/wgengine/router"
 	"github.com/sagernet/tailscale/wgengine/wgcfg"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/adapter/endpoint"
+	"github.com/singlink/singlink/common/dialer"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/dns"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	"github.com/singlink/singlink/protocol/tailscale/tailssh"
+	R "github.com/singlink/singlink/route/rule"
 
 	mDNS "github.com/miekg/dns"
 	"go4.org/netipx"
@@ -127,6 +127,132 @@ type Endpoint struct {
 	systemTun           tun.Tun
 	systemDialer        *dialer.DefaultDialer
 	fallbackTCPCloser   func()
+	interfaceGetterHook uint64
+	controlFuncHook     uint64
+}
+
+var tailscaleGlobalHooks = newTailscaleGlobalHookManager()
+
+type tailscaleGlobalHookManager struct {
+	mutex            sync.Mutex
+	nextID           uint64
+	interfaceGetters map[uint64]func() ([]netmon.Interface, error)
+	interfaceOrder   []uint64
+	controlFuncs     map[uint64]func(network string, address string, c syscall.RawConn) error
+	controlOrder     []uint64
+}
+
+func newTailscaleGlobalHookManager() *tailscaleGlobalHookManager {
+	return &tailscaleGlobalHookManager{}
+}
+
+func (m *tailscaleGlobalHookManager) registerInterfaceGetter(getter func() ([]netmon.Interface, error)) uint64 {
+	if getter == nil {
+		return 0
+	}
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	m.nextID++
+	id := m.nextID
+	if m.interfaceGetters == nil {
+		m.interfaceGetters = make(map[uint64]func() ([]netmon.Interface, error))
+	}
+	m.interfaceGetters[id] = getter
+	m.interfaceOrder = append(m.interfaceOrder, id)
+	netmon.RegisterInterfaceGetter(m.interfaceGetter)
+	return id
+}
+
+func (m *tailscaleGlobalHookManager) unregisterInterfaceGetter(id uint64) {
+	if id == 0 {
+		return
+	}
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	delete(m.interfaceGetters, id)
+	m.interfaceOrder = removeHookID(m.interfaceOrder, id)
+	if len(m.interfaceGetters) == 0 {
+		netmon.RegisterInterfaceGetter(nil)
+	}
+}
+
+func (m *tailscaleGlobalHookManager) interfaceGetter() ([]netmon.Interface, error) {
+	m.mutex.Lock()
+	getter := latestHook(m.interfaceOrder, m.interfaceGetters)
+	m.mutex.Unlock()
+	if getter != nil {
+		return getter()
+	}
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return nil, err
+	}
+	return common.Map(interfaces, func(it net.Interface) netmon.Interface {
+		return netmon.Interface{Interface: &it}
+	}), nil
+}
+
+func (m *tailscaleGlobalHookManager) registerControlFunc(controlFunc func(network string, address string, c syscall.RawConn) error) uint64 {
+	if controlFunc == nil {
+		return 0
+	}
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	m.nextID++
+	id := m.nextID
+	if m.controlFuncs == nil {
+		m.controlFuncs = make(map[uint64]func(network string, address string, c syscall.RawConn) error)
+	}
+	m.controlFuncs[id] = controlFunc
+	m.controlOrder = append(m.controlOrder, id)
+	netns.SetControlFunc(m.controlFunc)
+	return id
+}
+
+func (m *tailscaleGlobalHookManager) unregisterControlFunc(id uint64) {
+	if id == 0 {
+		return
+	}
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	delete(m.controlFuncs, id)
+	m.controlOrder = removeHookID(m.controlOrder, id)
+	if len(m.controlFuncs) == 0 {
+		netns.SetControlFunc(nil)
+	}
+}
+
+func (m *tailscaleGlobalHookManager) controlFunc(network string, address string, c syscall.RawConn) error {
+	m.mutex.Lock()
+	controlFunc := latestHook(m.controlOrder, m.controlFuncs)
+	m.mutex.Unlock()
+	if controlFunc == nil {
+		return nil
+	}
+	return controlFunc(network, address, c)
+}
+
+func latestHook[T any](order []uint64, hooks map[uint64]T) T {
+	for i := len(order) - 1; i >= 0; i-- {
+		if hook, ok := hooks[order[i]]; ok {
+			return hook
+		}
+	}
+	var zero T
+	return zero
+}
+
+func removeHookID(order []uint64, id uint64) []uint64 {
+	for index, candidate := range order {
+		if candidate == id {
+			return append(order[:index], order[index+1:]...)
+		}
+	}
+	return order
 }
 
 func NewEndpoint(ctx context.Context, router adapter.Router, logger log.ContextLogger, tag string, options option.TailscaleEndpointOptions) (adapter.Endpoint, error) {
@@ -256,13 +382,19 @@ func (t *Endpoint) Start(stage adapter.StartStage) error {
 	return nil
 }
 
-func (t *Endpoint) start() error {
+func (t *Endpoint) start() (err error) {
+	defer func() {
+		if err != nil {
+			t.unregisterGlobalHooks()
+		}
+	}()
+
 	if t.platformInterface != nil {
-		err := t.network.UpdateInterfaces()
+		err = t.network.UpdateInterfaces()
 		if err != nil {
 			return err
 		}
-		netmon.RegisterInterfaceGetter(func() ([]netmon.Interface, error) {
+		t.interfaceGetterHook = tailscaleGlobalHooks.registerInterfaceGetter(func() ([]netmon.Interface, error) {
 			return common.Map(t.network.InterfaceFinder().Interfaces(), func(it control.Interface) netmon.Interface {
 				return netmon.Interface{
 					Interface: &net.Interface{
@@ -331,13 +463,7 @@ func (t *Endpoint) start() error {
 		if bindFunc := t.network.AutoDetectInterfaceFunc(); bindFunc != nil {
 			controlFunc = control.Append(controlFunc, bindFunc)
 		}
-		netns.SetControlFunc(controlFunc)
-	} else if runtime.GOOS == "android" && t.platformInterface != nil {
-		netns.SetControlFunc(func(network, address string, c syscall.RawConn) error {
-			return control.Raw(c, func(fd uintptr) error {
-				return t.platformInterface.AutoDetectInterfaceControl(int(fd))
-			})
-		})
+		t.controlFuncHook = tailscaleGlobalHooks.registerControlFunc(controlFunc)
 	}
 	return nil
 }
@@ -628,8 +754,7 @@ func (t *Endpoint) Close() error {
 		err = common.Close(common.PtrOrNil(t.server))
 		t.serverStarted = false
 	}
-	netmon.RegisterInterfaceGetter(nil)
-	netns.SetControlFunc(nil)
+	t.unregisterGlobalHooks()
 	if t.fallbackTCPCloser != nil {
 		t.fallbackTCPCloser()
 		t.fallbackTCPCloser = nil
@@ -639,6 +764,13 @@ func (t *Endpoint) Close() error {
 		t.systemTun = nil
 	}
 	return err
+}
+
+func (t *Endpoint) unregisterGlobalHooks() {
+	tailscaleGlobalHooks.unregisterInterfaceGetter(t.interfaceGetterHook)
+	t.interfaceGetterHook = 0
+	tailscaleGlobalHooks.unregisterControlFunc(t.controlFuncHook)
+	t.controlFuncHook = 0
 }
 
 func (t *Endpoint) DialContext(ctx context.Context, network string, destination M.Socksaddr) (net.Conn, error) {

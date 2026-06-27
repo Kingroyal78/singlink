@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/netip"
 	"slices"
-	"strings"
 
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/process"
@@ -59,10 +58,6 @@ func (r *Router) searchProcessInfo(ctx context.Context, metadata *adapter.Inboun
 		} else {
 			r.logger.InfoContext(ctx, "found process path: ", processInfo.ProcessPath)
 		}
-		return
-	}
-	if len(processInfo.AndroidPackageNames) > 0 {
-		r.logger.InfoContext(ctx, "found package name: ", strings.Join(processInfo.AndroidPackageNames, ", "))
 		return
 	}
 	if processInfo.UserId != -1 {

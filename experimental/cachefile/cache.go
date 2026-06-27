@@ -7,17 +7,23 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/sagernet/bbolt"
 	bboltErrors "github.com/sagernet/bbolt/errors"
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/experimental/deprecated"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	"github.com/sagernet/sing/service/filemanager"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/experimental/deprecated"
+	"github.com/singlink/singlink/option"
+)
+
+const (
+	cacheFileMaxAsyncWrites       = 16
+	cacheFileAsyncWriteRetryDelay = time.Second
 )
 
 var (
@@ -53,7 +59,19 @@ type CacheFile struct {
 	optimisticTimeout  time.Duration
 	DB                 *bbolt.DB
 	resetAccess        sync.Mutex
+	dbAccess           sync.RWMutex
+	closed             atomic.Bool
+	asyncAccess        sync.Mutex
+	asyncWG            sync.WaitGroup
+	asyncWriteTokens   chan struct{}
+	cleanupAccess      sync.Mutex
+	cleanupCancel      context.CancelFunc
+	cleanupWG          sync.WaitGroup
+	saveMetadataAccess sync.Mutex
+	saveMetadataWrite  sync.Mutex
 	saveMetadataTimer  *time.Timer
+	saveMetadata       *adapter.FakeIPMetadata
+	saveMetadataSeq    uint64
 	saveFakeIPAccess   sync.RWMutex
 	saveDomain         map[netip.Addr]string
 	saveAddress4       map[string]netip.Addr
@@ -100,19 +118,20 @@ func New(ctx context.Context, logger logger.Logger, options option.CacheFileOpti
 		}
 	}
 	return &CacheFile{
-		ctx:          ctx,
-		logger:       logger,
-		path:         filemanager.BasePath(ctx, path),
-		cacheID:      cacheIDBytes,
-		storeFakeIP:  options.StoreFakeIP,
-		storeRDRC:    options.StoreRDRC,
-		storeDNS:     options.StoreDNS,
-		rdrcTimeout:  rdrcTimeout,
-		saveDomain:   make(map[netip.Addr]string),
-		saveAddress4: make(map[string]netip.Addr),
-		saveAddress6: make(map[string]netip.Addr),
-		saveRDRC:     make(map[saveCacheKey]bool),
-		saveDNSCache: make(map[saveCacheKey]saveDNSCacheEntry),
+		ctx:              ctx,
+		logger:           logger,
+		path:             filemanager.BasePath(ctx, path),
+		cacheID:          cacheIDBytes,
+		storeFakeIP:      options.StoreFakeIP,
+		storeRDRC:        options.StoreRDRC,
+		storeDNS:         options.StoreDNS,
+		rdrcTimeout:      rdrcTimeout,
+		asyncWriteTokens: make(chan struct{}, cacheFileMaxAsyncWrites),
+		saveDomain:       make(map[netip.Addr]string),
+		saveAddress4:     make(map[string]netip.Addr),
+		saveAddress6:     make(map[string]netip.Addr),
+		saveRDRC:         make(map[saveCacheKey]bool),
+		saveDNSCache:     make(map[saveCacheKey]saveDNSCacheEntry),
 	}
 }
 
@@ -145,19 +164,19 @@ func (c *CacheFile) Start(stage adapter.StartStage) error {
 func (c *CacheFile) startCacheCleanup() {
 	if c.storeDNS {
 		c.clearRDRC()
-		c.cleanupDNSCache()
+		c.cleanupDNSCache(c.ctx)
 		interval := c.optimisticTimeout / 2
 		if interval <= 0 {
 			interval = time.Hour
 		}
-		go c.loopCacheCleanup(interval, c.cleanupDNSCache)
+		c.startCacheCleanupLoop(interval, c.cleanupDNSCache)
 	} else if c.storeRDRC {
-		c.cleanupRDRC()
+		c.cleanupRDRC(c.ctx)
 		interval := c.rdrcTimeout / 2
 		if interval <= 0 {
 			interval = time.Hour
 		}
-		go c.loopCacheCleanup(interval, c.cleanupRDRC)
+		c.startCacheCleanupLoop(interval, c.cleanupRDRC)
 	}
 }
 
@@ -215,57 +234,205 @@ func (c *CacheFile) start() error {
 		db.Close()
 		return err
 	}
+	c.dbAccess.Lock()
+	if c.closed.Load() {
+		c.dbAccess.Unlock()
+		db.Close()
+		return os.ErrClosed
+	}
 	c.DB = db
+	c.dbAccess.Unlock()
 	return nil
 }
 
 func (c *CacheFile) Close() error {
-	if c.DB == nil {
+	if !c.closed.CompareAndSwap(false, true) {
 		return nil
 	}
-	return c.DB.Close()
+	c.stopCacheCleanup()
+	pendingMetadata := c.stopFakeIPMetadataTimer()
+	c.asyncAccess.Lock()
+	c.asyncAccess.Unlock()
+	c.asyncWG.Wait()
+	if pendingMetadata != nil {
+		c.saveMetadataWrite.Lock()
+		err := c.saveFakeIPMetadataOnClose(pendingMetadata)
+		c.saveMetadataWrite.Unlock()
+		if err != nil && !errors.Is(err, os.ErrClosed) {
+			c.logger.Warn("save FakeIP metadata: ", err)
+		}
+	}
+	c.clearPendingAsyncState()
+	c.dbAccess.Lock()
+	db := c.DB
+	c.DB = nil
+	c.dbAccess.Unlock()
+	if db == nil {
+		return nil
+	}
+	return db.Close()
 }
 
 func (c *CacheFile) view(fn func(tx *bbolt.Tx) error) (err error) {
+	db, unlock, err := c.openDB()
+	if err != nil {
+		return err
+	}
 	defer func() {
 		if r := recover(); r != nil {
+			unlock()
+			unlock = nil
 			c.resetDB()
 			err = E.New("database corrupted: ", r)
 		}
+		if unlock != nil {
+			unlock()
+		}
 	}()
-	return c.DB.View(fn)
+	return db.View(fn)
 }
 
 func (c *CacheFile) batch(fn func(tx *bbolt.Tx) error) (err error) {
+	db, unlock, err := c.openDB()
+	if err != nil {
+		return err
+	}
 	defer func() {
 		if r := recover(); r != nil {
+			unlock()
+			unlock = nil
 			c.resetDB()
 			err = E.New("database corrupted: ", r)
 		}
+		if unlock != nil {
+			unlock()
+		}
 	}()
-	return c.DB.Batch(fn)
+	return db.Batch(fn)
 }
 
 func (c *CacheFile) update(fn func(tx *bbolt.Tx) error) (err error) {
+	db, unlock, err := c.openDB()
+	if err != nil {
+		return err
+	}
 	defer func() {
 		if r := recover(); r != nil {
+			unlock()
+			unlock = nil
 			c.resetDB()
 			err = E.New("database corrupted: ", r)
 		}
+		if unlock != nil {
+			unlock()
+		}
 	}()
-	return c.DB.Update(fn)
+	return db.Update(fn)
 }
 
 func (c *CacheFile) resetDB() {
+	if c.closed.Load() {
+		return
+	}
 	c.resetAccess.Lock()
 	defer c.resetAccess.Unlock()
-	c.DB.Close()
+	c.dbAccess.Lock()
+	defer c.dbAccess.Unlock()
+	if c.DB != nil {
+		c.DB.Close()
+	}
 	os.Remove(c.path)
 	db, err := bbolt.Open(c.path, 0o666, &bbolt.Options{Timeout: time.Second})
 	if err == nil {
 		_ = filemanager.Chown(c.ctx, c.path)
 		c.DB = db
 	}
+}
+
+func (c *CacheFile) openDB() (*bbolt.DB, func(), error) {
+	c.dbAccess.RLock()
+	if c.closed.Load() || c.DB == nil {
+		c.dbAccess.RUnlock()
+		return nil, nil, os.ErrClosed
+	}
+	return c.DB, c.dbAccess.RUnlock, nil
+}
+
+func (c *CacheFile) startCacheCleanupLoop(interval time.Duration, cleanupFunc func(context.Context)) {
+	c.cleanupAccess.Lock()
+	if c.closed.Load() {
+		c.cleanupAccess.Unlock()
+		return
+	}
+	ctx, cancel := context.WithCancel(c.ctx)
+	c.cleanupCancel = cancel
+	c.cleanupWG.Add(1)
+	c.cleanupAccess.Unlock()
+	go func() {
+		defer c.cleanupWG.Done()
+		c.loopCacheCleanup(ctx, interval, cleanupFunc)
+	}()
+}
+
+func (c *CacheFile) stopCacheCleanup() {
+	c.cleanupAccess.Lock()
+	cancel := c.cleanupCancel
+	c.cleanupCancel = nil
+	c.cleanupAccess.Unlock()
+	if cancel != nil {
+		cancel()
+	}
+	c.cleanupWG.Wait()
+}
+
+func (c *CacheFile) beginAsyncWrite() bool {
+	c.asyncAccess.Lock()
+	defer c.asyncAccess.Unlock()
+	if c.closed.Load() {
+		return false
+	}
+	if c.asyncWriteTokens == nil {
+		c.asyncWriteTokens = make(chan struct{}, cacheFileMaxAsyncWrites)
+	}
+	select {
+	case c.asyncWriteTokens <- struct{}{}:
+		c.asyncWG.Add(1)
+		return true
+	default:
+		return false
+	}
+}
+
+func (c *CacheFile) endAsyncWrite() {
+	<-c.asyncWriteTokens
+	c.asyncWG.Done()
+}
+
+func (c *CacheFile) stopFakeIPMetadataTimer() *adapter.FakeIPMetadata {
+	c.saveMetadataAccess.Lock()
+	if c.saveMetadataTimer != nil {
+		c.saveMetadataTimer.Stop()
+		c.saveMetadataTimer = nil
+	}
+	metadata := cloneFakeIPMetadata(c.saveMetadata)
+	c.saveMetadata = nil
+	c.saveMetadataSeq++
+	c.saveMetadataAccess.Unlock()
+	return metadata
+}
+
+func (c *CacheFile) clearPendingAsyncState() {
+	c.saveFakeIPAccess.Lock()
+	clear(c.saveDomain)
+	clear(c.saveAddress4)
+	clear(c.saveAddress6)
+	c.saveFakeIPAccess.Unlock()
+	c.saveRDRCAccess.Lock()
+	clear(c.saveRDRC)
+	c.saveRDRCAccess.Unlock()
+	c.saveDNSCacheAccess.Lock()
+	clear(c.saveDNSCache)
+	c.saveDNSCacheAccess.Unlock()
 }
 
 func (c *CacheFile) StoreFakeIP() bool {

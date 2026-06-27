@@ -28,7 +28,7 @@ icon: material/new-box
 
 !!! warning "平台支持"
 
-    NaiveProxy 出站仅在 Apple 平台、Android、Windows 和特定 Linux 构建上可用。
+    NaiveProxy 出站仅在 macOS、Windows 和特定 Linux 构建上可用。
 
     **官方发布版本区别：**
 

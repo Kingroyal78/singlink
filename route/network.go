@@ -12,11 +12,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/settings"
-	"github.com/singlink/singlink/common/taskmonitor"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/control"
@@ -27,6 +22,11 @@ import (
 	"github.com/sagernet/sing/common/winpowrprof"
 	"github.com/sagernet/sing/service"
 	"github.com/sagernet/sing/service/pause"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/settings"
+	"github.com/singlink/singlink/common/taskmonitor"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 
 	"golang.org/x/exp/slices"
 )
@@ -63,8 +63,6 @@ func NewNetworkManager(ctx context.Context, logger logger.ContextLogger, options
 	defaultDomainResolver := common.PtrValueOrDefault(options.DefaultDomainResolver)
 	if options.AutoDetectInterface && !(C.IsLinux || C.IsDarwin || C.IsWindows) {
 		return nil, E.New("`auto_detect_interface` is only supported on Linux, Windows and macOS")
-	} else if options.OverrideAndroidVPN && !C.IsAndroid {
-		return nil, E.New("`override_android_vpn` is only supported on Android")
 	} else if options.DefaultInterface != "" && !(C.IsLinux || C.IsDarwin || C.IsWindows) {
 		return nil, E.New("`default_interface` is only supported on Linux, Windows and macOS")
 	} else if options.DefaultMark != 0 && !C.IsLinux {
@@ -119,7 +117,6 @@ func NewNetworkManager(ctx context.Context, logger logger.ContextLogger, options
 			nm.networkMonitor = networkMonitor
 			interfaceMonitor, err := tun.NewDefaultInterfaceMonitor(nm.networkMonitor, logger, tun.DefaultInterfaceMonitorOptions{
 				InterfaceFinder:       nm.interfaceFinder,
-				OverrideAndroidVPN:    options.OverrideAndroidVPN,
 				UnderNetworkExtension: nm.platformInterface != nil && nm.platformInterface.UnderNetworkExtension(),
 			})
 			if err != nil {
@@ -172,25 +169,6 @@ func (r *NetworkManager) Start(stage adapter.StartStage) error {
 			monitor.Finish()
 			if err != nil {
 				return E.Cause(err, "start power listener")
-			}
-		}
-		if C.IsAndroid && r.platformInterface == nil {
-			monitor.Start("initialize package manager")
-			packageManager, err := tun.NewPackageManager(tun.PackageManagerOptions{
-				Callback: r,
-				Logger:   r.logger,
-			})
-			monitor.Finish()
-			if err != nil {
-				return E.Cause(err, "create package manager")
-			}
-			monitor.Start("start package manager")
-			err = packageManager.Start()
-			monitor.Finish()
-			if err != nil {
-				r.logger.Warn("initialize package manager: ", err)
-			} else {
-				r.packageManager = packageManager
 			}
 		}
 	case adapter.StartStatePostStart:
@@ -495,15 +473,7 @@ func (r *NetworkManager) notifyInterfaceUpdate(defaultInterface *control.Interfa
 	r.pauseManager.NetworkWake()
 	var options []string
 	options = append(options, F.ToString("index ", defaultInterface.Index))
-	if C.IsAndroid && r.platformInterface == nil {
-		var vpnStatus string
-		if r.interfaceMonitor.AndroidVPNEnabled() {
-			vpnStatus = "enabled"
-		} else {
-			vpnStatus = "disabled"
-		}
-		options = append(options, "vpn "+vpnStatus)
-	} else if r.platformInterface != nil {
+	if r.platformInterface != nil {
 		networkInterface := common.Find(r.networkInterfaces.Load(), func(it adapter.NetworkInterface) bool {
 			return it.Interface.Index == defaultInterface.Index
 		})

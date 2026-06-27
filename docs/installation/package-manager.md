@@ -86,12 +86,6 @@ curl -fsSL https://singlink.app/install.sh | sh -s -- --version <version>
     | Chocolatey | Windows  | `choco install singlink`  | [![Chocolatey package](https://repology.org/badge/version-for-repo/chocolatey/singlink.svg)][choco] |
     | winget     | Windows  | `winget install singlink` | [![winget package](https://repology.org/badge/version-for-repo/winget/singlink.svg)][winget]        |
 
-=== ":material-android: Android"
-
-    | Type   | Platform | Command            | Link                                                                                         |
-    |--------|----------|--------------------|----------------------------------------------------------------------------------------------|
-    | Termux | Android  | `pkg add singlink` | [![Termux package](https://repology.org/badge/version-for-repo/termux/singlink.svg)][termux] |
-
 === ":material-freebsd: FreeBSD"
 
     | Type       | Platform | Command                | Link                                                                                       |
@@ -104,7 +98,6 @@ curl -fsSL https://singlink.app/install.sh | sh -s -- --version <version>
 |------------|----------|-------------------------------------------------------------------------------------------|-----------------------------------------|
 | DEB        | AOSC     | [aosc-os-abbs](https://github.com/AOSC-Dev/aosc-os-abbs/tree/stable/app-network/singlink) | Problematic build tag list modification |
 | Homebrew   | /        | [homebrew-core][brew]                                                                     | Problematic build tag list modification |
-| Termux     | Android  | [termux-packages][termux]                                                                 | Problematic build tag list modification |
 | FreshPorts | FreeBSD  | [FreeBSD ports][ports]                                                                    | Old Go  (go1.20)                        |
 
 If you are a user of them, please report issues to them:
@@ -147,8 +140,6 @@ you can manage the service using the following command:
 [scoop]: https://github.com/ScoopInstaller/Main/blob/master/bucket/singlink.json
 
 [winget]: https://github.com/microsoft/winget-pkgs/tree/master/manifests/s/SagerNet/singlink
-
-[termux]: https://github.com/termux/termux-packages/tree/master/packages/singlink
 
 [ports]: https://www.freshports.org/net/singlink
 

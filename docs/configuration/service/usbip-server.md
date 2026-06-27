@@ -11,7 +11,7 @@ to be imported by the [USB/IP Client](/configuration/service/usbip-client/) or a
 client.
 
 Available on Linux, Windows, and macOS (macOS requires a build with CGO, and exporting devices
-requires disabling System Integrity Protection). Not available on iOS.
+requires disabling System Integrity Protection).
 
 ### Structure
 
@@ -46,8 +46,7 @@ The device source provider.
 
 - `default`: Exports the local devices matched by `devices`. The default value.
 - `dynamic`: Devices are provided at runtime through a [singlink API](/configuration/service/api/)
-  client instead of from configuration, on supported platforms: the singlink graphical clients on
-  [macOS](/clients/apple/) and [Android](/clients/android/), and Chromium-based browsers with
+  client instead of from configuration, for example Chromium-based browsers with
   [singlink Dashboard](https://github.com/SagerNet/singlink-dashboard).
 
 !!! quote ""

@@ -8,7 +8,7 @@ icon: material/new-box
 
 USB/IP Client 服务通过 [USB/IP](https://usbip.sourceforge.net/) 导入由 [USB/IP Server](/zh/configuration/service/usbip-server/) 导出的远程 USB 设备。
 
-可用于 Linux、Windows 和 macOS（macOS 需要使用 CGO 构建）。不支持 iOS。
+可用于 Linux、Windows 和 macOS（macOS 需要使用 CGO 构建）。
 
 服务端必须是 singlink（或 sing-usbip）服务端。
 

@@ -4,7 +4,6 @@ icon: material/new-box
 
 !!! quote "singlink 1.14.0 中的更改"
 
-    :material-plus: [package_name_regex](#package_name_regex)  
     :material-alert: [query_type](#query_type)
 
 !!! quote "singlink 1.13.0 中的更改"
@@ -79,12 +78,6 @@ icon: material/new-box
       ],
       "process_path_regex": [
         "^/usr/bin/.+"
-      ],
-      "package_name": [
-        "com.termux"
-      ],
-      "package_name_regex": [
-        "^com\\.termux.*"
       ],
       "network_type": [
         "wifi"
@@ -216,23 +209,13 @@ DNS 查询类型。值可以为整数或者类型名称字符串。
 
 使用正则表达式匹配进程路径。
 
-#### package_name
-
-匹配 Android 应用包名。
-
-#### package_name_regex
-
-!!! question "自 singlink 1.14.0 起"
-
-使用正则表达式匹配 Android 应用包名。
-
 #### network_type
 
 !!! question "自 singlink 1.11.0 起"
 
 !!! quote ""
 
-    仅在 Android 与 Apple 平台图形客户端中支持。
+    仅在网络类型检测可用时支持。
 
 匹配网络类型。
 
@@ -244,10 +227,9 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 !!! quote ""
 
-    仅在 Android 与 Apple 平台图形客户端中支持。
+    仅在平台能报告计费或昂贵网络状态时支持。
 
-匹配如果网络被视为计费 (在 Android) 或被视为昂贵，
-像蜂窝网络或个人热点 (在 Apple 平台)。
+匹配网络是否被视为计费或昂贵。
 
 #### network_is_constrained
 
@@ -255,7 +237,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 !!! quote ""
 
-    仅在 Apple 平台图形客户端中支持。
+    仅在平台能报告受限网络状态时支持。
 
 匹配如果网络在低数据模式下。
 
@@ -265,7 +247,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 !!! quote ""
 
-    仅在 Android 与 Apple 平台图形客户端中支持。
+    仅在网络类型检测可用时支持。
 
 匹配网络接口（可用值同 `network_type`）地址。
 
@@ -283,7 +265,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 !!! quote ""
 
-    仅在 Android 与 Apple 平台图形客户端中支持。
+    仅支持 Linux 和 Windows。参阅 [Wi-Fi 状态](/zh/configuration/shared/wifi-state/) 了解设置方法。
 
 匹配 WiFi SSID。
 
@@ -291,7 +273,7 @@ Available values: `wifi`, `cellular`, `ethernet` and `other`.
 
 !!! quote ""
 
-    仅在 Android 与 Apple 平台图形客户端中支持。
+    仅支持 Linux 和 Windows。参阅 [Wi-Fi 状态](/zh/configuration/shared/wifi-state/) 了解设置方法。
 
 #### invert
 

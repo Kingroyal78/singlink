@@ -4,13 +4,13 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 
 	"go4.org/netipx"
 )
@@ -61,7 +61,7 @@ func HasHeadlessRule(rules []option.HeadlessRule, cond func(rule option.DefaultH
 }
 
 func isProcessHeadlessRule(rule option.DefaultHeadlessRule) bool {
-	return len(rule.ProcessName) > 0 || len(rule.ProcessPath) > 0 || len(rule.ProcessPathRegex) > 0 || len(rule.PackageName) > 0 || len(rule.PackageNameRegex) > 0
+	return len(rule.ProcessName) > 0 || len(rule.ProcessPath) > 0 || len(rule.ProcessPathRegex) > 0
 }
 
 func isWIFIHeadlessRule(rule option.DefaultHeadlessRule) bool {

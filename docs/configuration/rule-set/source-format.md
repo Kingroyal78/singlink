@@ -45,7 +45,7 @@ Version of rule-set.
 * 2: singlink 1.10.0: Optimized memory usages of `domain_suffix` rules in binary rule-sets.
 * 3: singlink 1.11.0: Added `network_type`, `network_is_expensive` and `network_is_constrainted` rule items.
 * 4: singlink 1.13.0: Added `network_interface_address` and `default_interface_address` rule items.
-* 5: singlink 1.14.0: Added `package_name_regex` rule item.
+* 5: singlink 1.14.0: Removed from the server-only rule item set.
 
 #### rules
 

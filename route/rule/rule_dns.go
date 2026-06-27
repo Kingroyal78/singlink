@@ -3,14 +3,14 @@ package rule
 import (
 	"context"
 
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/experimental/deprecated"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-	"github.com/sagernet/sing/service"
 
 	"github.com/miekg/dns"
 )
@@ -242,19 +242,6 @@ func NewDefaultDNSRule(ctx context.Context, logger log.ContextLogger, options op
 		item, err := NewProcessPathRegexItem(options.ProcessPathRegex)
 		if err != nil {
 			return nil, E.Cause(err, "process_path_regex")
-		}
-		rule.items = append(rule.items, item)
-		rule.allItems = append(rule.allItems, item)
-	}
-	if len(options.PackageName) > 0 {
-		item := NewPackageNameItem(options.PackageName)
-		rule.items = append(rule.items, item)
-		rule.allItems = append(rule.allItems, item)
-	}
-	if len(options.PackageNameRegex) > 0 {
-		item, err := NewPackageNameRegexItem(options.PackageNameRegex)
-		if err != nil {
-			return nil, E.Cause(err, "package_name_regex")
 		}
 		rule.items = append(rule.items, item)
 		rule.allItems = append(rule.allItems, item)

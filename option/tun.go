@@ -38,9 +38,6 @@ type TunInboundOptions struct {
 	IncludeUIDRange               badoption.Listable[string]       `json:"include_uid_range,omitempty"`
 	ExcludeUID                    badoption.Listable[uint32]       `json:"exclude_uid,omitempty"`
 	ExcludeUIDRange               badoption.Listable[string]       `json:"exclude_uid_range,omitempty"`
-	IncludeAndroidUser            badoption.Listable[int]          `json:"include_android_user,omitempty"`
-	IncludePackage                badoption.Listable[string]       `json:"include_package,omitempty"`
-	ExcludePackage                badoption.Listable[string]       `json:"exclude_package,omitempty"`
 	IncludeMACAddress             badoption.Listable[string]       `json:"include_mac_address,omitempty"`
 	ExcludeMACAddress             badoption.Listable[string]       `json:"exclude_mac_address,omitempty"`
 	UDPTimeout                    UDPTimeoutCompat                 `json:"udp_timeout,omitempty"`

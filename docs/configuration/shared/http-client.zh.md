@@ -38,12 +38,12 @@ icon: material/new-box
 * `go`（默认）
 * `apple`
 
-`apple` 使用 NSURLSession，仅在 Apple 平台可用。
+`apple` 使用 NSURLSession，仅在 macOS 可用。
 
 !!! warning ""
 
     仅供实验用途：由于 CGO 和 Network.framework 占用的内存都很多，
-    不应在 iOS 和 tvOS 的热路径中使用。
+    不应在热路径中使用。
 
 支持的字段：
 

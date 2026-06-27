@@ -3,6 +3,7 @@
 package httpclient
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -96,4 +97,21 @@ func TestHTTP3BrokenEmptyAuthorityNoOp(t *testing.T) {
 		t.Fatal("h3Broken must return false for empty authority")
 	}
 	transport.clearH3Broken("")
+}
+
+func TestHTTP3BrokenAuthorityCapacity(t *testing.T) {
+	transport := &http3FallbackTransport{broken: make(map[string]http3BrokenEntry)}
+
+	for index := range maxFallbackAuthorityEntries + 10 {
+		transport.markH3Broken(fmt.Sprintf("authority-%d.example:443", index))
+	}
+	if len(transport.broken) > maxFallbackAuthorityEntries {
+		t.Fatalf("broken authority map grew to %d entries, want at most %d", len(transport.broken), maxFallbackAuthorityEntries)
+	}
+	if transport.h3Broken("authority-0.example:443") {
+		t.Fatal("oldest broken authority should be evicted")
+	}
+	if !transport.h3Broken(fmt.Sprintf("authority-%d.example:443", maxFallbackAuthorityEntries+9)) {
+		t.Fatal("newest broken authority should be retained")
+	}
 }

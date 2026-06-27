@@ -86,7 +86,7 @@ go build -tags "tag_a tag_b" ./cmd/singlink
 
 | 文件 | 说明 |
 |------|------|
-| `release/DEFAULT_BUILD_TAGS` | Linux（常见架构）、Darwin 和 Android 的默认标签。 |
+| `release/DEFAULT_BUILD_TAGS` | Linux（常见架构）和 Darwin 的默认标签。 |
 | `release/DEFAULT_BUILD_TAGS_WINDOWS` | Windows 的默认标签（包含 `with_purego`）。 |
 | `release/DEFAULT_BUILD_TAGS_OTHERS` | 其他平台的默认标签（不含 `with_naive_outbound`）。 |
 | `release/LDFLAGS` | 必需的链接器标志（参见上文）。 |
@@ -103,8 +103,7 @@ NaiveProxy 出站需要根据目标平台进行特殊的构建配置。
 | Linux        | 386, amd64, arm, arm64, mipsle, mips64le, riscv64, loong64 | CGO    | Chromium 工具链，运行时需要 glibc >= 2.31（loong64: >= 2.36） |
 | Linux (musl) | 386, amd64, arm, arm64, mipsle, riscv64, loong64          | CGO    | Chromium 工具链                                        |
 | Windows      | amd64, arm64                                             | purego | 无（官方发布版本已包含库文件）                                     |
-| Apple 平台     | *                                                        | CGO    | Xcode                                               |
-| Android      | *                                                        | CGO    | Android NDK                                          |
+| macOS        | amd64, arm64                                             | CGO    | Xcode                                               |
 
 ### Windows
 
@@ -125,6 +124,6 @@ NaiveProxy 出站需要根据目标平台进行特殊的构建配置。
 - **glibc 构建**：运行时需要 glibc >= 2.31
 - **musl 构建**：使用 `with_musl` 标记，静态链接，无运行时要求
 
-### Apple 平台 / Android
+### macOS
 
 参阅 [cronet-go](https://github.com/sagernet/cronet-go)。

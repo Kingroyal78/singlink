@@ -28,7 +28,7 @@ icon: material/new-box
 
 !!! warning "Platform Support"
 
-    NaiveProxy outbound is only available on Apple platforms, Android, Windows and certain Linux builds.
+    NaiveProxy outbound is only available on macOS, Windows and certain Linux builds.
 
     **Official Release Build Variants:**
 

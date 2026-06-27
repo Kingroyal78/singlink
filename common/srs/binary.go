@@ -8,14 +8,14 @@ import (
 	"net/netip"
 	"unsafe"
 
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/domain"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/json/badjson"
 	"github.com/sagernet/sing/common/json/badoption"
 	"github.com/sagernet/sing/common/varbin"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/option"
 
 	"go4.org/netipx"
 )
@@ -214,10 +214,8 @@ func readDefaultRule(reader varbin.Reader, recover bool) (rule option.DefaultHea
 			rule.ProcessPath, err = readRuleItemString(reader)
 		case ruleItemProcessPathRegex:
 			rule.ProcessPathRegex, err = readRuleItemString(reader)
-		case ruleItemPackageName:
-			rule.PackageName, err = readRuleItemString(reader)
-		case ruleItemPackageNameRegex:
-			rule.PackageNameRegex, err = readRuleItemString(reader)
+		case ruleItemPackageName, ruleItemPackageNameRegex:
+			_, err = readRuleItemString(reader)
 		case ruleItemWIFISSID:
 			rule.WIFISSID, err = readRuleItemString(reader)
 		case ruleItemWIFIBSSID:
@@ -387,21 +385,6 @@ func writeDefaultRule(writer varbin.Writer, rule option.DefaultHeadlessRule, gen
 	}
 	if len(rule.ProcessPathRegex) > 0 {
 		err = writeRuleItemString(writer, ruleItemProcessPathRegex, rule.ProcessPathRegex)
-		if err != nil {
-			return err
-		}
-	}
-	if len(rule.PackageName) > 0 {
-		err = writeRuleItemString(writer, ruleItemPackageName, rule.PackageName)
-		if err != nil {
-			return err
-		}
-	}
-	if len(rule.PackageNameRegex) > 0 {
-		if generateVersion < C.RuleSetVersion5 {
-			return E.New("`package_name_regex` rule item is only supported in version 5 or later")
-		}
-		err = writeRuleItemString(writer, ruleItemPackageNameRegex, rule.PackageNameRegex)
 		if err != nil {
 			return err
 		}

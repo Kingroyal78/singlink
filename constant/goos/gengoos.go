@@ -34,7 +34,7 @@ func main() {
 	}
 
 	for _, target := range gooses {
-		if target == "nacl" {
+		if target == "android" || target == "ios" || target == "nacl" {
 			continue
 		}
 		var tags []string

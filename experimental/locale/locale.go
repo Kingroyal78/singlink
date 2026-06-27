@@ -6,7 +6,6 @@ var (
 )
 
 type Locale struct {
-	// deprecated messages for graphical clients
 	Locale                  string
 	DeprecatedMessage       string
 	DeprecatedMessageNoLink string

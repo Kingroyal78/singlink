@@ -59,8 +59,8 @@ Example: `$HOME/.tailscale`
 #### auth_key
 
 !!! note
-    
-    Auth key is not required. By default, singlink will log the login URL (or popup a notification on graphical clients).
+
+    Auth key is not required. By default, singlink will log the login URL.
 
 The auth key to create the node. If the node is already created (from state previously stored), then this field is not
 used.
@@ -80,10 +80,6 @@ Indicates whether the instance should register as an Ephemeral node (https://tai
 The hostname of the node.
 
 System hostname is used by default.
-
-!!! question "Since singlink 1.14.0"
-
-    On iOS, tvOS and Android, the device name is used by default.
 
 Example: `localhost`
 
@@ -167,10 +163,6 @@ Access is controlled by the SSH ACL in the Tailscale admin console, which maps e
 
 - **Linux** and **macOS**: the user is resolved from the system user database. Switching to a user other than the one singlink runs as requires running as root; without root, sessions are limited to the current user.
 - **Windows**: sessions run as the singlink process identity; the mapped user is not impersonated, so a session mapped to a different local account is refused.
-- **Android**: the user is resolved by the app rather than the system user database. `root` is the superuser (UID 0) and `shell` is the ADB shell user (UID 2000); every other name is resolved as the package name of an installed application, running as that application's UID with its data directory as the home directory, so the target application must be installed. `termux` is a shortcut for `com.termux`, and `singlink` for the app's own package name; when Termux is installed, the `root` and `termux` users load the Termux environment. Running as the singlink application itself requires no root, while any other user requires granted root access; without root, sessions are limited to the singlink user.
-- **macOS**: the SSH server is only available in the standalone version and requires the Root Helper; the App Store version is not supported.
-- **iOS**: the SSH server is only available in the jailbreak build; the App Store and TestFlight versions are not supported.
-- **tvOS**: not yet supported.
 
 Object format:
 

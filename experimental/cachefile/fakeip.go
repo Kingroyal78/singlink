@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/sagernet/bbolt"
-	"github.com/singlink/singlink/adapter"
-	C "github.com/singlink/singlink/constant"
+	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/common/logger"
 	M "github.com/sagernet/sing/common/metadata"
+	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 )
 
 const fakeipBucketPrefix = "fakeip_"
@@ -45,27 +46,120 @@ func (c *CacheFile) FakeIPMetadata() *adapter.FakeIPMetadata {
 }
 
 func (c *CacheFile) FakeIPSaveMetadata(metadata *adapter.FakeIPMetadata) error {
+	metadata = cloneFakeIPMetadata(metadata)
+	if metadata == nil {
+		return nil
+	}
+	c.saveMetadataAccess.Lock()
+	c.saveMetadataSeq++
+	if c.saveMetadataTimer != nil {
+		c.saveMetadataTimer.Stop()
+		c.saveMetadataTimer = nil
+	}
+	c.saveMetadata = nil
+	c.saveMetadataAccess.Unlock()
+	c.saveMetadataWrite.Lock()
+	defer c.saveMetadataWrite.Unlock()
+	return c.saveFakeIPMetadata(metadata)
+}
+
+func (c *CacheFile) saveFakeIPMetadata(metadata *adapter.FakeIPMetadata) error {
 	return c.batch(func(tx *bbolt.Tx) error {
-		bucket, err := tx.CreateBucketIfNotExists(bucketFakeIP)
-		if err != nil {
-			return err
-		}
-		metadataBinary, err := metadata.MarshalBinary()
-		if err != nil {
-			return err
-		}
-		return bucket.Put(keyMetadata, metadataBinary)
+		return saveFakeIPMetadataInTx(tx, metadata)
 	})
 }
 
+func saveFakeIPMetadataInTx(tx *bbolt.Tx, metadata *adapter.FakeIPMetadata) error {
+	bucket, err := tx.CreateBucketIfNotExists(bucketFakeIP)
+	if err != nil {
+		return err
+	}
+	metadataBinary, err := metadata.MarshalBinary()
+	if err != nil {
+		return err
+	}
+	return bucket.Put(keyMetadata, metadataBinary)
+}
+
 func (c *CacheFile) FakeIPSaveMetadataAsync(metadata *adapter.FakeIPMetadata) {
+	metadata = cloneFakeIPMetadata(metadata)
+	if metadata == nil || c.closed.Load() {
+		return
+	}
+	c.saveMetadataAccess.Lock()
+	if c.closed.Load() {
+		c.saveMetadataAccess.Unlock()
+		return
+	}
+	c.saveMetadata = metadata
+	c.saveMetadataSeq++
 	if c.saveMetadataTimer == nil {
-		c.saveMetadataTimer = time.AfterFunc(C.FakeIPMetadataSaveInterval, func() {
-			_ = c.FakeIPSaveMetadata(metadata)
-		})
+		c.scheduleFakeIPMetadataFlushLocked(C.FakeIPMetadataSaveInterval)
 	} else {
 		c.saveMetadataTimer.Reset(C.FakeIPMetadataSaveInterval)
 	}
+	c.saveMetadataAccess.Unlock()
+}
+
+func (c *CacheFile) scheduleFakeIPMetadataFlushLocked(delay time.Duration) {
+	if c.saveMetadataTimer == nil {
+		c.saveMetadataTimer = time.AfterFunc(delay, func() {
+			c.flushFakeIPMetadata()
+		})
+		return
+	}
+	c.saveMetadataTimer.Reset(delay)
+}
+
+func (c *CacheFile) flushFakeIPMetadata() {
+	if !c.beginAsyncWrite() {
+		c.saveMetadataAccess.Lock()
+		if !c.closed.Load() && c.saveMetadata != nil {
+			c.scheduleFakeIPMetadataFlushLocked(cacheFileAsyncWriteRetryDelay)
+		}
+		c.saveMetadataAccess.Unlock()
+		return
+	}
+	defer c.endAsyncWrite()
+	c.saveMetadataAccess.Lock()
+	metadata := cloneFakeIPMetadata(c.saveMetadata)
+	sequence := c.saveMetadataSeq
+	c.saveMetadataAccess.Unlock()
+	if metadata == nil {
+		return
+	}
+	c.saveMetadataWrite.Lock()
+	defer c.saveMetadataWrite.Unlock()
+	c.saveMetadataAccess.Lock()
+	if c.closed.Load() || sequence != c.saveMetadataSeq {
+		c.saveMetadataAccess.Unlock()
+		return
+	}
+	c.saveMetadataAccess.Unlock()
+	_ = c.saveFakeIPMetadata(metadata)
+	c.saveMetadataAccess.Lock()
+	if sequence == c.saveMetadataSeq {
+		c.saveMetadata = nil
+	}
+	c.saveMetadataAccess.Unlock()
+}
+
+func (c *CacheFile) saveFakeIPMetadataOnClose(metadata *adapter.FakeIPMetadata) (err error) {
+	c.dbAccess.RLock()
+	db := c.DB
+	if db == nil {
+		c.dbAccess.RUnlock()
+		return os.ErrClosed
+	}
+	defer c.dbAccess.RUnlock()
+	defer func() {
+		if r := recover(); r != nil {
+			err = E.New("database corrupted: ", r)
+		}
+	}()
+	return db.Batch(func(tx *bbolt.Tx) error {
+		return saveFakeIPMetadataInTx(tx, metadata)
+	})
 }
 
 func (c *CacheFile) FakeIPStore(address netip.Addr, domain string) error {
@@ -97,6 +191,9 @@ func (c *CacheFile) FakeIPStore(address netip.Addr, domain string) error {
 }
 
 func (c *CacheFile) FakeIPStoreAsync(address netip.Addr, domain string, logger logger.Logger) {
+	if !c.beginAsyncWrite() {
+		return
+	}
 	c.saveFakeIPAccess.Lock()
 	if oldDomain, loaded := c.saveDomain[address]; loaded {
 		if address.Is4() {
@@ -113,16 +210,23 @@ func (c *CacheFile) FakeIPStoreAsync(address netip.Addr, domain string, logger l
 	}
 	c.saveFakeIPAccess.Unlock()
 	go func() {
+		defer c.endAsyncWrite()
 		err := c.FakeIPStore(address, domain)
-		if err != nil {
+		if err != nil && !c.closed.Load() {
 			logger.Warn("save FakeIP cache: ", err)
 		}
 		c.saveFakeIPAccess.Lock()
-		delete(c.saveDomain, address)
+		if currentDomain, loaded := c.saveDomain[address]; loaded && currentDomain == domain {
+			delete(c.saveDomain, address)
+		}
 		if address.Is4() {
-			delete(c.saveAddress4, domain)
+			if currentAddress, loaded := c.saveAddress4[domain]; loaded && currentAddress == address {
+				delete(c.saveAddress4, domain)
+			}
 		} else {
-			delete(c.saveAddress6, domain)
+			if currentAddress, loaded := c.saveAddress6[domain]; loaded && currentAddress == address {
+				delete(c.saveAddress6, domain)
+			}
 		}
 		c.saveFakeIPAccess.Unlock()
 	}()
@@ -191,4 +295,12 @@ func (c *CacheFile) FakeIPReset() error {
 		}
 		return tx.DeleteBucket(bucketFakeIPDomain6)
 	})
+}
+
+func cloneFakeIPMetadata(metadata *adapter.FakeIPMetadata) *adapter.FakeIPMetadata {
+	if metadata == nil {
+		return nil
+	}
+	metadataCopy := *metadata
+	return &metadataCopy
 }

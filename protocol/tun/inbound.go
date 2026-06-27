@@ -5,18 +5,11 @@ import (
 	"net"
 	"net/netip"
 	"os"
-	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/adapter/inbound"
-	"github.com/singlink/singlink/common/taskmonitor"
-	C "github.com/singlink/singlink/constant"
-	"github.com/singlink/singlink/log"
-	"github.com/singlink/singlink/option"
-	"github.com/singlink/singlink/route/rule"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -26,6 +19,13 @@ import (
 	"github.com/sagernet/sing/common/ranges"
 	"github.com/sagernet/sing/common/x/list"
 	"github.com/sagernet/sing/service"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/adapter/inbound"
+	"github.com/singlink/singlink/common/taskmonitor"
+	C "github.com/singlink/singlink/constant"
+	"github.com/singlink/singlink/log"
+	"github.com/singlink/singlink/option"
+	"github.com/singlink/singlink/route/rule"
 
 	"go4.org/netipx"
 )
@@ -53,8 +53,11 @@ type Inbound struct {
 	routeRuleSetCallback        []*list.Element[adapter.RuleSetUpdateCallback]
 	routeExcludeRuleSet         []adapter.RuleSet
 	routeExcludeRuleSetCallback []*list.Element[adapter.RuleSetUpdateCallback]
+	routeRuleSetRefsAdded       bool
 	routeAddressSet             []*netipx.IPSet
 	routeExcludeAddressSet      []*netipx.IPSet
+	routeSetAccess              sync.Mutex
+	routeSetClosed              bool
 }
 
 func NewInbound(ctx context.Context, router adapter.Router, logger log.ContextLogger, tag string, options option.TunInboundOptions) (adapter.Inbound, error) {
@@ -104,9 +107,6 @@ func NewInbound(ctx context.Context, router adapter.Router, logger log.ContextLo
 		if platformInterface != nil && platformInterface.UnderNetworkExtension() {
 			// In Network Extension, when MTU exceeds 4064 (4096-UTUN_IF_HEADROOM_SIZE), the performance of tun will drop significantly, which may be a system bug.
 			tunMTU = 4064
-		} else if C.IsAndroid {
-			// Some Android devices report ENOBUFS when using MTU 65535
-			tunMTU = 9000
 		} else {
 			tunMTU = 65535
 		}
@@ -213,9 +213,6 @@ func NewInbound(ctx context.Context, router adapter.Router, logger log.ContextLo
 			Inet6RouteExcludeAddress:              inet6RouteExcludeAddress,
 			IncludeUID:                            includeUID,
 			ExcludeUID:                            excludeUID,
-			IncludeAndroidUser:                    options.IncludeAndroidUser,
-			IncludePackage:                        options.IncludePackage,
-			ExcludePackage:                        options.ExcludePackage,
 			IncludeMACAddress:                     includeMACAddress,
 			ExcludeMACAddress:                     excludeMACAddress,
 			InterfaceMonitor:                      networkManager.InterfaceMonitor(),
@@ -260,12 +257,10 @@ func NewInbound(ctx context.Context, router adapter.Router, logger log.ContextLo
 		if err != nil {
 			return nil, E.Cause(err, "initialize auto-redirect")
 		}
-		if !C.IsAndroid {
-			inbound.tunOptions.AutoRedirectMarkMode = true
-			err = networkManager.RegisterAutoRedirectOutputMark(inbound.tunOptions.AutoRedirectOutputMark)
-			if err != nil {
-				return nil, err
-			}
+		inbound.tunOptions.AutoRedirectMarkMode = true
+		err = networkManager.RegisterAutoRedirectOutputMark(inbound.tunOptions.AutoRedirectOutputMark)
+		if err != nil {
+			return nil, err
 		}
 	}
 	return inbound, nil
@@ -320,13 +315,17 @@ func (t *Inbound) Start(stage adapter.StartStage) error {
 			t.dnsHijackAddress = append(inet4DNSAddress, inet6DNSAddress...)
 		}
 	case adapter.StartStateStart:
-		if C.IsAndroid && t.platformInterface == nil {
-			t.tunOptions.BuildAndroidRules(t.networkManager.PackageManager())
-		}
+		var routeAddressSet []*netipx.IPSet
+		var routeExcludeAddressSet []*netipx.IPSet
 		if t.tunOptions.Name == "" {
 			t.tunOptions.Name = tun.CalculateInterfaceName("")
 		}
 		if t.platformInterface == nil {
+			t.routeSetAccess.Lock()
+			if t.routeSetClosed {
+				t.routeSetAccess.Unlock()
+				return os.ErrClosed
+			}
 			t.routeAddressSet = common.FlatMap(t.routeRuleSet, adapter.RuleSet.ExtractIPSet)
 			for _, routeRuleSet := range t.routeRuleSet {
 				ipSets := routeRuleSet.ExtractIPSet()
@@ -351,6 +350,10 @@ func (t *Inbound) Start(stage adapter.StartStage) error {
 					t.routeExcludeRuleSetCallback = append(t.routeExcludeRuleSetCallback, routeExcludeRuleSet.RegisterCallback(t.updateRouteAddressSet))
 				}
 			}
+			t.routeRuleSetRefsAdded = true
+			routeAddressSet = append(routeAddressSet, t.routeAddressSet...)
+			routeExcludeAddressSet = append(routeExcludeAddressSet, t.routeExcludeAddressSet...)
+			t.routeSetAccess.Unlock()
 		}
 		var (
 			tunInterface tun.Tun
@@ -358,8 +361,8 @@ func (t *Inbound) Start(stage adapter.StartStage) error {
 		)
 		monitor := taskmonitor.New(t.logger, C.StartTimeout)
 		tunOptions := t.tunOptions
-		if t.autoRedirect == nil && !(runtime.GOOS == "android" && t.platformInterface != nil) {
-			for _, ipSet := range t.routeAddressSet {
+		if t.autoRedirect == nil {
+			for _, ipSet := range routeAddressSet {
 				for _, prefix := range ipSet.Prefixes() {
 					if prefix.Addr().Is4() {
 						tunOptions.Inet4RouteAddress = append(tunOptions.Inet4RouteAddress, prefix)
@@ -368,7 +371,7 @@ func (t *Inbound) Start(stage adapter.StartStage) error {
 					}
 				}
 			}
-			for _, ipSet := range t.routeExcludeAddressSet {
+			for _, ipSet := range routeExcludeAddressSet {
 				for _, prefix := range ipSet.Prefixes() {
 					if prefix.Addr().Is4() {
 						tunOptions.Inet4RouteExcludeAddress = append(tunOptions.Inet4RouteExcludeAddress, prefix)
@@ -438,13 +441,22 @@ func (t *Inbound) Start(stage adapter.StartStage) error {
 				return E.Cause(err, "auto-redirect")
 			}
 		}
-		t.routeAddressSet = nil
-		t.routeExcludeAddressSet = nil
+		t.routeSetAccess.Lock()
+		if !t.routeSetClosed {
+			t.routeAddressSet = nil
+			t.routeExcludeAddressSet = nil
+		}
+		t.routeSetAccess.Unlock()
 	}
 	return nil
 }
 
 func (t *Inbound) updateRouteAddressSet(it adapter.RuleSet) {
+	t.routeSetAccess.Lock()
+	defer t.routeSetAccess.Unlock()
+	if t.routeSetClosed || t.autoRedirect == nil {
+		return
+	}
 	t.routeAddressSet = common.FlatMap(t.routeRuleSet, adapter.RuleSet.ExtractIPSet)
 	t.routeExcludeAddressSet = common.FlatMap(t.routeExcludeRuleSet, adapter.RuleSet.ExtractIPSet)
 	t.autoRedirect.UpdateRouteAddressSet()
@@ -453,11 +465,57 @@ func (t *Inbound) updateRouteAddressSet(it adapter.RuleSet) {
 }
 
 func (t *Inbound) Close() error {
+	t.routeSetAccess.Lock()
+	if t.routeSetClosed {
+		t.routeSetAccess.Unlock()
+		return nil
+	}
+	t.routeSetClosed = true
+	t.closeRouteRuleSetsLocked()
+	tunStack := t.tunStack
+	t.tunStack = nil
+	tunIf := t.tunIf
+	t.tunIf = nil
+	autoRedirect := t.autoRedirect
+	t.autoRedirect = nil
+	t.routeSetAccess.Unlock()
 	return common.Close(
-		t.tunStack,
-		t.tunIf,
-		t.autoRedirect,
+		tunStack,
+		tunIf,
+		autoRedirect,
 	)
+}
+
+func (t *Inbound) closeRouteRuleSets() {
+	t.routeSetAccess.Lock()
+	defer t.routeSetAccess.Unlock()
+	t.closeRouteRuleSetsLocked()
+}
+
+func (t *Inbound) closeRouteRuleSetsLocked() {
+	for index, callback := range t.routeRuleSetCallback {
+		if callback != nil && index < len(t.routeRuleSet) {
+			t.routeRuleSet[index].UnregisterCallback(callback)
+		}
+	}
+	t.routeRuleSetCallback = nil
+	for index, callback := range t.routeExcludeRuleSetCallback {
+		if callback != nil && index < len(t.routeExcludeRuleSet) {
+			t.routeExcludeRuleSet[index].UnregisterCallback(callback)
+		}
+	}
+	t.routeExcludeRuleSetCallback = nil
+	if t.routeRuleSetRefsAdded {
+		for _, routeRuleSet := range t.routeRuleSet {
+			routeRuleSet.DecRef()
+		}
+		for _, routeExcludeRuleSet := range t.routeExcludeRuleSet {
+			routeExcludeRuleSet.DecRef()
+		}
+		t.routeRuleSetRefsAdded = false
+	}
+	t.routeAddressSet = nil
+	t.routeExcludeAddressSet = nil
 }
 
 func (t *Inbound) PrepareConnection(network string, source M.Socksaddr, destination M.Socksaddr, routeContext tun.DirectRouteContext, timeout time.Duration) (tun.DirectRouteDestination, error) {

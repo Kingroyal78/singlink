@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/singlink/singlink/adapter"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/adapter"
 )
 
 func selectShellBackend(platformInterface adapter.PlatformInterface) shellBackend {
@@ -20,7 +20,7 @@ func selectShellBackend(platformInterface adapter.PlatformInterface) shellBacken
 func CheckServerSupport(platformInterface adapter.PlatformInterface) (string, error) {
 	if platformInterface != nil && platformInterface.UnderNetworkExtension() {
 		if !platformInterface.UsePlatformShell() {
-			return "", E.New("SSH server is not supported in the App Store version of sing-box")
+			return "", E.New("SSH server is not supported in this platform environment")
 		}
 		err := platformInterface.CheckPlatformShell()
 		if err != nil {

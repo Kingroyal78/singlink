@@ -6,6 +6,12 @@ import (
 	"net/netip"
 	"time"
 
+	"github.com/sagernet/sing/common"
+	"github.com/sagernet/sing/common/buf"
+	"github.com/sagernet/sing/common/control"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
+	"github.com/sagernet/sing/common/udpnat2"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/adapter/inbound"
 	"github.com/singlink/singlink/common/listener"
@@ -13,12 +19,6 @@ import (
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
-	"github.com/sagernet/sing/common"
-	"github.com/sagernet/sing/common/buf"
-	"github.com/sagernet/sing/common/control"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
-	"github.com/sagernet/sing/common/udpnat2"
 )
 
 func RegisterTProxy(registry *inbound.Registry) {
@@ -68,7 +68,11 @@ func (t *TProxy) Start(stage adapter.StartStage) error {
 }
 
 func (t *TProxy) Close() error {
-	return t.listener.Close()
+	err := t.listener.Close()
+	if t.udpNat != nil {
+		t.udpNat.Purge()
+	}
+	return err
 }
 
 func (t *TProxy) NewConnection(ctx context.Context, conn net.Conn, metadata adapter.InboundContext, onClose N.CloseHandlerFunc) {
@@ -128,6 +132,7 @@ func (w *tproxyPacketWriter) WritePacket(buffer *buf.Buffer, destination M.Socks
 		if w.destination == destination && conn != nil {
 			_, err := conn.WriteToUDPAddrPort(buffer.Bytes(), w.source)
 			if err != nil {
+				conn.Close()
 				w.conn = nil
 			}
 			return err
@@ -146,5 +151,12 @@ func (w *tproxyPacketWriter) WritePacket(buffer *buf.Buffer, destination M.Socks
 	} else {
 		defer udpConn.Close()
 	}
-	return common.Error(udpConn.WriteToUDPAddrPort(buffer.Bytes(), w.source))
+	err = common.Error(udpConn.WriteToUDPAddrPort(buffer.Bytes(), w.source))
+	if err != nil && w.listener.ListenOptions().NetNs == "" && w.destination == destination {
+		if w.conn == udpConn {
+			w.conn = nil
+		}
+		udpConn.Close()
+	}
+	return err
 }

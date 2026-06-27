@@ -3,6 +3,7 @@ package rule
 import (
 	"context"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/singlink/singlink/adapter"
@@ -12,6 +13,7 @@ type RuleSetUpdater struct {
 	ctx      context.Context
 	cancel   context.CancelFunc
 	ruleSets []*RemoteRuleSet
+	wg       sync.WaitGroup
 }
 
 func NewRuleSetUpdater(ctx context.Context, ruleSets []adapter.RuleSet) *RuleSetUpdater {
@@ -34,18 +36,21 @@ func NewRuleSetUpdater(ctx context.Context, ruleSets []adapter.RuleSet) *RuleSet
 }
 
 func (u *RuleSetUpdater) Start() {
+	u.wg.Add(1)
 	go u.loopUpdate()
 }
 
 func (u *RuleSetUpdater) Close() error {
 	u.cancel()
+	u.wg.Wait()
 	return nil
 }
 
 func (u *RuleSetUpdater) loopUpdate() {
+	defer u.wg.Done()
 	nextUpdates := make([]time.Time, len(u.ruleSets))
 	for i, ruleSet := range u.ruleSets {
-		nextUpdates[i] = ruleSet.lastUpdated.Add(ruleSet.updateInterval)
+		nextUpdates[i] = ruleSet.lastUpdatedTime().Add(ruleSet.updateInterval)
 	}
 	timer := time.NewTimer(0)
 	defer timer.Stop()
@@ -61,7 +66,7 @@ func (u *RuleSetUpdater) loopUpdate() {
 			if now.Before(nextUpdates[i]) {
 				continue
 			}
-			ruleSet.updateOnce()
+			ruleSet.updateOnce(u.ctx)
 			nextUpdates[i] = now.Add(ruleSet.updateInterval)
 			updated = true
 		}

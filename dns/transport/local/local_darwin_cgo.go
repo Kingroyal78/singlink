@@ -31,8 +31,8 @@ import (
 	"errors"
 	"unsafe"
 
-	"github.com/singlink/singlink/dns"
 	E "github.com/sagernet/sing/common/exceptions"
+	"github.com/singlink/singlink/dns"
 
 	mDNS "github.com/miekg/dns"
 )
@@ -42,7 +42,11 @@ const (
 	darwinResolverTryAgain     = 2
 	darwinResolverNoRecovery   = 3
 	darwinResolverNoData       = 4
+
+	darwinSystemDNSMaxConcurrent = 16
 )
+
+var darwinSystemDNSLookupAccess = make(chan struct{}, darwinSystemDNSMaxConcurrent)
 
 func darwinLookupSystemDNS(name string, class, qtype int) (*mDNS.Msg, error) {
 	cName := C.CString(name)
@@ -83,8 +87,16 @@ func (t *Transport) systemExchange(ctx context.Context, message *mDNS.Msg) (*mDN
 		response *mDNS.Msg
 		err      error
 	}
+	select {
+	case darwinSystemDNSLookupAccess <- struct{}{}:
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
 	resultCh := make(chan resolvResult, 1)
 	go func() {
+		defer func() {
+			<-darwinSystemDNSLookupAccess
+		}()
 		response, err := darwinLookupSystemDNS(question.Name, int(question.Qclass), int(question.Qtype))
 		resultCh <- resolvResult{response, err}
 	}()

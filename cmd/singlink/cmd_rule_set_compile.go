@@ -82,9 +82,7 @@ func compileRuleSet(sourcePath string) error {
 }
 
 func downgradeRuleSetVersion(version uint8, options option.PlainRuleSet) uint8 {
-	if version == C.RuleSetVersion5 && !rule.HasHeadlessRule(options.Rules, func(rule option.DefaultHeadlessRule) bool {
-		return len(rule.PackageNameRegex) > 0
-	}) {
+	if version == C.RuleSetVersion5 {
 		version = C.RuleSetVersion4
 	}
 	if version == C.RuleSetVersion4 && !rule.HasHeadlessRule(options.Rules, func(rule option.DefaultHeadlessRule) bool {

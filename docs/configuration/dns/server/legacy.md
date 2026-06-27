@@ -55,10 +55,6 @@ The address of the dns server.
 | `DHCP`                               | `dhcp://auto` or `dhcp://en0` |
 | [FakeIP](/configuration/dns/fakeip/) | `fakeip`                      |
 
-!!! warning ""
-
-    To ensure that Android system DNS is in effect, rather than Go's built-in default resolver, enable CGO at compile time.
-
 !!! info ""
 
     the RCode transport is often used to block queries. Use with rules and the `disable_cache` rule option.

@@ -194,7 +194,7 @@ Setting this option directly to a string is equivalent to setting `server` of th
 
 !!! quote ""
 
-    Only supported in graphical clients on Android and Apple platforms with `auto_detect_interface` enabled.
+    Only supported when `auto_detect_interface` is enabled and network type detection is available.
 
 Strategy for selecting network interfaces.
 
@@ -216,7 +216,7 @@ Conflicts with `bind_interface`, `inet4_bind_address` and `inet6_bind_address`.
 
 !!! quote ""
 
-    Only supported in graphical clients on Android and Apple platforms with `auto_detect_interface` enabled.
+    Only supported when `auto_detect_interface` is enabled and network type detection is available.
 
 Network types to use when using `default` or `hybrid` network strategy or
 preferred network types to use when using `fallback` network strategy.
@@ -231,7 +231,7 @@ Device's default network is used by default.
 
 !!! quote ""
 
-    Only supported in graphical clients on Android and Apple platforms with `auto_detect_interface` enabled.
+    Only supported when `auto_detect_interface` is enabled and network type detection is available.
 
 Fallback network types when preferred networks are unavailable or timeout when using `fallback` network strategy.
 
@@ -243,7 +243,7 @@ All other networks expect preferred are used by default.
 
 !!! quote ""
 
-    Only supported in graphical clients on Android and Apple platforms with `auto_detect_interface` enabled.
+    Only supported when `auto_detect_interface` is enabled and network type detection is available.
 
 The length of time to wait before spawning a RFC 6555 Fast Fallback connection.
 
@@ -271,4 +271,3 @@ If set, the requested domain name will be resolved to IP before connect.
 |----------|--------------------------|-------------------------------------------|
 | `direct` | Domain in request        | Take `inbound.domain_strategy` if not set | 
 | others   | Domain in server address | /                                         |
-

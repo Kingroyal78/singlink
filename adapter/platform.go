@@ -3,9 +3,9 @@ package adapter
 import (
 	"net/netip"
 
-	"github.com/singlink/singlink/option"
 	"github.com/sagernet/sing-tun"
 	"github.com/sagernet/sing/common/logger"
+	"github.com/singlink/singlink/option"
 )
 
 type PlatformInterface interface {
@@ -71,11 +71,10 @@ type FindConnectionOwnerRequest struct {
 }
 
 type ConnectionOwner struct {
-	ProcessID           uint32
-	UserId              int32
-	UserName            string
-	ProcessPath         string
-	AndroidPackageNames []string
+	ProcessID   uint32
+	UserId      int32
+	UserName    string
+	ProcessPath string
 }
 
 type Notification struct {

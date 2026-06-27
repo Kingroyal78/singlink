@@ -10,13 +10,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/tls"
-	"github.com/singlink/singlink/option"
 	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	sHTTP "github.com/sagernet/sing/protocol/http"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/tls"
+	"github.com/singlink/singlink/option"
 
 	"golang.org/x/net/http2"
 )
@@ -126,6 +126,7 @@ func (c *Client) dialHTTP2(ctx context.Context) (net.Conn, error) {
 		URL:    &c.requestURL,
 		Header: c.headers.Clone(),
 	}
+	ctx, cancel := context.WithCancel(ctx)
 	request = request.WithContext(ctx)
 	switch hostLen := len(c.host); hostLen {
 	case 0:
@@ -136,7 +137,7 @@ func (c *Client) dialHTTP2(ctx context.Context) (net.Conn, error) {
 	default:
 		request.Host = c.host[rand.Intn(hostLen)]
 	}
-	conn := NewLateHTTPConn(pipeInWriter)
+	conn := NewLateHTTPConn(pipeInWriter, cancel)
 	go func() {
 		response, err := c.transport.RoundTrip(request)
 		if err != nil {

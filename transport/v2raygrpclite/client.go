@@ -8,13 +8,13 @@ import (
 	"net/url"
 	"time"
 
+	E "github.com/sagernet/sing/common/exceptions"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	"github.com/singlink/singlink/common/tls"
 	"github.com/singlink/singlink/option"
 	"github.com/singlink/singlink/transport/v2rayhttp"
-	E "github.com/sagernet/sing/common/exceptions"
-	M "github.com/sagernet/sing/common/metadata"
-	N "github.com/sagernet/sing/common/network"
 
 	"golang.org/x/net/http2"
 )
@@ -86,8 +86,9 @@ func (c *Client) DialContext(ctx context.Context) (net.Conn, error) {
 		Header: defaultClientHeader,
 		Host:   c.host,
 	}
+	ctx, cancel := context.WithCancel(ctx)
 	request = request.WithContext(ctx)
-	conn := newLateGunConn(pipeInWriter)
+	conn := newLateGunConn(pipeInWriter, cancel)
 	go func() {
 		response, err := c.transport.RoundTrip(request)
 		if err != nil {

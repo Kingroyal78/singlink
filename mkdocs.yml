@@ -54,16 +54,6 @@ nav:
       - Package Manager: installation/package-manager.md
       - Docker: installation/docker.md
       - Build from source: installation/build-from-source.md
-  - Graphical Clients:
-      - clients/index.md
-      - Android:
-          - clients/android/index.md
-          - Features: clients/android/features.md
-      - Apple platforms:
-          - clients/apple/index.md
-          - Features: clients/apple/features.md
-      - General: clients/general.md
-      - Privacy policy: clients/privacy.md
   - Manual:
       - Proxy:
           - Server: manual/proxy/server.md
@@ -259,12 +249,6 @@ plugins:
             Installation: 安装
             Package Manager: 包管理器
             Build from source: 从源代码构建
-
-            Graphical Clients: 图形界面客户端
-            Features: 特性
-            Apple platforms: Apple 平台
-            General: 通用
-            Privacy policy: 隐私政策
 
             Configuration: 配置
             Log: 日志

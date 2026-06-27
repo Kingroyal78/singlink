@@ -9,7 +9,7 @@ icon: material/new-box
 USB/IP Client service imports remote USB devices over [USB/IP](https://usbip.sourceforge.net/),
 exported by the [USB/IP Server](/configuration/service/usbip-server/).
 
-Available on Linux, Windows, and macOS (macOS requires a build with CGO). Not available on iOS.
+Available on Linux, Windows, and macOS (macOS requires a build with CGO).
 
 The server must be a singlink (or sing-usbip) server.
 

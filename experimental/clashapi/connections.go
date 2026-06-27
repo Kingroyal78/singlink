@@ -7,18 +7,24 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/singlink/singlink/adapter"
-	"github.com/singlink/singlink/common/trafficcontrol"
-	C "github.com/singlink/singlink/constant"
 	"github.com/sagernet/sing/common"
 	F "github.com/sagernet/sing/common/format"
 	"github.com/sagernet/sing/common/json"
 	"github.com/sagernet/ws"
 	"github.com/sagernet/ws/wsutil"
+	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/trafficcontrol"
+	C "github.com/singlink/singlink/constant"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/gofrs/uuid/v5"
+)
+
+const (
+	defaultConnectionsInterval = time.Second
+	minConnectionsInterval     = 100 * time.Millisecond
+	maxConnectionsInterval     = time.Minute
 )
 
 func connectionRouter(ctx context.Context, network adapter.NetworkManager, trafficManager *trafficcontrol.Manager) http.Handler {
@@ -63,8 +69,6 @@ func (c connectionObject) MarshalJSON() ([]byte, error) {
 	if c.Metadata.ProcessInfo != nil {
 		if c.Metadata.ProcessInfo.ProcessPath != "" {
 			processPath = c.Metadata.ProcessInfo.ProcessPath
-		} else if len(c.Metadata.ProcessInfo.AndroidPackageNames) > 0 {
-			processPath = c.Metadata.ProcessInfo.AndroidPackageNames[0]
 		}
 		if processPath == "" {
 			if c.Metadata.ProcessInfo.UserId != -1 {
@@ -104,10 +108,32 @@ func (c connectionObject) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func parseConnectionsInterval(intervalStr string) (time.Duration, bool) {
+	if intervalStr == "" {
+		return defaultConnectionsInterval, true
+	}
+	intervalMilliseconds, err := strconv.Atoi(intervalStr)
+	if err != nil {
+		return 0, false
+	}
+	interval := time.Duration(intervalMilliseconds) * time.Millisecond
+	if interval < minConnectionsInterval || interval > maxConnectionsInterval {
+		return 0, false
+	}
+	return interval, true
+}
+
 func getConnections(ctx context.Context, trafficManager *trafficcontrol.Manager) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Upgrade") != "websocket" {
 			render.JSON(w, r, connectionsSnapshot(trafficManager))
+			return
+		}
+
+		interval, ok := parseConnectionsInterval(r.URL.Query().Get("interval"))
+		if !ok {
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, ErrBadRequest)
 			return
 		}
 
@@ -116,19 +142,6 @@ func getConnections(ctx context.Context, trafficManager *trafficcontrol.Manager)
 			return
 		}
 		defer conn.Close()
-
-		intervalStr := r.URL.Query().Get("interval")
-		interval := 1000
-		if intervalStr != "" {
-			t, err := strconv.Atoi(intervalStr)
-			if err != nil {
-				render.Status(r, http.StatusBadRequest)
-				render.JSON(w, r, ErrBadRequest)
-				return
-			}
-
-			interval = t
-		}
 
 		buf := &bytes.Buffer{}
 		sendSnapshot := func() error {
@@ -144,7 +157,7 @@ func getConnections(ctx context.Context, trafficManager *trafficcontrol.Manager)
 			return
 		}
 
-		tick := time.NewTicker(time.Millisecond * time.Duration(interval))
+		tick := time.NewTicker(interval)
 		defer tick.Stop()
 		for {
 			select {
