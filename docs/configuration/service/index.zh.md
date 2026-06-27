@@ -32,6 +32,7 @@ icon: material/new-box
 | `ssm-api`         | [SSM API](./ssm-api)                  |
 | `usbip-server`    | [USB/IP Server](./usbip-server)       |
 | `usbip-client`    | [USB/IP Client](./usbip-client)       |
+| `v2board`         | [V2Board](./v2board)                  |
 
 #### tag
 

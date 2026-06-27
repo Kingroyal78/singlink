@@ -104,7 +104,7 @@ func TestMapInboundRejectsUnsupportedNodeTypeBeforeUserValidation(t *testing.T) 
 		ID:    1,
 		Label: "user-1",
 	}}, MapperOptions{})
-	if err == nil || !strings.Contains(err.Error(), `unsupported node type "mtproxy" by sing-box`) {
+	if err == nil || !strings.Contains(err.Error(), `unsupported node type "mtproxy" by singlink`) {
 		t.Fatalf("expected unsupported node type error, got %v", err)
 	}
 }

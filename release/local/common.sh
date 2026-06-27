@@ -4,11 +4,12 @@ set -e -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-BINARY_NAME="sing-box"
+BINARY_NAME="singlink"
+SERVICE_NAME="singlink"
 
 INSTALL_BIN_PATH="/usr/local/bin"
-INSTALL_CONFIG_PATH="/usr/local/etc/sing-box"
-INSTALL_DATA_PATH="/var/lib/sing-box"
+INSTALL_CONFIG_PATH="/etc/singlink"
+INSTALL_DATA_PATH="/var/lib/singlink"
 SYSTEMD_SERVICE_PATH="/etc/systemd/system"
 
 DEFAULT_BUILD_TAGS="$(cat "$PROJECT_DIR/release/DEFAULT_BUILD_TAGS_OTHERS")"
@@ -49,12 +50,12 @@ get_ldflags() {
     echo "-X 'github.com/singlink/singlink/constant.Version=${version}' ${shared_ldflags} -s -w -buildid="
 }
 
-build_sing_box() {
+build_singlink() {
     local tags="$1"
     local ldflags
     ldflags=$(get_ldflags)
 
-    echo "Building sing-box with tags: $tags"
+    echo "Building singlink with tags: $tags"
     cd "$PROJECT_DIR"
     export GOTOOLCHAIN=local
     go build -v -trimpath -o "$(go env GOPATH)/bin/${BINARY_NAME}" -ldflags "$ldflags" -tags "$tags" ./cmd/singlink
@@ -64,12 +65,12 @@ install_binary() {
     local gopath
     gopath=$(go env GOPATH)
     echo "Installing binary to $INSTALL_BIN_PATH/$BINARY_NAME"
-    sudo cp "${gopath}/bin/${BINARY_NAME}" "${INSTALL_BIN_PATH}/"
+    sudo install -Dm755 "${gopath}/bin/${BINARY_NAME}" "${INSTALL_BIN_PATH}/${BINARY_NAME}"
 }
 
 setup_config() {
     echo "Setting up configuration"
-    sudo mkdir -p "$INSTALL_CONFIG_PATH"
+    sudo install -d "$INSTALL_CONFIG_PATH"
     if [ ! -f "$INSTALL_CONFIG_PATH/config.json" ]; then
         sudo cp "$PROJECT_DIR/release/config/config.json" "$INSTALL_CONFIG_PATH/config.json"
         echo "Default config installed to $INSTALL_CONFIG_PATH/config.json"
@@ -80,23 +81,23 @@ setup_config() {
 
 setup_systemd() {
     echo "Setting up systemd service"
-    sudo cp "$SCRIPT_DIR/sing-box.service" "$SYSTEMD_SERVICE_PATH/"
+    sudo install -Dm644 "$SCRIPT_DIR/${SERVICE_NAME}.service" "$SYSTEMD_SERVICE_PATH/${SERVICE_NAME}.service"
     sudo systemctl daemon-reload
 }
 
 stop_service() {
-    if systemctl is-active --quiet sing-box; then
-        echo "Stopping sing-box service"
-        sudo systemctl stop sing-box
+    if systemctl is-active --quiet "$SERVICE_NAME"; then
+        echo "Stopping $SERVICE_NAME service"
+        sudo systemctl stop "$SERVICE_NAME"
     fi
 }
 
 start_service() {
-    echo "Starting sing-box service"
-    sudo systemctl start sing-box
+    echo "Starting $SERVICE_NAME service"
+    sudo systemctl start "$SERVICE_NAME"
 }
 
 restart_service() {
-    echo "Restarting sing-box service"
-    sudo systemctl restart sing-box
+    echo "Restarting $SERVICE_NAME service"
+    sudo systemctl restart "$SERVICE_NAME"
 }

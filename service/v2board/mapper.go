@@ -71,7 +71,7 @@ func MapInbound(node *NodeInfo, users []UserInfo, mapperOptions MapperOptions) (
 		return option.Inbound{}, fmt.Errorf("missing node type")
 	}
 	if !supportedNodeType(nodeType) {
-		return option.Inbound{}, fmt.Errorf("unsupported node type %q by sing-box", nodeType)
+		return option.Inbound{}, fmt.Errorf("unsupported node type %q by singlink", nodeType)
 	}
 	if config.ServerPort <= 0 || config.ServerPort > 65535 {
 		return option.Inbound{}, fmt.Errorf("invalid server_port %d", config.ServerPort)
@@ -357,14 +357,14 @@ func validatePanelTLSCertificateSettings(config *ServerConfig) error {
 	switch certMode {
 	case "", "self":
 	case "http", "dns":
-		return fmt.Errorf("tls: unsupported v2board cert_mode %q by sing-box inbound", settings.CertMode)
+		return fmt.Errorf("tls: unsupported v2board cert_mode %q by singlink inbound", settings.CertMode)
 	case "none":
 		return fmt.Errorf("TLS is disabled by v2board cert_mode=none")
 	default:
 		return fmt.Errorf("tls: unsupported v2board cert_mode %q", settings.CertMode)
 	}
 	if strings.TrimSpace(settings.Provider) != "" || strings.TrimSpace(settings.DNSEnv) != "" {
-		return fmt.Errorf("tls: unsupported v2board certificate provider settings by sing-box inbound")
+		return fmt.Errorf("tls: unsupported v2board certificate provider settings by singlink inbound")
 	}
 	return nil
 }
@@ -392,7 +392,7 @@ func applyPanelECH(tlsOptions *option.InboundTLSOptions, config *ServerConfig) e
 		}
 		return nil
 	case "cloudflare":
-		return fmt.Errorf("tls: unsupported v2board ECH mode %q by sing-box inbound", settings.ECH)
+		return fmt.Errorf("tls: unsupported v2board ECH mode %q by singlink inbound", settings.ECH)
 	default:
 		return fmt.Errorf("tls: unsupported v2board ECH mode %q", settings.ECH)
 	}
@@ -408,7 +408,7 @@ func realityTLS(config *ServerConfig) (*option.InboundTLSOptions, error) {
 		xver = config.RealityConfig.Xver
 	}
 	if xver != 0 {
-		return nil, fmt.Errorf("reality tls: unsupported xver %d by sing-box inbound", xver)
+		return nil, fmt.Errorf("reality tls: unsupported xver %d by singlink inbound", xver)
 	}
 	serverName := serverName(config)
 	if serverName == "" {
@@ -562,7 +562,7 @@ func rejectProxyProtocol(raw json.RawMessage) error {
 		return err
 	}
 	if config.AcceptProxyProtocol {
-		return fmt.Errorf("unsupported acceptProxyProtocol by sing-box inbound")
+		return fmt.Errorf("unsupported acceptProxyProtocol by singlink inbound")
 	}
 	return nil
 }
@@ -603,14 +603,14 @@ func shadowsocksOptions(listen option.ListenOptions, config *ServerConfig, users
 	}
 	network := strings.ToLower(strings.TrimSpace(config.Network))
 	if network != "" && network != "tcp" {
-		return nil, fmt.Errorf("shadowsocks: unsupported network %q by sing-box inbound", config.Network)
+		return nil, fmt.Errorf("shadowsocks: unsupported network %q by singlink inbound", config.Network)
 	}
 	obfs := strings.ToLower(strings.TrimSpace(config.Obfs))
 	if obfs != "" && obfs != "none" {
-		return nil, fmt.Errorf("shadowsocks: unsupported obfs %q by sing-box inbound", config.Obfs)
+		return nil, fmt.Errorf("shadowsocks: unsupported obfs %q by singlink inbound", config.Obfs)
 	}
 	if rawJSONHasValue(config.ObfsSettings) {
-		return nil, fmt.Errorf("shadowsocks: unsupported obfs_settings by sing-box inbound")
+		return nil, fmt.Errorf("shadowsocks: unsupported obfs_settings by singlink inbound")
 	}
 	options := &option.ShadowsocksInboundOptions{
 		ListenOptions: listen,
@@ -645,11 +645,11 @@ func validateVLESSEncryption(config *ServerConfig) error {
 	encryption := strings.ToLower(strings.TrimSpace(config.Encryption))
 	if encryption == "" || encryption == "none" {
 		if encryption == "" && config.EncryptionSettings.HasValue() {
-			return fmt.Errorf("vless: unsupported encryption_settings by sing-box inbound")
+			return fmt.Errorf("vless: unsupported encryption_settings by singlink inbound")
 		}
 		return nil
 	}
-	return fmt.Errorf("vless: unsupported encryption %q by sing-box inbound", config.Encryption)
+	return fmt.Errorf("vless: unsupported encryption %q by singlink inbound", config.Encryption)
 }
 
 func rawJSONHasValue(raw json.RawMessage) bool {

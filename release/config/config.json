@@ -1,41 +1,46 @@
 {
   "log": {
-    "level": "info"
+    "level": "info",
+    "timestamp": true
   },
-  "dns": {
-    "servers": [
-      {
-        "type": "tls",
-        "tag": "google",
-        "server": "8.8.8.8"
-      }
-    ]
-  },
-  "inbounds": [
+  "services": [
     {
-      "type": "shadowsocks",
-      "listen": "::",
-      "listen_port": 8080,
-      "network": "tcp",
-      "method": "2022-blake3-aes-128-gcm",
-      "password": "Gn1JUS14bLUHgv1cWDDp4A==",
+      "type": "v2board",
+      "tag": "v2board",
+      "api_host": "https://panel.example.com",
+      "api_key": "REPLACE_WITH_V2BOARD_NODE_TOKEN",
+      "api_version": 1,
+      "api_style": "uniproxy",
+      "timeout": "30s",
+      "listen": "0.0.0.0",
+      "tcp_fast_open": false,
+      "pull_interval": "1m",
+      "push_interval": "1m",
+      "node_report_min_traffic": 0,
+      "device_online_min_traffic": 200,
+      "tls": {
+        "mode": "none"
+      },
       "multiplex": {
         "enabled": true,
         "padding": true
-      }
+      },
+      "nodes": [
+        {
+          "tag": "v2board-shadowsocks-1",
+          "node_id": 1,
+          "node_type": "shadowsocks"
+        }
+      ]
     }
   ],
   "outbounds": [
     {
-      "type": "direct"
+      "type": "direct",
+      "tag": "direct"
     }
   ],
   "route": {
-    "rules": [
-      {
-        "port": 53,
-        "action": "hijack-dns"
-      }
-    ]
+    "final": "direct"
   }
 }
