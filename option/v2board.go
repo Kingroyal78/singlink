@@ -134,6 +134,8 @@ func v2BoardNormalizeNodeType(nodeType string) string {
 	switch strings.ToLower(strings.TrimSpace(nodeType)) {
 	case "v2ray":
 		return C.TypeVMess
+	case "ss":
+		return C.TypeShadowsocks
 	case "deepbwork":
 		return C.TypeVMess
 	case "trojan_tidalab":

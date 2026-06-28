@@ -1,6 +1,8 @@
 package v2board
 
 import (
+	"encoding/base64"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -61,6 +63,44 @@ func TestMapInboundRejectsUnsupportedTransport(t *testing.T) {
 	}}, MapperOptions{})
 	if err == nil || !strings.Contains(err.Error(), "unsupported network") {
 		t.Fatalf("expected unsupported network error, got %v", err)
+	}
+}
+
+func TestMapInboundRejectsQUICWithoutTLS(t *testing.T) {
+	_, err := MapUniProxyInbound("vmess", []byte(`{
+		"protocol": "vmess",
+		"server_port": 10000,
+		"network": "quic"
+	}`), []UserInfo{{
+		ID:   1,
+		UUID: "00000000-0000-0000-0000-000000000001",
+	}}, MapperOptions{})
+	if err == nil || !strings.Contains(err.Error(), "quic requires TLS") {
+		t.Fatalf("expected quic TLS error, got %v", err)
+	}
+}
+
+func TestMapInboundAcceptsQUICWithTLS(t *testing.T) {
+	inbound, err := MapUniProxyInbound("vmess", []byte(`{
+		"protocol": "vmess",
+		"server_port": 10000,
+		"network": "quic",
+		"tls": 1
+	}`), []UserInfo{{
+		ID:   1,
+		UUID: "00000000-0000-0000-0000-000000000001",
+	}}, MapperOptions{
+		TLS: &option.V2BoardTLSOptions{
+			CertFile: "cert.pem",
+			KeyFile:  "key.pem",
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	options := inbound.Options.(*option.VMessInboundOptions)
+	if options.TLS == nil || !options.TLS.Enabled {
+		t.Fatalf("expected TLS options, got %#v", options.TLS)
 	}
 }
 
@@ -393,13 +433,91 @@ func TestMapInboundRejectsShortShadowsocks2022UserKey(t *testing.T) {
 		"protocol": "shadowsocks",
 		"server_port": 10000,
 		"cipher": "2022-blake3-aes-256-gcm",
-		"server_key": "server-key"
+		"server_key": "`+testBase64Key(32, 1)+`"
 	}`), []UserInfo{{
 		ID:   1,
 		UUID: "short",
 	}}, MapperOptions{})
 	if err == nil || !strings.Contains(err.Error(), "too short") {
 		t.Fatalf("expected short key error, got %v", err)
+	}
+}
+
+func TestMapInboundRejectsLargeLegacyShadowsocksUserSet(t *testing.T) {
+	users := make([]UserInfo, maxLegacyShadowsocksUsers+1)
+	for i := range users {
+		users[i] = UserInfo{ID: i + 1, UUID: testUUID(i + 1)}
+	}
+	_, err := MapUniProxyInbound("ss", []byte(`{
+		"protocol": "ss",
+		"server_port": 10000,
+		"cipher": "aes-128-gcm"
+	}`), users, MapperOptions{})
+	if err == nil || !strings.Contains(err.Error(), "requires 2022-blake3") {
+		t.Fatalf("expected legacy high-scale rejection, got %v", err)
+	}
+}
+
+func TestMapInboundAcceptsShadowsocks2022Keys(t *testing.T) {
+	inbound, err := MapUniProxyInbound("ss", []byte(`{
+		"protocol": "ss",
+		"server_port": 10000,
+		"cipher": "2022-blake3-aes-128-gcm",
+		"server_key": "`+testBase64Key(16, 1)+`"
+	}`), []UserInfo{{
+		ID:     1,
+		UUID:   testUUID(1),
+		Secret: testBase64Key(16, 2),
+	}}, MapperOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	options := inbound.Options.(*option.ShadowsocksInboundOptions)
+	if options.Password != testBase64Key(16, 1) {
+		t.Fatalf("unexpected server key: %q", options.Password)
+	}
+	if len(options.Users) != 1 || options.Users[0].Password != testBase64Key(16, 2) {
+		t.Fatalf("unexpected users: %#v", options.Users)
+	}
+}
+
+func TestMapInboundRejectsInvalidShadowsocks2022ServerKey(t *testing.T) {
+	_, err := MapUniProxyInbound("ss", []byte(`{
+		"protocol": "ss",
+		"server_port": 10000,
+		"cipher": "2022-blake3-aes-128-gcm",
+		"server_key": "not-base64"
+	}`), []UserInfo{{ID: 1, UUID: testUUID(1)}}, MapperOptions{})
+	if err == nil || !strings.Contains(err.Error(), "server_key must be base64") {
+		t.Fatalf("expected invalid server key rejection, got %v", err)
+	}
+}
+
+func TestMapInboundRejectsDuplicateShadowsocks2022UserPSK(t *testing.T) {
+	duplicateKey := testBase64Key(16, 9)
+	_, err := MapUniProxyInbound("ss", []byte(`{
+		"protocol": "ss",
+		"server_port": 10000,
+		"cipher": "2022-blake3-aes-128-gcm",
+		"server_key": "`+testBase64Key(16, 1)+`"
+	}`), []UserInfo{
+		{ID: 1, UUID: testUUID(1), Secret: duplicateKey},
+		{ID: 2, UUID: testUUID(2), Secret: duplicateKey},
+	}, MapperOptions{})
+	if err == nil || !strings.Contains(err.Error(), "duplicates user 1") {
+		t.Fatalf("expected duplicate user psk rejection, got %v", err)
+	}
+}
+
+func TestMapInboundRejectsShadowsocks2022ChachaMultiUser(t *testing.T) {
+	_, err := MapUniProxyInbound("ss", []byte(`{
+		"protocol": "ss",
+		"server_port": 10000,
+		"cipher": "2022-blake3-chacha20-poly1305",
+		"server_key": "`+testBase64Key(32, 1)+`"
+	}`), []UserInfo{{ID: 1, UUID: testUUID(1)}}, MapperOptions{})
+	if err == nil || !strings.Contains(err.Error(), "unsupported multi-user cipher") {
+		t.Fatalf("expected unsupported chacha 2022 rejection, got %v", err)
 	}
 }
 
@@ -432,4 +550,16 @@ func TestMapInboundRejectsUnsupportedShadowsocksNetwork(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), `unsupported network "http"`) {
 		t.Fatalf("expected unsupported shadowsocks network error, got %v", err)
 	}
+}
+
+func testBase64Key(length int, seed byte) string {
+	key := make([]byte, length)
+	for i := range key {
+		key[i] = seed + byte(i)
+	}
+	return base64.StdEncoding.EncodeToString(key)
+}
+
+func testUUID(id int) string {
+	return "00000000-0000-0000-0000-" + strings.Repeat("0", 12-len(fmt.Sprint(id))) + fmt.Sprint(id)
 }

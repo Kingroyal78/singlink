@@ -11,6 +11,7 @@ import (
 	aTLS "github.com/sagernet/sing/common/tls"
 	"github.com/singlink/singlink/adapter"
 	boxService "github.com/singlink/singlink/adapter/service"
+	"github.com/singlink/singlink/common/controlauth"
 	"github.com/singlink/singlink/common/listener"
 	"github.com/singlink/singlink/common/tls"
 	C "github.com/singlink/singlink/constant"
@@ -43,6 +44,13 @@ type Service struct {
 
 func NewService(ctx context.Context, logger log.ContextLogger, tag string, options option.APIServiceOptions) (adapter.Service, error) {
 	ctx, cancel := context.WithCancel(ctx)
+	if err := controlauth.RequireSecretForNonLoopback("api", options.Secret, options.ListenOptions); err != nil {
+		cancel()
+		return nil, err
+	}
+	if options.Secret == "" {
+		logger.Warn("api service is unauthenticated on loopback listener")
+	}
 	s := &Service{
 		Adapter: boxService.NewAdapter(C.TypeAPI, tag),
 		ctx:     ctx,

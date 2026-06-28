@@ -31,7 +31,10 @@ import (
 	"golang.org/x/net/http2"
 )
 
-const MimeType = "application/dns-message"
+const (
+	MimeType           = "application/dns-message"
+	MaxDNSMessageBytes = 64 * 1024
+)
 
 var _ adapter.DNSTransport = (*HTTPSTransport)(nil)
 
@@ -201,24 +204,28 @@ func (t *HTTPSTransport) exchange(ctx context.Context, message *mDNS.Msg) (*mDNS
 	if response.StatusCode != http.StatusOK {
 		return nil, E.New("unexpected status: ", response.Status)
 	}
-	var responseMessage mDNS.Msg
-	if response.ContentLength > 0 {
-		responseBuffer := buf.NewSize(int(response.ContentLength))
-		defer responseBuffer.Release()
-		_, err = responseBuffer.ReadFullFrom(response.Body, int(response.ContentLength))
-		if err != nil {
-			return nil, err
-		}
-		err = responseMessage.Unpack(responseBuffer.Bytes())
-	} else {
-		rawMessage, err = io.ReadAll(response.Body)
-		if err != nil {
-			return nil, err
-		}
-		err = responseMessage.Unpack(rawMessage)
+	rawMessage, err = ReadLimitedMessageBody(response)
+	if err != nil {
+		return nil, err
 	}
+	var responseMessage mDNS.Msg
+	err = responseMessage.Unpack(rawMessage)
 	if err != nil {
 		return nil, err
 	}
 	return &responseMessage, nil
+}
+
+func ReadLimitedMessageBody(response *http.Response) ([]byte, error) {
+	if response.ContentLength > MaxDNSMessageBytes {
+		return nil, E.New("dns response size exceeds limit: ", response.ContentLength, " > ", MaxDNSMessageBytes)
+	}
+	content, err := io.ReadAll(io.LimitReader(response.Body, MaxDNSMessageBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(content) > MaxDNSMessageBytes {
+		return nil, E.New("dns response size exceeds limit: ", MaxDNSMessageBytes)
+	}
+	return content, nil
 }

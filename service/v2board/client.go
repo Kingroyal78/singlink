@@ -619,7 +619,9 @@ func (c *Client) getShadowsocksTidalabServerConfig(ctx context.Context) (*Server
 }
 
 func normalizeETag(etag string) string {
-	return strings.TrimSpace(etag)
+	etag = strings.TrimSpace(etag)
+	etag = strings.TrimPrefix(etag, "W/")
+	return strings.Trim(etag, `"`)
 }
 
 func decodeUserList(body []byte, contentType string) (*UserListBody, error) {

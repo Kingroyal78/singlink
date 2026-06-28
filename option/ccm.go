@@ -7,11 +7,12 @@ import (
 type CCMServiceOptions struct {
 	ListenOptions
 	InboundTLSOptionsContainer
-	CredentialPath string               `json:"credential_path,omitempty"`
-	Users          []CCMUser            `json:"users,omitempty"`
-	Headers        badoption.HTTPHeader `json:"headers,omitempty"`
-	Detour         string               `json:"detour,omitempty"`
-	UsagesPath     string               `json:"usages_path,omitempty"`
+	CredentialPath       string               `json:"credential_path,omitempty"`
+	Users                []CCMUser            `json:"users,omitempty"`
+	AllowUnauthenticated bool                 `json:"allow_unauthenticated,omitempty"`
+	Headers              badoption.HTTPHeader `json:"headers,omitempty"`
+	Detour               string               `json:"detour,omitempty"`
+	UsagesPath           string               `json:"usages_path,omitempty"`
 }
 
 type CCMUser struct {

@@ -3,7 +3,6 @@ package daemon
 import (
 	"context"
 	"time"
-	"unsafe"
 
 	"github.com/sagernet/sing/common/memory"
 	"github.com/singlink/singlink/service/oomkiller"
@@ -73,7 +72,8 @@ func (s *ManagedService) TriggerDebugCrash(ctx context.Context, request *DebugCr
 	switch request.Type {
 	case DebugCrashRequest_GO:
 		time.AfterFunc(200*time.Millisecond, func() {
-			*(*int)(unsafe.Pointer(uintptr(0))) = 0
+			var crash *int
+			*crash = 0
 		})
 	case DebugCrashRequest_NATIVE:
 		err := s.handler.TriggerNativeCrash()

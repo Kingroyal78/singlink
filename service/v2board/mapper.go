@@ -12,10 +12,13 @@ import (
 	"strings"
 	"time"
 
+	shadowsocks "github.com/sagernet/sing-shadowsocks"
 	"github.com/sagernet/sing/common/json/badoption"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/option"
 )
+
+const maxLegacyShadowsocksUsers = 10_000
 
 type MapperOptions struct {
 	Tag           string
@@ -101,6 +104,9 @@ func MapInbound(node *NodeInfo, users []UserInfo, mapperOptions MapperOptions) (
 		if err != nil {
 			return option.Inbound{}, err
 		}
+		if err := requireTransportTLS(nodeType, transport, tlsOptions); err != nil {
+			return option.Inbound{}, err
+		}
 		inbound.Options = &option.VMessInboundOptions{
 			ListenOptions:              listen,
 			Users:                      vmessUsers(users),
@@ -118,6 +124,9 @@ func MapInbound(node *NodeInfo, users []UserInfo, mapperOptions MapperOptions) (
 		}
 		tlsOptions, err := inboundTLS(config.TLS, config, mapperOptions)
 		if err != nil {
+			return option.Inbound{}, err
+		}
+		if err := requireTransportTLS(nodeType, transport, tlsOptions); err != nil {
 			return option.Inbound{}, err
 		}
 		inbound.Options = &option.VLESSInboundOptions{
@@ -553,6 +562,16 @@ func v2rayTransport(network string, raw json.RawMessage) (*option.V2RayTransport
 	}
 }
 
+func requireTransportTLS(nodeType string, transport *option.V2RayTransportOptions, tlsOptions *option.InboundTLSOptions) error {
+	if transport == nil || transport.Type != C.V2RayTransportTypeQUIC {
+		return nil
+	}
+	if tlsOptions != nil && tlsOptions.Enabled {
+		return nil
+	}
+	return fmt.Errorf("%s transport: quic requires TLS", nodeType)
+}
+
 func rejectProxyProtocol(raw json.RawMessage) error {
 	if len(raw) == 0 || strings.TrimSpace(string(raw)) == "null" {
 		return nil
@@ -612,33 +631,74 @@ func shadowsocksOptions(listen option.ListenOptions, config *ServerConfig, users
 	if rawJSONHasValue(config.ObfsSettings) {
 		return nil, fmt.Errorf("shadowsocks: unsupported obfs_settings by singlink inbound")
 	}
+	keyLength, is2022, err := shadowsocks2022KeyLength(config.Cipher)
+	if err != nil {
+		return nil, err
+	}
+	if !is2022 && len(users) > maxLegacyShadowsocksUsers {
+		return nil, fmt.Errorf("shadowsocks: %s with %d users requires 2022-blake3-aes-128-gcm or 2022-blake3-aes-256-gcm; legacy multi-user authentication is O(n)", config.Cipher, len(users))
+	}
 	options := &option.ShadowsocksInboundOptions{
 		ListenOptions: listen,
 		Method:        config.Cipher,
 		Users:         make([]option.ShadowsocksUser, len(users)),
 		Multiplex:     multiplex,
 	}
-	keyLength, is2022, err := shadowsocks2022KeyLength(config.Cipher)
-	if err != nil {
-		return nil, err
-	}
 	if is2022 {
-		if config.ServerKey == "" {
-			return nil, fmt.Errorf("shadowsocks: missing server_key for %s", config.Cipher)
+		if _, err := decodeShadowsocks2022PSK(config.ServerKey, keyLength, "server_key"); err != nil {
+			return nil, err
 		}
 		options.Password = config.ServerKey
 	}
+	seenPSK := make(map[string]int, len(users))
 	for i, user := range users {
 		password := user.UUID
 		if is2022 {
-			if len(password) < keyLength {
-				return nil, fmt.Errorf("shadowsocks: user %d uuid is too short for %s", user.ID, config.Cipher)
+			var err error
+			password, err = shadowsocks2022UserPassword(user, keyLength)
+			if err != nil {
+				return nil, err
 			}
-			password = base64.StdEncoding.EncodeToString([]byte(password[:keyLength]))
+			psk, err := decodeShadowsocks2022PSK(password, keyLength, fmt.Sprintf("user %d psk", user.ID))
+			if err != nil {
+				return nil, err
+			}
+			key := string(psk)
+			if previous, loaded := seenPSK[key]; loaded {
+				return nil, fmt.Errorf("shadowsocks: user %d psk duplicates user %d psk", user.ID, previous)
+			}
+			seenPSK[key] = user.ID
 		}
 		options.Users[i] = option.ShadowsocksUser{Name: user.UUID, Password: password}
 	}
 	return options, nil
+}
+
+func shadowsocks2022UserPassword(user UserInfo, keyLength int) (string, error) {
+	if user.Secret != "" {
+		return user.Secret, nil
+	}
+	if len(user.UUID) < keyLength {
+		return "", fmt.Errorf("shadowsocks: user %d uuid is too short for 2022 key derivation", user.ID)
+	}
+	return base64.StdEncoding.EncodeToString([]byte(user.UUID[:keyLength])), nil
+}
+
+func decodeShadowsocks2022PSK(value string, keyLength int, name string) ([]byte, error) {
+	if value == "" {
+		return nil, fmt.Errorf("shadowsocks: missing %s", name)
+	}
+	key, err := base64.StdEncoding.DecodeString(value)
+	if err != nil {
+		return nil, fmt.Errorf("shadowsocks: %s must be base64-encoded: %w", name, err)
+	}
+	if len(key) < keyLength {
+		return nil, fmt.Errorf("shadowsocks: %s is too short for 2022 key length %d", name, keyLength)
+	}
+	if len(key) > keyLength {
+		key = shadowsocks.Key(key, keyLength)
+	}
+	return key, nil
 }
 
 func validateVLESSEncryption(config *ServerConfig) error {
@@ -661,8 +721,10 @@ func shadowsocks2022KeyLength(cipher string) (int, bool, error) {
 	switch cipher {
 	case "2022-blake3-aes-128-gcm":
 		return 16, true, nil
-	case "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305":
+	case "2022-blake3-aes-256-gcm":
 		return 32, true, nil
+	case "2022-blake3-chacha20-poly1305":
+		return 0, false, fmt.Errorf("shadowsocks: unsupported multi-user cipher %q", cipher)
 	case "aes-128-gcm", "aes-192-gcm", "aes-256-gcm", "chacha20-ietf-poly1305", "xchacha20-ietf-poly1305", "none":
 		return 0, false, nil
 	default:

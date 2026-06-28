@@ -65,6 +65,8 @@ func normalizeNodeType(nodeType string) string {
 	switch strings.ToLower(strings.TrimSpace(nodeType)) {
 	case "v2ray":
 		return "vmess"
+	case "ss":
+		return C.TypeShadowsocks
 	case APIStyleDeepbwork:
 		return C.TypeVMess
 	case APIStyleTrojanTidalab:

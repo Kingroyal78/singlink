@@ -24,6 +24,7 @@ import (
 	aTLS "github.com/sagernet/sing/common/tls"
 	"github.com/singlink/singlink/adapter"
 	boxService "github.com/singlink/singlink/adapter/service"
+	"github.com/singlink/singlink/common/controlauth"
 	"github.com/singlink/singlink/common/dialer"
 	"github.com/singlink/singlink/common/listener"
 	"github.com/singlink/singlink/common/tls"
@@ -162,6 +163,18 @@ type Service struct {
 }
 
 func NewService(ctx context.Context, logger log.ContextLogger, tag string, options option.CCMServiceOptions) (adapter.Service, error) {
+	if len(options.Users) == 0 {
+		if !controlauth.IsLoopbackListenOptions(options.ListenOptions) {
+			return nil, E.New("ccm users are required when listen is not loopback")
+		}
+		if options.AllowUnauthenticated {
+			logger.Warn("ccm explicitly allows unauthenticated requests on loopback listener")
+		} else {
+			logger.Warn("ccm has no users configured; requests are unauthenticated on loopback listener")
+		}
+	} else if err := validateUsers(options.Users); err != nil {
+		return nil, err
+	}
 	serviceDialer, err := dialer.NewWithOptions(dialer.Options{
 		Context: ctx,
 		Options: option.DialerOptions{
@@ -358,7 +371,7 @@ func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var ok bool
 		username, ok = s.userManager.Authenticate(clientToken)
 		if !ok {
-			s.logger.Warn("authentication failed for request from ", r.RemoteAddr, ": unknown key: ", clientToken)
+			s.logger.Warn("authentication failed for request from ", r.RemoteAddr, ": unknown key fingerprint: ", controlauth.TokenFingerprint(clientToken))
 			writeJSONError(w, r, http.StatusUnauthorized, "authentication_error", "invalid api key")
 			return
 		}

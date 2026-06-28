@@ -1,0 +1,329 @@
+name: Release Artifacts
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, with or without leading v"
+        required: true
+        type: string
+      publish_release:
+        description: "Create/update GitHub Release and upload binary assets"
+        required: true
+        default: true
+        type: boolean
+      push_image:
+        description: "Build and push GHCR Docker image"
+        required: true
+        default: true
+        type: boolean
+      prerelease:
+        description: "Mark release as prerelease"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare release metadata
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+      image: ${{ steps.meta.outputs.image }}
+      publish_release: ${{ steps.meta.outputs.publish_release }}
+      push_image: ${{ steps.meta.outputs.push_image }}
+      prerelease: ${{ steps.meta.outputs.prerelease }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Resolve metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            version="${{ inputs.version }}"
+            publish_release="${{ inputs.publish_release }}"
+            push_image="${{ inputs.push_image }}"
+            prerelease="${{ inputs.prerelease }}"
+          else
+            version="${GITHUB_REF_NAME}"
+            publish_release="true"
+            push_image="true"
+            if [[ "$version" == *-* ]]; then
+              prerelease="true"
+            else
+              prerelease="false"
+            fi
+          fi
+
+          version="${version#v}"
+          if [[ -z "$version" ]]; then
+            echo "version is empty" >&2
+            exit 1
+          fi
+
+          tag="v${version}"
+          repo_lower="$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')"
+          image="ghcr.io/${repo_lower}"
+
+          {
+            echo "version=${version}"
+            echo "tag=${tag}"
+            echo "image=${image}"
+            echo "publish_release=${publish_release}"
+            echo "push_image=${push_image}"
+            echo "prerelease=${prerelease}"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "release: ${tag}"
+          echo "image: ${image}"
+
+  build_binaries:
+    name: Build ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: linux_amd64, goos: linux, goarch: amd64 }
+          - { target: linux_arm64, goos: linux, goarch: arm64 }
+          - { target: linux_armv7, goos: linux, goarch: arm, goarm: "7" }
+          - { target: linux_armv6, goos: linux, goarch: arm, goarm: "6" }
+          - { target: linux_386, goos: linux, goarch: "386", go386: sse2 }
+          - { target: linux_riscv64, goos: linux, goarch: riscv64 }
+          - { target: linux_ppc64le, goos: linux, goarch: ppc64le }
+          - { target: linux_s390x, goos: linux, goarch: s390x }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ~1.26.4
+      - name: Build binary
+        shell: bash
+        env:
+          CGO_ENABLED: "0"
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          GOARM: ${{ matrix.goarm }}
+          GO386: ${{ matrix.go386 }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist package
+          tags="$(cat release/DEFAULT_BUILD_TAGS_OTHERS)"
+          ldflags_shared="$(cat release/LDFLAGS)"
+
+          go build -v -trimpath \
+            -tags "${tags}" \
+            -ldflags "-X 'github.com/singlink/singlink/constant.Version=${VERSION}' ${ldflags_shared} -s -w -buildid=" \
+            -o "dist/singlink" \
+            ./cmd/singlink
+
+          package_name="singlink_${VERSION}_${{ matrix.target }}"
+          package_dir="package/${package_name}"
+          mkdir -p "${package_dir}"
+          install -m 0755 "dist/singlink" "${package_dir}/singlink"
+          install -m 0644 LICENSE "${package_dir}/LICENSE"
+          install -m 0644 README.md "${package_dir}/README.md"
+          install -m 0644 release/config/config.json "${package_dir}/config.example.json"
+
+          tar -C package -czf "dist/${package_name}.tar.gz" "${package_name}"
+          (cd dist && sha256sum "${package_name}.tar.gz" > "${package_name}.tar.gz.sha256")
+
+          cat > "dist/${package_name}.metadata.json" <<EOF
+          {
+            "name": "${package_name}.tar.gz",
+            "target": "${{ matrix.target }}",
+            "os": "${{ matrix.goos }}",
+            "arch": "${{ matrix.goarch }}",
+            "goarm": "${{ matrix.goarm }}",
+            "go386": "${{ matrix.go386 }}",
+            "format": "tar.gz"
+          }
+          EOF
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-binary-${{ matrix.target }}
+          path: |
+            dist/*.tar.gz
+            dist/*.tar.gz.sha256
+            dist/*.metadata.json
+          if-no-files-found: error
+
+  publish_release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+      - build_binaries
+    if: needs.prepare.outputs.publish_release == 'true'
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ needs.prepare.outputs.version }}
+      TAG: ${{ needs.prepare.outputs.tag }}
+      IMAGE: ${{ needs.prepare.outputs.image }}
+      PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Download binary artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: dist
+          pattern: release-binary-*
+          merge-multiple: true
+      - name: Generate checksums and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -m 0755 release/install.sh dist/install.sh
+          cd dist
+          sha256sum -- *.tar.gz | sort -k2 > checksums.txt
+          cd ..
+
+          python3 - <<'PY'
+          import glob
+          import hashlib
+          import json
+          import os
+          from datetime import datetime, timezone
+
+          version = os.environ["VERSION"]
+          tag = os.environ["TAG"]
+          image = os.environ["IMAGE"]
+          repo = os.environ["GITHUB_REPOSITORY"]
+          base_url = f"https://github.com/{repo}/releases/download/{tag}"
+
+          assets = []
+          for metadata_path in sorted(glob.glob("dist/*.metadata.json")):
+              with open(metadata_path, "r", encoding="utf-8") as metadata_file:
+                  metadata = json.load(metadata_file)
+              asset_path = os.path.join("dist", metadata["name"])
+              with open(asset_path, "rb") as asset_file:
+                  metadata["sha256"] = hashlib.sha256(asset_file.read()).hexdigest()
+              metadata["url"] = f"{base_url}/{metadata['name']}"
+              assets.append(metadata)
+
+          image_tags = [f"{image}:{version}", f"{image}:{tag}"]
+          if os.environ.get("PRERELEASE") != "true":
+              image_tags.append(f"{image}:latest")
+
+          manifest = {
+              "project": "singlink",
+              "version": version,
+              "tag": tag,
+              "repository": repo,
+              "generated_at": datetime.now(timezone.utc).isoformat(),
+              "checksums": f"{base_url}/checksums.txt",
+              "installer": f"{base_url}/install.sh",
+              "image": image,
+              "image_tags": image_tags,
+              "assets": assets,
+          }
+
+          with open("dist/release-manifest.json", "w", encoding="utf-8") as manifest_file:
+              json.dump(manifest, manifest_file, indent=2, sort_keys=True)
+              manifest_file.write("\n")
+          PY
+      - name: Create or update release
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          release_args=()
+          if [[ "$PRERELEASE" == "true" ]]; then
+            release_args+=(--prerelease)
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; uploading assets with --clobber."
+          else
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "$TAG" \
+              --notes "Automated singlink release $TAG." \
+              "${release_args[@]}"
+          fi
+
+          gh release upload "$TAG" \
+            dist/*.tar.gz \
+            dist/*.tar.gz.sha256 \
+            dist/checksums.txt \
+            dist/release-manifest.json \
+            dist/install.sh \
+            --clobber
+
+  publish_image:
+    name: Publish Docker image
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+    if: needs.prepare.outputs.push_image == 'true'
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      TAG: ${{ needs.prepare.outputs.tag }}
+      IMAGE: ${{ needs.prepare.outputs.image }}
+      PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Prepare Docker tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "DOCKER_TAGS<<EOF"
+            echo "${IMAGE}:${VERSION}"
+            echo "${IMAGE}:${TAG}"
+            if [[ "$PRERELEASE" != "true" ]]; then
+              echo "${IMAGE}:latest"
+            fi
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v4
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386
+          push: true
+          build-args: |
+            VERSION=${{ env.VERSION }}
+          tags: ${{ env.DOCKER_TAGS }}

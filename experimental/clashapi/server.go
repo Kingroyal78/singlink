@@ -21,6 +21,7 @@ import (
 	"github.com/sagernet/ws"
 	"github.com/sagernet/ws/wsutil"
 	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/controlauth"
 	"github.com/singlink/singlink/common/trafficcontrol"
 	"github.com/singlink/singlink/common/urltest"
 	C "github.com/singlink/singlink/constant"
@@ -71,6 +72,11 @@ func NewServer(ctx context.Context, logFactory log.ObservableFactory, options op
 	if urlTestHistory == nil {
 		return nil, E.New("missing URL test history storage")
 	}
+	if options.ExternalController != "" {
+		if err := controlauth.RequireSecretForNonLoopbackAddress("clash api", options.Secret, options.ExternalController); err != nil {
+			return nil, err
+		}
+	}
 	chiRouter := chi.NewRouter()
 	s := &Server{
 		ctx:       ctx,
@@ -106,6 +112,9 @@ func NewServer(ctx context.Context, logFactory log.ObservableFactory, options op
 	//nolint:staticcheck
 	if options.StoreMode || options.StoreSelected || options.StoreFakeIP || options.CacheFile != "" || options.CacheID != "" {
 		return nil, E.New("cache_file and related fields in Clash API is deprecated in sing-box 1.8.0, use experimental.cache_file instead.")
+	}
+	if options.ExternalController != "" && options.Secret == "" {
+		s.logger.Warn("clash api is unauthenticated on loopback listener")
 	}
 	allowedOrigins := options.AccessControlAllowOrigin
 	if len(allowedOrigins) == 0 {

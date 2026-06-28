@@ -2,6 +2,7 @@ package ssmapi
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/sagernet/sing/common/logger"
 	sHTTP "github.com/sagernet/sing/protocol/http"
@@ -15,13 +16,15 @@ type APIServer struct {
 	logger  logger.Logger
 	traffic *TrafficManager
 	user    *UserManager
+	secret  string
 }
 
-func NewAPIServer(logger logger.Logger, traffic *TrafficManager, user *UserManager) *APIServer {
+func NewAPIServer(logger logger.Logger, traffic *TrafficManager, user *UserManager, secret string) *APIServer {
 	return &APIServer{
 		logger:  logger,
 		traffic: traffic,
 		user:    user,
+		secret:  secret,
 	}
 }
 
@@ -33,6 +36,9 @@ func (s *APIServer) Route(r chi.Router) {
 				handler.ServeHTTP(writer, request)
 			})
 		})
+		if s.secret != "" {
+			r.Use(s.authenticate)
+		}
 		r.Get("/", s.getServerInfo)
 		r.Get("/users", s.listUser)
 		r.Post("/users", s.addUser)
@@ -40,6 +46,17 @@ func (s *APIServer) Route(r chi.Router) {
 		r.Put("/users/{username}", s.updateUser)
 		r.Delete("/users/{username}", s.deleteUser)
 		r.Get("/stats", s.getStats)
+	})
+}
+
+func (s *APIServer) authenticate(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		token, ok := strings.CutPrefix(request.Header.Get("Authorization"), "Bearer ")
+		if !ok || token != s.secret {
+			writer.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		handler.ServeHTTP(writer, request)
 	})
 }
 

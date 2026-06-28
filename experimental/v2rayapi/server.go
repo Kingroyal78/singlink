@@ -6,7 +6,9 @@ import (
 	"net/http"
 
 	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/singlink/singlink/adapter"
+	"github.com/singlink/singlink/common/controlauth"
 	"github.com/singlink/singlink/experimental"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
@@ -30,6 +32,12 @@ type Server struct {
 }
 
 func NewServer(logger log.Logger, options option.V2RayAPIOptions) (adapter.V2RayServer, error) {
+	if options.Listen != "" && !controlauth.IsLoopbackListenAddress(options.Listen) {
+		return nil, E.New("v2ray api listen must be loopback")
+	}
+	if options.Listen != "" {
+		logger.Warn("v2ray api is unauthenticated on loopback listener")
+	}
 	grpcServer := grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
 	statsService := NewStatsService(common.PtrValueOrDefault(options.Stats))
 	if statsService != nil {

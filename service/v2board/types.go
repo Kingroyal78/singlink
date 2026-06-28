@@ -86,6 +86,7 @@ func (c *ServerConfig) UnmarshalJSON(data []byte) error {
 		NetworkSettingsCamel json.RawMessage    `json:"networkSettings"`
 		TLSSettingsCamel     *ServerTLSSettings `json:"tlsSettings"`
 		ObfsPasswordHyphen   string             `json:"obfs-password"`
+		SettingsRaw          json.RawMessage    `json:"settings"`
 	}{
 		serverConfig: (*serverConfig)(c),
 	}
@@ -102,6 +103,13 @@ func (c *ServerConfig) UnmarshalJSON(data []byte) error {
 	}
 	if c.ObfsPassword == "" && aux.ObfsPasswordHyphen != "" {
 		c.ObfsPassword = aux.ObfsPasswordHyphen
+	}
+	if rawJSONHasValue(aux.SettingsRaw) {
+		if len(bytes.TrimSpace(aux.SettingsRaw)) > 0 && bytes.TrimSpace(aux.SettingsRaw)[0] == '{' {
+			if err := json.Unmarshal(aux.SettingsRaw, &c.Settings); err != nil {
+				return fmt.Errorf("decode settings: %w", err)
+			}
+		}
 	}
 	return nil
 }

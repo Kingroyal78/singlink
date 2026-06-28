@@ -165,7 +165,7 @@ func (t *adaptiveTimer) poll() {
 	if t.timerConfig.policyMode == policyModeNetworkExtension {
 		if t.cleanupTriggered {
 			runtimeDebug.FreeOSMemory()
-			t.cleanupTriggered = true
+			t.cleanupTriggered = false
 		}
 	}
 	if t.pendingPressureBaseline {
@@ -198,11 +198,13 @@ func (t *adaptiveTimer) poll() {
 			}
 		}
 	}
+	if triggered && t.timerConfig.policyMode == policyModeNetworkExtension {
+		t.cleanupTriggered = true
+	}
 	t.access.Unlock()
 	if !triggered {
 		return
 	}
-	t.cleanupTriggered = false
 	t.onTriggered(sample.usage)
 	if rateTriggered {
 		if t.killerDisabled {

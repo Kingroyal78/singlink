@@ -67,9 +67,12 @@ func format() error {
 			return E.Cause(err, "open output")
 		}
 		_, err = output.Write(buffer.Bytes())
-		output.Close()
+		closeErr := output.Close()
 		if err != nil {
 			return E.Cause(err, "write output")
+		}
+		if closeErr != nil {
+			return E.Cause(closeErr, "close output")
 		}
 		os.Stderr.WriteString(outputPath + "\n")
 	}

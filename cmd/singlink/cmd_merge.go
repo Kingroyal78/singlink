@@ -38,7 +38,7 @@ func merge(outputPath string) error {
 	if err != nil {
 		return err
 	}
-	err = mergePathResources(&mergedOptions)
+	containsSensitiveResources, err := mergePathResources(&mergedOptions)
 	if err != nil {
 		return err
 	}
@@ -49,46 +49,61 @@ func merge(outputPath string) error {
 	if err != nil {
 		return E.Cause(err, "encode config")
 	}
-	if existsContent, err := os.ReadFile(outputPath); err != nil {
-		if string(existsContent) == buffer.String() {
-			return nil
-		}
+	if existsContent, err := os.ReadFile(outputPath); err == nil && bytes.Equal(existsContent, buffer.Bytes()) {
+		return nil
 	}
 	err = rw.MkdirParent(outputPath)
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(outputPath, buffer.Bytes(), 0o644)
+	fileMode := os.FileMode(0o644)
+	if containsSensitiveResources {
+		fileMode = 0o600
+	}
+	err = os.WriteFile(outputPath, buffer.Bytes(), fileMode)
 	if err != nil {
 		return err
+	}
+	if containsSensitiveResources {
+		err = os.Chmod(outputPath, fileMode)
+		if err != nil {
+			return err
+		}
+		os.Stderr.WriteString("warning: merged config contains inlined private key material\n")
 	}
 	outputPath, _ = filepath.Abs(outputPath)
 	os.Stderr.WriteString(outputPath + "\n")
 	return nil
 }
 
-func mergePathResources(options *option.Options) error {
+func mergePathResources(options *option.Options) (bool, error) {
+	var containsSensitiveResources bool
 	for _, inbound := range options.Inbounds {
 		if tlsOptions, containsTLSOptions := inbound.Options.(option.InboundTLSOptionsWrapper); containsTLSOptions {
-			tlsOptions.ReplaceInboundTLSOptions(mergeTLSInboundOptions(tlsOptions.TakeInboundTLSOptions()))
+			mergedOptions, containsSensitive := mergeTLSInboundOptions(tlsOptions.TakeInboundTLSOptions())
+			containsSensitiveResources = containsSensitiveResources || containsSensitive
+			tlsOptions.ReplaceInboundTLSOptions(mergedOptions)
 		}
 	}
 	for _, outbound := range options.Outbounds {
 		switch outbound.Type {
 		case C.TypeSSH:
-			mergeSSHOutboundOptions(outbound.Options.(*option.SSHOutboundOptions))
+			containsSensitiveResources = mergeSSHOutboundOptions(outbound.Options.(*option.SSHOutboundOptions)) || containsSensitiveResources
 		}
 		if tlsOptions, containsTLSOptions := outbound.Options.(option.OutboundTLSOptionsWrapper); containsTLSOptions {
-			tlsOptions.ReplaceOutboundTLSOptions(mergeTLSOutboundOptions(tlsOptions.TakeOutboundTLSOptions()))
+			mergedOptions, containsSensitive := mergeTLSOutboundOptions(tlsOptions.TakeOutboundTLSOptions())
+			containsSensitiveResources = containsSensitiveResources || containsSensitive
+			tlsOptions.ReplaceOutboundTLSOptions(mergedOptions)
 		}
 	}
-	return nil
+	return containsSensitiveResources, nil
 }
 
-func mergeTLSInboundOptions(options *option.InboundTLSOptions) *option.InboundTLSOptions {
+func mergeTLSInboundOptions(options *option.InboundTLSOptions) (*option.InboundTLSOptions, bool) {
 	if options == nil {
-		return nil
+		return nil, false
 	}
+	var containsSensitiveResources bool
 	if options.CertificatePath != "" {
 		if content, err := os.ReadFile(options.CertificatePath); err == nil {
 			options.Certificate = trimStringArray(strings.Split(string(content), "\n"))
@@ -97,25 +112,39 @@ func mergeTLSInboundOptions(options *option.InboundTLSOptions) *option.InboundTL
 	if options.KeyPath != "" {
 		if content, err := os.ReadFile(options.KeyPath); err == nil {
 			options.Key = trimStringArray(strings.Split(string(content), "\n"))
+			containsSensitiveResources = true
 		}
 	}
 	if options.ECH != nil {
 		if options.ECH.KeyPath != "" {
 			if content, err := os.ReadFile(options.ECH.KeyPath); err == nil {
 				options.ECH.Key = trimStringArray(strings.Split(string(content), "\n"))
+				containsSensitiveResources = true
 			}
 		}
 	}
-	return options
+	return options, containsSensitiveResources
 }
 
-func mergeTLSOutboundOptions(options *option.OutboundTLSOptions) *option.OutboundTLSOptions {
+func mergeTLSOutboundOptions(options *option.OutboundTLSOptions) (*option.OutboundTLSOptions, bool) {
 	if options == nil {
-		return nil
+		return nil, false
 	}
+	var containsSensitiveResources bool
 	if options.CertificatePath != "" {
 		if content, err := os.ReadFile(options.CertificatePath); err == nil {
 			options.Certificate = trimStringArray(strings.Split(string(content), "\n"))
+		}
+	}
+	if options.ClientCertificatePath != "" {
+		if content, err := os.ReadFile(options.ClientCertificatePath); err == nil {
+			options.ClientCertificate = trimStringArray(strings.Split(string(content), "\n"))
+		}
+	}
+	if options.ClientKeyPath != "" {
+		if content, err := os.ReadFile(options.ClientKeyPath); err == nil {
+			options.ClientKey = trimStringArray(strings.Split(string(content), "\n"))
+			containsSensitiveResources = true
 		}
 	}
 	if options.ECH != nil {
@@ -125,15 +154,17 @@ func mergeTLSOutboundOptions(options *option.OutboundTLSOptions) *option.Outboun
 			}
 		}
 	}
-	return options
+	return options, containsSensitiveResources
 }
 
-func mergeSSHOutboundOptions(options *option.SSHOutboundOptions) {
+func mergeSSHOutboundOptions(options *option.SSHOutboundOptions) bool {
 	if options.PrivateKeyPath != "" {
 		if content, err := os.ReadFile(os.ExpandEnv(options.PrivateKeyPath)); err == nil {
 			options.PrivateKey = trimStringArray(strings.Split(string(content), "\n"))
+			return true
 		}
 	}
+	return false
 }
 
 func trimStringArray(array []string) []string {

@@ -31,7 +31,7 @@ func TestGetServerConfigUsesQueryAndETag(t *testing.T) {
 			}`))
 			return
 		}
-		if request.Header.Get("If-None-Match") != `"config-etag"` {
+		if request.Header.Get("If-None-Match") != `config-etag` {
 			t.Fatalf("missing If-None-Match: %s", request.Header.Get("If-None-Match"))
 		}
 		writer.WriteHeader(http.StatusNotModified)
@@ -75,6 +75,16 @@ func TestDecodeUserListTracksEnabledPresence(t *testing.T) {
 	}
 }
 
+func TestDecodeServerConfigIgnoresNonObjectSettings(t *testing.T) {
+	var config ServerConfig
+	if err := json.Unmarshal([]byte(`{"protocol":"mtproxy","server_port":443,"settings":[]}`), &config); err != nil {
+		t.Fatal(err)
+	}
+	if config.Settings != nil {
+		t.Fatalf("unexpected settings: %#v", config.Settings)
+	}
+}
+
 func TestGetV2ServerConfigUsesV2Path(t *testing.T) {
 	var calls int
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -93,7 +103,7 @@ func TestGetV2ServerConfigUsesV2Path(t *testing.T) {
 			t.Fatalf("unexpected token: %s", query.Get("token"))
 		}
 		if calls > 1 {
-			if request.Header.Get("If-None-Match") != `"v2-etag"` {
+			if request.Header.Get("If-None-Match") != `v2-etag` {
 				t.Fatalf("unexpected v2 If-None-Match: %s", request.Header.Get("If-None-Match"))
 			}
 			writer.WriteHeader(http.StatusNotModified)

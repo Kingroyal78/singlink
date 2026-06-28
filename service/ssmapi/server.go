@@ -14,6 +14,7 @@ import (
 	"github.com/sagernet/sing/service"
 	"github.com/singlink/singlink/adapter"
 	boxService "github.com/singlink/singlink/adapter/service"
+	"github.com/singlink/singlink/common/controlauth"
 	"github.com/singlink/singlink/common/listener"
 	"github.com/singlink/singlink/common/tls"
 	C "github.com/singlink/singlink/constant"
@@ -46,6 +47,13 @@ type Service struct {
 
 func NewService(ctx context.Context, logger log.ContextLogger, tag string, options option.SSMAPIServiceOptions) (adapter.Service, error) {
 	ctx, cancel := context.WithCancel(ctx)
+	if err := controlauth.RequireSecretForNonLoopback("ssmapi", options.Secret, options.ListenOptions); err != nil {
+		cancel()
+		return nil, err
+	}
+	if options.Secret == "" {
+		logger.Warn("ssmapi is unauthenticated on loopback listener")
+	}
 	chiRouter := chi.NewRouter()
 	s := &Service{
 		Adapter: boxService.NewAdapter(C.TypeSSMAPI, tag),
@@ -83,7 +91,7 @@ func NewService(ctx context.Context, logger log.ContextLogger, tag string, optio
 		traffic := NewTrafficManager()
 		managedServer.SetTracker(traffic)
 		user := NewUserManager(managedServer, traffic)
-		chiRouter.Route(entry.Key, NewAPIServer(logger, traffic, user).Route)
+		chiRouter.Route(entry.Key, NewAPIServer(logger, traffic, user, options.Secret).Route)
 		s.traffics[entry.Key] = traffic
 		s.users[entry.Key] = user
 	}
