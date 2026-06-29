@@ -24,6 +24,7 @@
 | `shadowsocks`  | [Shadowsocks](./shadowsocks/)   |
 | `vmess`        | [VMess](./vmess/)               |
 | `trojan`       | [Trojan](./trojan/)             |
+| `mieru`        | [Mieru](./mieru/)               |
 | `wireguard`    | [Wireguard](./wireguard/)       |
 | `hysteria`     | [Hysteria](./hysteria/)         |
 | `vless`        | [VLESS](./vless/)               |

@@ -25,6 +25,7 @@ import (
 	"github.com/singlink/singlink/protocol/direct"
 	"github.com/singlink/singlink/protocol/group"
 	"github.com/singlink/singlink/protocol/http"
+	"github.com/singlink/singlink/protocol/mieru"
 	"github.com/singlink/singlink/protocol/mixed"
 	"github.com/singlink/singlink/protocol/naive"
 	"github.com/singlink/singlink/protocol/redirect"
@@ -67,6 +68,7 @@ func InboundRegistry() *inbound.Registry {
 	shadowtls.RegisterInbound(registry)
 	vless.RegisterInbound(registry)
 	anytls.RegisterInbound(registry)
+	mieru.RegisterInbound(registry)
 
 	registerQUICInbounds(registry)
 	registerCloudflaredInbound(registry)
@@ -96,6 +98,7 @@ func OutboundRegistry() *outbound.Registry {
 	shadowtls.RegisterOutbound(registry)
 	vless.RegisterOutbound(registry)
 	anytls.RegisterOutbound(registry)
+	mieru.RegisterOutbound(registry)
 
 	registerQUICOutbounds(registry)
 	registerStubForRemovedOutbounds(registry)

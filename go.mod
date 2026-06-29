@@ -13,6 +13,7 @@ require (
 	github.com/creack/pty v1.1.24
 	github.com/cretz/bine v0.2.0
 	github.com/database64128/tfo-go/v2 v2.3.2
+	github.com/enfein/mieru/v3 v3.33.0
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/go-chi/render v1.0.3
 	github.com/godbus/dbus/v5 v5.2.2
@@ -68,6 +69,8 @@ require (
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.11
 )
+
+replace github.com/enfein/mieru/v3 => ./third_party/mieru
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect

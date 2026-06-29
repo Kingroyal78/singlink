@@ -25,6 +25,7 @@
 | `vmess`       | [VMess](./vmess/)             | TCP              |
 | `trojan`      | [Trojan](./trojan/)           | TCP              |
 | `naive`       | [Naive](./naive/)             | :material-close: |
+| `mieru`       | [Mieru](./mieru/)             | :material-close: |
 | `hysteria`    | [Hysteria](./hysteria/)       | :material-close: |
 | `shadowtls`   | [ShadowTLS](./shadowtls/)     | TCP              |
 | `tuic`        | [TUIC](./tuic/)               | :material-close: |
