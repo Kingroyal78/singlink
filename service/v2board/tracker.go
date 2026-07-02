@@ -19,6 +19,7 @@ import (
 	M "github.com/sagernet/sing/common/metadata"
 	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 )
 
 type TrafficTracker struct {
@@ -142,10 +143,10 @@ func routerKey(router adapter.Router) uintptr {
 }
 
 func (t *TrafficTracker) UpdateNode(tag string, nodeID int, users []UserInfo, alive map[int]int, rules nodeRules) {
-	t.updateNode(tag, nodeID, users, alive, time.Now(), defaultAliveListTTL, rules)
+	t.updateNode(tag, "", nodeID, users, alive, time.Now(), defaultAliveListTTL, rules)
 }
 
-func (t *TrafficTracker) updateNode(tag string, nodeID int, users []UserInfo, alive map[int]int, aliveAt time.Time, aliveTTL time.Duration, rules nodeRules) {
+func (t *TrafficTracker) updateNode(tag string, nodeType string, nodeID int, users []UserInfo, alive map[int]int, aliveAt time.Time, aliveTTL time.Duration, rules nodeRules) {
 	t.access.Lock()
 	defer t.access.Unlock()
 	state, loaded := t.nodes[tag]
@@ -153,7 +154,7 @@ func (t *TrafficTracker) updateNode(tag string, nodeID int, users []UserInfo, al
 		state = &nodeTraffic{}
 		t.nodes[tag] = state
 	}
-	state.updateUsersWithAliveState(nodeID, users, alive, aliveAt, aliveTTL, rules)
+	state.updateUsersWithAliveStateForNodeType(nodeType, nodeID, users, alive, aliveAt, aliveTTL, rules)
 }
 
 func (t *TrafficTracker) UpdateAliveList(tag string, alive map[int]int) {
@@ -278,6 +279,10 @@ func (n *nodeTraffic) updateUsers(nodeID int, users []UserInfo, alive map[int]in
 }
 
 func (n *nodeTraffic) updateUsersWithAliveState(nodeID int, users []UserInfo, alive map[int]int, aliveAt time.Time, aliveTTL time.Duration, rules nodeRules) {
+	n.updateUsersWithAliveStateForNodeType("", nodeID, users, alive, aliveAt, aliveTTL, rules)
+}
+
+func (n *nodeTraffic) updateUsersWithAliveStateForNodeType(nodeType string, nodeID int, users []UserInfo, alive map[int]int, aliveAt time.Time, aliveTTL time.Duration, rules nodeRules) {
 	n.access.Lock()
 	defer n.access.Unlock()
 	n.nodeID = nodeID
@@ -292,7 +297,7 @@ func (n *nodeTraffic) updateUsersWithAliveState(nodeID int, users []UserInfo, al
 	nextPrevious := make(map[string]map[string]struct{}, len(users))
 	nextPending := clonePendingCounters(n.pending)
 	for _, user := range users {
-		key := userTrackerKey(user)
+		key := userTrackerKey(nodeType, user)
 		if key == "" {
 			continue
 		}
@@ -367,7 +372,13 @@ func (n *nodeTraffic) speedLimiter(user string) *rateLimiter {
 	return n.limits[user].limiter
 }
 
-func userTrackerKey(user UserInfo) string {
+func userTrackerKey(nodeType string, user UserInfo) string {
+	switch normalizeNodeType(nodeType) {
+	case C.TypeNaive:
+		if user.Username != "" {
+			return user.Username
+		}
+	}
 	if user.UUID != "" {
 		return user.UUID
 	}

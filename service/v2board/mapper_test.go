@@ -384,6 +384,92 @@ func TestMapUniProxyInboundHysteriaVersion2UsesHysteria2(t *testing.T) {
 	}
 }
 
+func TestMapUniProxyInboundNaive(t *testing.T) {
+	users := []UserInfo{{
+		ID:       7,
+		UUID:     "00000000-0000-0000-0000-000000000007",
+		Username: "user-7",
+		Password: "00000000-0000-0000-0000-000000000007",
+	}}
+	inbound, err := MapUniProxyInbound("naiveproxy", []byte(`{
+		"protocol": "naive",
+		"listen_ip": "127.0.0.1",
+		"server_port": 443,
+		"tls": 1,
+		"network": "tcp",
+		"server_name": "naive.example.com"
+	}`), users, MapperOptions{
+		Tag: "panel-naive",
+		TLS: &option.V2BoardTLSOptions{
+			CertFile:   "cert.pem",
+			KeyFile:    "key.pem",
+			ServerName: "naive.example.com",
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if inbound.Type != "naive" || inbound.Tag != "panel-naive" {
+		t.Fatalf("unexpected inbound identity: %#v", inbound)
+	}
+	options := inbound.Options.(*option.NaiveInboundOptions)
+	if options.ListenPort != 443 || options.Listen == nil {
+		t.Fatalf("unexpected naive listen options: %#v", options.ListenOptions)
+	}
+	if string(options.Network) != "tcp" {
+		t.Fatalf("unexpected naive network: %q", options.Network)
+	}
+	if len(options.Users) != 1 || options.Users[0].Username != "user-7" || options.Users[0].Password != users[0].UUID {
+		t.Fatalf("unexpected naive users: %#v", options.Users)
+	}
+	if options.TLS == nil || !options.TLS.Enabled || options.TLS.CertificatePath != "cert.pem" {
+		t.Fatalf("unexpected naive tls options: %#v", options.TLS)
+	}
+}
+
+func TestMapUniProxyInboundNaiveQUICDefaultsToTCPAndUDP(t *testing.T) {
+	inbound, err := MapUniProxyInbound("naive", []byte(`{
+		"protocol": "naive",
+		"server_port": 443,
+		"tls": 1,
+		"quic_congestion_control": "bbr2"
+	}`), []UserInfo{{
+		ID:       7,
+		Username: "user-7",
+		Password: "password",
+	}}, MapperOptions{
+		TLS: &option.V2BoardTLSOptions{
+			CertFile: "cert.pem",
+			KeyFile:  "key.pem",
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	options := inbound.Options.(*option.NaiveInboundOptions)
+	if options.Network != "" {
+		t.Fatalf("empty naive network should let sing-box listen on tcp and udp, got %q", options.Network)
+	}
+	if options.QUICCongestionControl != "bbr2" {
+		t.Fatalf("unexpected naive quic congestion control: %q", options.QUICCongestionControl)
+	}
+}
+
+func TestMapUniProxyInboundNaiveRequiresTLS(t *testing.T) {
+	_, err := MapUniProxyInbound("naive", []byte(`{
+		"protocol": "naive",
+		"server_port": 443,
+		"tls": 1
+	}`), []UserInfo{{
+		ID:       7,
+		Username: "user-7",
+		Password: "password",
+	}}, MapperOptions{})
+	if err == nil || !strings.Contains(err.Error(), "naive tls") {
+		t.Fatalf("expected naive TLS error, got %v", err)
+	}
+}
+
 func TestMapUniProxyInboundAnyTLSReality(t *testing.T) {
 	inbound, err := MapUniProxyInbound("anytls", []byte(`{
 		"protocol": "anytls",

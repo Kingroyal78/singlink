@@ -62,6 +62,7 @@ type ServerConfig struct {
 	Cipher                string            `json:"cipher"`
 	ServerKey             string            `json:"server_key"`
 	CongestionControl     string            `json:"congestion_control"`
+	QUICCongestionControl string            `json:"quic_congestion_control"`
 	ZeroRTTHandshake      bool              `json:"zero_rtt_handshake"`
 	PaddingScheme         []string          `json:"padding_scheme,omitempty"`
 	Version               int               `json:"version"`
@@ -380,6 +381,8 @@ func (s ServerEncSettings) HasValue() bool {
 type PanelUserInfo struct {
 	ID             int    `json:"id" codec:"id" msgpack:"id"`
 	UUID           string `json:"uuid" codec:"uuid" msgpack:"uuid"`
+	Username       string `json:"username,omitempty" codec:"username" msgpack:"username"`
+	Password       string `json:"password,omitempty" codec:"password" msgpack:"password"`
 	SpeedLimit     int    `json:"speed_limit" codec:"speed_limit" msgpack:"speed_limit"`
 	DeviceLimit    int    `json:"device_limit" codec:"device_limit" msgpack:"device_limit"`
 	Label          string `json:"label,omitempty" codec:"label" msgpack:"label"`

@@ -205,7 +205,7 @@ func (c *Controller) rebuildInbound() error {
 		c.lifecycle.Unlock()
 		return context.Canceled
 	}
-	c.tracker.updateNode(c.options.Tag, c.options.NodeID, c.activeUsers, c.aliveList, c.aliveUpdated, c.options.PullInterval, rules)
+	c.tracker.updateNode(c.options.Tag, inbound.Type, c.options.NodeID, c.activeUsers, c.aliveList, c.aliveUpdated, c.options.PullInterval, rules)
 	c.inboundReady = true
 	c.lifecycle.Unlock()
 	c.logger.Info("v2board node ", c.options.Tag, " loaded with ", len(c.activeUsers), " users")
@@ -258,8 +258,9 @@ func (c *Controller) clearInbound(rules nodeRules) error {
 	if err != nil && !errors.Is(err, os.ErrInvalid) {
 		return err
 	}
+	nodeType := c.current.Type
 	c.current = option.Inbound{}
-	c.tracker.updateNode(c.options.Tag, c.options.NodeID, nil, c.aliveList, c.aliveUpdated, c.options.PullInterval, rules)
+	c.tracker.updateNode(c.options.Tag, nodeType, c.options.NodeID, nil, c.aliveList, c.aliveUpdated, c.options.PullInterval, rules)
 	c.inboundReady = true
 	return nil
 }
@@ -400,6 +401,12 @@ func digestUsers(users []UserInfo) [32]byte {
 		if left.UUID != right.UUID {
 			return left.UUID < right.UUID
 		}
+		if left.Username != right.Username {
+			return left.Username < right.Username
+		}
+		if left.Password != right.Password {
+			return left.Password < right.Password
+		}
 		if left.Label != right.Label {
 			return left.Label < right.Label
 		}
@@ -461,6 +468,8 @@ func digestUsers(users []UserInfo) [32]byte {
 		user := users[index]
 		writeInt64(int64(user.ID))
 		writeString(user.UUID)
+		writeString(user.Username)
+		writeString(user.Password)
 		writeInt64(int64(user.SpeedLimit))
 		writeInt64(int64(user.DeviceLimit))
 		writeString(user.Label)

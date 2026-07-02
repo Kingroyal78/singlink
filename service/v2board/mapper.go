@@ -13,6 +13,7 @@ import (
 	"time"
 
 	shadowsocks "github.com/sagernet/sing-shadowsocks"
+	"github.com/sagernet/sing/common/auth"
 	"github.com/sagernet/sing/common/json/badoption"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/option"
@@ -213,6 +214,12 @@ func MapInbound(node *NodeInfo, users []UserInfo, mapperOptions MapperOptions) (
 			IgnoreClientBandwidth:      config.IgnoreClientBandwidth,
 			InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{TLS: tlsOptions},
 		}
+	case C.TypeNaive:
+		options, err := naiveOptions(listen, config, users, mapperOptions)
+		if err != nil {
+			return option.Inbound{}, err
+		}
+		inbound.Options = options
 	default:
 		return option.Inbound{}, fmt.Errorf("unsupported node type %q", nodeType)
 	}
@@ -228,7 +235,8 @@ func supportedNodeType(nodeType string) bool {
 		C.TypeTUIC,
 		C.TypeAnyTLS,
 		C.TypeHysteria,
-		C.TypeHysteria2:
+		C.TypeHysteria2,
+		C.TypeNaive:
 		return true
 	default:
 		return false
@@ -755,8 +763,45 @@ func hysteria2Obfs(config *ServerConfig) (*option.Hysteria2Obfs, error) {
 	}
 }
 
+func naiveOptions(listen option.ListenOptions, config *ServerConfig, users []UserInfo, mapperOptions MapperOptions) (*option.NaiveInboundOptions, error) {
+	tlsOptions, err := requiredTLS(config, mapperOptions)
+	if err != nil {
+		return nil, fmt.Errorf("naive tls: %w", err)
+	}
+	network, err := naiveNetwork(config.Network)
+	if err != nil {
+		return nil, err
+	}
+	return &option.NaiveInboundOptions{
+		ListenOptions:              listen,
+		Users:                      naiveUsers(users),
+		Network:                    network,
+		QUICCongestionControl:      config.QUICCongestionControl,
+		InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{TLS: tlsOptions},
+	}, nil
+}
+
+func naiveNetwork(network string) (option.NetworkList, error) {
+	network = strings.ToLower(strings.TrimSpace(network))
+	switch network {
+	case "", "tcp", "udp":
+		return option.NetworkList(network), nil
+	default:
+		return "", fmt.Errorf("naive: unsupported network %q", network)
+	}
+}
+
 func validateUsers(nodeType string, users []UserInfo) error {
 	for i, user := range users {
+		if nodeType == C.TypeNaive {
+			if strings.TrimSpace(user.Username) == "" {
+				return fmt.Errorf("%s: user at index %d has empty username", nodeType, i)
+			}
+			if strings.TrimSpace(user.Password) == "" {
+				return fmt.Errorf("%s: user at index %d has empty password", nodeType, i)
+			}
+			continue
+		}
 		if strings.TrimSpace(user.UUID) == "" {
 			return fmt.Errorf("%s: user at index %d has empty uuid", nodeType, i)
 		}
@@ -816,6 +861,14 @@ func hysteria2Users(users []UserInfo) []option.Hysteria2User {
 	result := make([]option.Hysteria2User, len(users))
 	for i, user := range users {
 		result[i] = option.Hysteria2User{Name: user.UUID, Password: user.UUID}
+	}
+	return result
+}
+
+func naiveUsers(users []UserInfo) []auth.User {
+	result := make([]auth.User, len(users))
+	for i, user := range users {
+		result[i] = auth.User{Username: user.Username, Password: user.Password}
 	}
 	return result
 }

@@ -67,6 +67,8 @@ func normalizeNodeType(nodeType string) string {
 		return "vmess"
 	case "ss":
 		return C.TypeShadowsocks
+	case "naiveproxy", "naive_proxy", "naive-proxy":
+		return C.TypeNaive
 	case APIStyleDeepbwork:
 		return C.TypeVMess
 	case APIStyleTrojanTidalab:

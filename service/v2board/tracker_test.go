@@ -10,6 +10,7 @@ import (
 	"github.com/sagernet/sing/common/bufio"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/route"
 )
 
@@ -96,6 +97,41 @@ func TestUserTrackerKeyFallsBackToPanelLabel(t *testing.T) {
 	}
 	if counter := state.counter(""); counter != nil {
 		t.Fatal("empty user should not match")
+	}
+}
+
+func TestUserTrackerKeyKeepsUUIDForNonNaiveWhenUsernameIsPresent(t *testing.T) {
+	const uuid = "00000000-0000-0000-0000-000000000007"
+	state := &nodeTraffic{}
+	state.updateUsersWithAliveStateForNodeType(C.TypeVMess, 23, []UserInfo{{
+		ID:       7,
+		UUID:     uuid,
+		Username: "user-7",
+	}}, nil, time.Now(), defaultAliveListTTL, nodeRules{})
+
+	if counter := state.counter(uuid); counter == nil {
+		t.Fatal("expected uuid based counter for non-naive user")
+	}
+	if counter := state.counter("user-7"); counter != nil {
+		t.Fatal("non-naive tracker must not prefer username over uuid")
+	}
+}
+
+func TestUserTrackerKeyUsesUsernameForNaive(t *testing.T) {
+	const uuid = "00000000-0000-0000-0000-000000000007"
+	state := &nodeTraffic{}
+	state.updateUsersWithAliveStateForNodeType(C.TypeNaive, 23, []UserInfo{{
+		ID:       7,
+		UUID:     uuid,
+		Username: "user-7",
+		Password: uuid,
+	}}, nil, time.Now(), defaultAliveListTTL, nodeRules{})
+
+	if counter := state.counter("user-7"); counter == nil {
+		t.Fatal("expected username based counter for naive user")
+	}
+	if counter := state.counter(uuid); counter != nil {
+		t.Fatal("naive tracker must prefer username over uuid")
 	}
 }
 

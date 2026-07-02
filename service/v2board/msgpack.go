@@ -27,6 +27,8 @@ func userListFromAny(value any) (*UserListBody, error) {
 		users = append(users, UserInfo{
 			ID:             int(firstInt(userMap, "id", "uid")),
 			UUID:           userUUID(userMap),
+			Username:       stringValue(userMap["username"]),
+			Password:       stringValue(userMap["password"]),
 			SpeedLimit:     int(firstInt(userMap, "speed_limit")),
 			DeviceLimit:    int(firstInt(userMap, "device_limit")),
 			Label:          stringValue(userMap["label"]),
