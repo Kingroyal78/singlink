@@ -421,6 +421,14 @@ func (r *Router) matchRule(
 	selectedRule adapter.Rule, selectedRuleIndex int,
 	buffers []*buf.Buffer, packetBuffers []*N.PacketBuffer, fatalErr error,
 ) {
+	defer func() {
+		if fatalErr != nil {
+			buf.ReleaseMulti(buffers)
+			buffers = nil
+			N.ReleaseMultiPacketBuffer(packetBuffers)
+			packetBuffers = nil
+		}
+	}()
 	r.searchProcessInfo(ctx, metadata)
 	if r.neighborResolver != nil && metadata.SourceMACAddress == nil && metadata.Source.Addr.IsValid() {
 		mac, macFound := r.neighborResolver.LookupMAC(metadata.Source.Addr)

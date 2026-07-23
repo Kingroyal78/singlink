@@ -106,6 +106,10 @@ func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	source := sHttp.SourceAddress(request)
 	if h, ok := writer.(http.Hijacker); ok {
 		var requestBody *buf.Buffer
+		if request.ContentLength > int64(buf.BufferSize) {
+			s.invalidRequest(writer, request, http.StatusRequestEntityTooLarge, E.New("request body too large"))
+			return
+		}
 		if contentLength := int(request.ContentLength); contentLength > 0 {
 			requestBody = buf.NewSize(contentLength)
 			_, err := requestBody.ReadFullFrom(request.Body, contentLength)

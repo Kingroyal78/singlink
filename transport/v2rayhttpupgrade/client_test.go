@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -123,5 +124,38 @@ func TestDialContextUnexpectedStatusClosesConn(t *testing.T) {
 	case <-trackedConn.closed:
 	case <-time.After(time.Second):
 		t.Fatal("failed handshake did not close the underlying conn")
+	}
+}
+
+func TestDialContextPreservesDataBufferedWithUpgradeResponse(t *testing.T) {
+	payload := []byte("early-response-data")
+	dialer := &testDialer{
+		onDial: func(conn net.Conn) {
+			defer conn.Close()
+			request, err := http.ReadRequest(bufio.NewReader(conn))
+			if err != nil {
+				return
+			}
+			request.Body.Close()
+			_, _ = fmt.Fprintf(conn,
+				"HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: websocket\r\n\r\n%s",
+				payload,
+			)
+		},
+	}
+	client := newTestClient(dialer)
+
+	conn, err := client.DialContext(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	_ = conn.SetReadDeadline(time.Now().Add(time.Second))
+	received := make([]byte, len(payload))
+	if _, err = io.ReadFull(conn, received); err != nil {
+		t.Fatal(err)
+	}
+	if string(received) != string(payload) {
+		t.Fatalf("received %q, want %q", received, payload)
 	}
 }

@@ -1,14 +1,22 @@
 package v2rayhttp
 
 import (
+	std_bufio "bufio"
+	"bytes"
 	"context"
 	"errors"
 	"io"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/sagernet/sing/common/buf"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
+	boxLog "github.com/singlink/singlink/log"
 )
 
 type roundTripFunc func(*http.Request) (*http.Response, error)
@@ -69,5 +77,80 @@ func TestLateHTTPConnCloseCancelsRoundTrip(t *testing.T) {
 		}
 	case <-time.After(time.Second):
 		t.Fatal("RoundTrip was not canceled by Close")
+	}
+}
+
+func TestHTTP2ConnWrapperWriteBufferAfterCloseReleasesBuffer(t *testing.T) {
+	clientConn, serverConn := net.Pipe()
+	defer clientConn.Close()
+	defer serverConn.Close()
+	conn := NewHTTP2Wrapper(clientConn)
+	conn.CloseWrapper()
+	buffer := buf.NewSize(4)
+	if _, err := buffer.Write([]byte("data")); err != nil {
+		t.Fatal(err)
+	}
+
+	err := conn.WriteBuffer(buffer)
+	if !errors.Is(err, net.ErrClosed) {
+		t.Fatalf("WriteBuffer after Close error = %v, want net.ErrClosed", err)
+	}
+	if buffer.Cap() != 0 {
+		t.Fatalf("buffer was not released: cap = %d", buffer.Cap())
+	}
+}
+
+type serverTestHandler struct {
+	called bool
+}
+
+func (h *serverTestHandler) NewConnectionEx(ctx context.Context, conn net.Conn, source M.Socksaddr, destination M.Socksaddr, onClose N.CloseHandlerFunc) {
+	h.called = true
+	conn.Close()
+}
+
+type hijackResponseWriter struct {
+	header http.Header
+	status int
+}
+
+func (w *hijackResponseWriter) Header() http.Header {
+	return w.header
+}
+
+func (w *hijackResponseWriter) Write(data []byte) (int, error) {
+	return len(data), nil
+}
+
+func (w *hijackResponseWriter) WriteHeader(statusCode int) {
+	w.status = statusCode
+}
+
+func (w *hijackResponseWriter) Flush() {
+}
+
+func (w *hijackResponseWriter) Hijack() (net.Conn, *std_bufio.ReadWriter, error) {
+	clientConn, serverConn := net.Pipe()
+	serverConn.Close()
+	return clientConn, std_bufio.NewReadWriter(std_bufio.NewReader(bytes.NewReader(nil)), std_bufio.NewWriter(io.Discard)), nil
+}
+
+func TestServerRejectsOversizedHTTP1RequestBodyCache(t *testing.T) {
+	handler := &serverTestHandler{}
+	server := &Server{
+		logger:  boxLog.NewNOPFactory().Logger(),
+		handler: handler,
+		path:    "/",
+	}
+	body := bytes.NewReader(make([]byte, buf.BufferSize+1))
+	request := httptest.NewRequest(http.MethodPost, "http://example.com/", body)
+	writer := &hijackResponseWriter{header: http.Header{}}
+
+	server.ServeHTTP(writer, request)
+	if writer.status == http.StatusOK {
+		t.Fatal("oversized request body cache was accepted")
+	}
+	if handler.called {
+		t.Fatal("handler was called for oversized request body cache")
 	}
 }

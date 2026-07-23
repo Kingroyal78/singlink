@@ -15,6 +15,16 @@ icon: material/new-box
   ... // 其他监听字段
 
   "transport": "TCP",
+  "port_bindings": [
+    {
+      "port": 8964,
+      "protocol": "TCP"
+    },
+    {
+      "port_range": "9000-9010",
+      "protocol": "UDP"
+    }
+  ],
   "users": [
     {
       "name": "user",
@@ -32,15 +42,41 @@ icon: material/new-box
 
 ### 监听字段
 
-参阅 [监听字段](/zh/configuration/shared/listen/)。
+参阅 [监听字段](/zh/configuration/shared/listen/)。只有省略 `port_bindings` 时才会使用 `listen_port`。
 
-Mieru 入站要求使用单个 `listen_port`。singlink 不暴露 Mieru 入站端口范围或多个端口绑定。
+设置 `port_bindings` 后，Mieru 会监听每一个配置的端口绑定。共享的监听地址和 socket 选项仍来自监听字段。
 
 ### 字段
 
-#### transport
+#### port_bindings
+
+Mieru 端口绑定列表。
+
+如果省略该字段，singlink 会使用兼容路径：`listen_port` 加 `transport`。
+
+#### port_bindings.port
+
+单个监听端口。
+
+`port` 和 `port_range` 必须且只能设置其中一个。
+
+#### port_bindings.port_range
+
+监听端口范围，格式为 `begin-end`，例如 `9000-9010`。
+
+`port` 和 `port_range` 必须且只能设置其中一个。
+
+#### port_bindings.protocol
 
 ==必填==
+
+该端口绑定的传输协议。
+
+支持值为 `TCP` 和 `UDP`。解析时不区分大小写，但规范写法为大写。
+
+#### transport
+
+省略 `port_bindings` 时必填。
 
 传输协议。
 
@@ -71,6 +107,10 @@ Mieru 密码。
 #### traffic_pattern
 
 Mieru `TrafficPattern` protobuf 消息的 base64 编码。
+
+#### mtu
+
+Mieru underlay MTU。设置时取值必须在 `1280` 到 `1400` 之间。
 
 #### user_hint_is_mandatory
 

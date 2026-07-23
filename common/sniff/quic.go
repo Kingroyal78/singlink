@@ -20,6 +20,15 @@ import (
 	"golang.org/x/crypto/hkdf"
 )
 
+const (
+	frameTypePadding         = 0x00
+	frameTypePing            = 0x01
+	frameTypeAck             = 0x02
+	frameTypeAck2            = 0x03
+	frameTypeCrypto          = 0x06
+	frameTypeConnectionClose = 0x1c
+)
+
 func QUICClientHello(ctx context.Context, metadata *adapter.InboundContext, packet []byte) error {
 	reader := bytes.NewReader(packet)
 	typeByte, err := reader.ReadByte()
@@ -170,108 +179,9 @@ func QUICClientHello(ctx context.Context, metadata *adapter.InboundContext, pack
 	if err != nil {
 		return err
 	}
-	var frameType byte
-	var fragments []qCryptoFragment
-	decryptedReader := bytes.NewReader(decrypted)
-	const (
-		frameTypePadding         = 0x00
-		frameTypePing            = 0x01
-		frameTypeAck             = 0x02
-		frameTypeAck2            = 0x03
-		frameTypeCrypto          = 0x06
-		frameTypeConnectionClose = 0x1c
-	)
-	var frameTypeList []uint8
-	for {
-		frameType, err = decryptedReader.ReadByte()
-		if err == io.EOF {
-			break
-		}
-		frameTypeList = append(frameTypeList, frameType)
-		switch frameType {
-		case frameTypePadding:
-			continue
-		case frameTypePing:
-			continue
-		case frameTypeAck, frameTypeAck2:
-			_, err = qtls.ReadUvarint(decryptedReader) // Largest Acknowledged
-			if err != nil {
-				return err
-			}
-			_, err = qtls.ReadUvarint(decryptedReader) // ACK Delay
-			if err != nil {
-				return err
-			}
-			ackRangeCount, err := qtls.ReadUvarint(decryptedReader) // ACK Range Count
-			if err != nil {
-				return err
-			}
-			_, err = qtls.ReadUvarint(decryptedReader) // First ACK Range
-			if err != nil {
-				return err
-			}
-			for i := 0; i < int(ackRangeCount); i++ {
-				_, err = qtls.ReadUvarint(decryptedReader) // Gap
-				if err != nil {
-					return err
-				}
-				_, err = qtls.ReadUvarint(decryptedReader) // ACK Range Length
-				if err != nil {
-					return err
-				}
-			}
-			if frameType == 0x03 {
-				_, err = qtls.ReadUvarint(decryptedReader) // ECT0 Count
-				if err != nil {
-					return err
-				}
-				_, err = qtls.ReadUvarint(decryptedReader) // ECT1 Count
-				if err != nil {
-					return err
-				}
-				_, err = qtls.ReadUvarint(decryptedReader) // ECN-CE Count
-				if err != nil {
-					return err
-				}
-			}
-		case frameTypeCrypto:
-			var offset uint64
-			offset, err = qtls.ReadUvarint(decryptedReader)
-			if err != nil {
-				return err
-			}
-			var length uint64
-			length, err = qtls.ReadUvarint(decryptedReader)
-			if err != nil {
-				return err
-			}
-			index := len(decrypted) - decryptedReader.Len()
-			fragments = append(fragments, qCryptoFragment{offset, length, decrypted[index : index+int(length)]})
-			_, err = decryptedReader.Seek(int64(length), io.SeekCurrent)
-			if err != nil {
-				return err
-			}
-		case frameTypeConnectionClose:
-			_, err = qtls.ReadUvarint(decryptedReader) // Error Code
-			if err != nil {
-				return err
-			}
-			_, err = qtls.ReadUvarint(decryptedReader) // Frame Type
-			if err != nil {
-				return err
-			}
-			var length uint64
-			length, err = qtls.ReadUvarint(decryptedReader) // Reason Phrase Length
-			if err != nil {
-				return err
-			}
-			_, err = decryptedReader.Seek(int64(length), io.SeekCurrent) // Reason Phrase
-			if err != nil {
-				return err
-			}
-		default:
-			return os.ErrInvalid
-		}
+	fragments, frameTypeList, err := parseQUICCryptoFrames(decrypted)
+	if err != nil {
+		return err
 	}
 	if metadata.SniffContext != nil {
 		fragments = append(fragments, metadata.SniffContext.([]qCryptoFragment)...)
@@ -280,6 +190,9 @@ func QUICClientHello(ctx context.Context, metadata *adapter.InboundContext, pack
 	var frameLen uint64
 	for _, fragment := range fragments {
 		frameLen += fragment.length
+	}
+	if frameLen > 65535 {
+		return os.ErrInvalid
 	}
 	buffer := buf.NewSize(5 + int(frameLen))
 	defer buffer.Release()
@@ -345,6 +258,115 @@ find:
 		break
 	}
 	return nil
+}
+
+func parseQUICCryptoFrames(decrypted []byte) ([]qCryptoFragment, []uint8, error) {
+	var (
+		fragments       []qCryptoFragment
+		frameTypeList   []uint8
+		decryptedReader = bytes.NewReader(decrypted)
+	)
+	for {
+		frameType, err := decryptedReader.ReadByte()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return nil, nil, err
+		}
+		frameTypeList = append(frameTypeList, frameType)
+		switch frameType {
+		case frameTypePadding:
+			continue
+		case frameTypePing:
+			continue
+		case frameTypeAck, frameTypeAck2:
+			_, err = qtls.ReadUvarint(decryptedReader) // Largest Acknowledged
+			if err != nil {
+				return nil, nil, err
+			}
+			_, err = qtls.ReadUvarint(decryptedReader) // ACK Delay
+			if err != nil {
+				return nil, nil, err
+			}
+			ackRangeCount, err := qtls.ReadUvarint(decryptedReader) // ACK Range Count
+			if err != nil {
+				return nil, nil, err
+			}
+			_, err = qtls.ReadUvarint(decryptedReader) // First ACK Range
+			if err != nil {
+				return nil, nil, err
+			}
+			for i := uint64(0); i < ackRangeCount; i++ {
+				_, err = qtls.ReadUvarint(decryptedReader) // Gap
+				if err != nil {
+					return nil, nil, err
+				}
+				_, err = qtls.ReadUvarint(decryptedReader) // ACK Range Length
+				if err != nil {
+					return nil, nil, err
+				}
+			}
+			if frameType == frameTypeAck2 {
+				_, err = qtls.ReadUvarint(decryptedReader) // ECT0 Count
+				if err != nil {
+					return nil, nil, err
+				}
+				_, err = qtls.ReadUvarint(decryptedReader) // ECT1 Count
+				if err != nil {
+					return nil, nil, err
+				}
+				_, err = qtls.ReadUvarint(decryptedReader) // ECN-CE Count
+				if err != nil {
+					return nil, nil, err
+				}
+			}
+		case frameTypeCrypto:
+			offset, err := qtls.ReadUvarint(decryptedReader)
+			if err != nil {
+				return nil, nil, err
+			}
+			length, err := qtls.ReadUvarint(decryptedReader)
+			if err != nil {
+				return nil, nil, err
+			}
+			if length > uint64(decryptedReader.Len()) {
+				return nil, nil, io.ErrUnexpectedEOF
+			}
+			if length == 0 {
+				continue
+			}
+			index := len(decrypted) - decryptedReader.Len()
+			payloadLen := int(length)
+			fragments = append(fragments, qCryptoFragment{offset, length, decrypted[index : index+payloadLen]})
+			_, err = decryptedReader.Seek(int64(payloadLen), io.SeekCurrent)
+			if err != nil {
+				return nil, nil, err
+			}
+		case frameTypeConnectionClose:
+			_, err = qtls.ReadUvarint(decryptedReader) // Error Code
+			if err != nil {
+				return nil, nil, err
+			}
+			_, err = qtls.ReadUvarint(decryptedReader) // Frame Type
+			if err != nil {
+				return nil, nil, err
+			}
+			length, err := qtls.ReadUvarint(decryptedReader) // Reason Phrase Length
+			if err != nil {
+				return nil, nil, err
+			}
+			if length > uint64(decryptedReader.Len()) {
+				return nil, nil, io.ErrUnexpectedEOF
+			}
+			_, err = decryptedReader.Seek(int64(length), io.SeekCurrent) // Reason Phrase
+			if err != nil {
+				return nil, nil, err
+			}
+		default:
+			return nil, nil, os.ErrInvalid
+		}
+	}
+	return fragments, frameTypeList, nil
 }
 
 func isZero(slices []uint8) bool {

@@ -102,8 +102,9 @@ func (c *Client) dialContext(ctx context.Context, requestURL *url.URL, headers h
 		return nil, err
 	}
 	if reader != nil {
-		buffer := buf.NewSize(reader.Buffered())
-		_, err = buffer.ReadFullFrom(reader, buffer.Len())
+		cachedLen := reader.Buffered()
+		buffer := buf.NewSize(cachedLen)
+		_, err = buffer.ReadFullFrom(reader, cachedLen)
 		if err != nil {
 			return nil, err
 		}

@@ -14,6 +14,7 @@ import (
 	mierumodel "github.com/enfein/mieru/v3/apis/model"
 	mieruserver "github.com/enfein/mieru/v3/apis/server"
 	mierutp "github.com/enfein/mieru/v3/apis/trafficpattern"
+	mieruappctlcommon "github.com/enfein/mieru/v3/pkg/appctl/appctlcommon"
 	mierupb "github.com/enfein/mieru/v3/pkg/appctl/appctlpb"
 	mierucipher "github.com/enfein/mieru/v3/pkg/cipher"
 	"github.com/sagernet/sing/common"
@@ -280,7 +281,7 @@ func buildMieruServerConfig(logger log.ContextLogger, options option.MieruInboun
 		return nil, err
 	}
 
-	transportProtocol, err := mieruTransportProtocol(options.Transport)
+	portBindings, err := buildMieruPortBindings(options)
 	if err != nil {
 		return nil, err
 	}
@@ -302,12 +303,7 @@ func buildMieruServerConfig(logger log.ContextLogger, options option.MieruInboun
 
 	return &mieruserver.ServerConfig{
 		Config: &mierupb.ServerConfig{
-			PortBindings: []*mierupb.PortBinding{
-				{
-					Port:     proto.Int32(int32(options.ListenOptions.ListenPort)),
-					Protocol: transportProtocol,
-				},
-			},
+			PortBindings: portBindings,
 			Users: common.Map(options.Users, func(user option.MieruUser) *mierupb.User {
 				return &mierupb.User{
 					Name:           proto.String(user.Name),
@@ -315,6 +311,7 @@ func buildMieruServerConfig(logger log.ContextLogger, options option.MieruInboun
 				}
 			}),
 			TrafficPattern:   trafficPattern,
+			Mtu:              proto.Int32(int32(options.MTU)),
 			AdvancedSettings: advancedSettings,
 		},
 		StreamListenerFactory: &mieruListenerFactory{
@@ -329,14 +326,14 @@ func buildMieruServerConfig(logger log.ContextLogger, options option.MieruInboun
 }
 
 func validateMieruInboundOptions(options option.MieruInboundOptions) error {
-	if options.ListenOptions.ListenPort == 0 {
-		return E.New("missing listen_port")
-	}
-	if _, err := mieruTransportProtocol(options.Transport); err != nil {
+	if _, err := buildMieruPortBindings(options); err != nil {
 		return err
 	}
 	if len(options.Users) == 0 {
 		return E.New("missing users")
+	}
+	if options.MTU != 0 && (options.MTU < 1280 || options.MTU > 1400) {
+		return E.New("mtu must be between 1280 and 1400")
 	}
 	for index, user := range options.Users {
 		if err := validateMieruUser(user.Name, user.Password); err != nil {
@@ -344,6 +341,60 @@ func validateMieruInboundOptions(options option.MieruInboundOptions) error {
 		}
 	}
 	return nil
+}
+
+func buildMieruPortBindings(options option.MieruInboundOptions) ([]*mierupb.PortBinding, error) {
+	if len(options.PortBindings) == 0 {
+		if options.ListenOptions.ListenPort == 0 {
+			return nil, E.New("missing listen_port")
+		}
+		transportProtocol, err := mieruTransportProtocol(options.Transport)
+		if err != nil {
+			return nil, err
+		}
+		portBindings := []*mierupb.PortBinding{
+			{
+				Port:     proto.Int32(int32(options.ListenOptions.ListenPort)),
+				Protocol: transportProtocol,
+			},
+		}
+		if _, err = mieruappctlcommon.FlatPortBindings(portBindings); err != nil {
+			return nil, E.Cause(err, "port_bindings")
+		}
+		return portBindings, nil
+	}
+
+	portBindings := make([]*mierupb.PortBinding, len(options.PortBindings))
+	for index, binding := range options.PortBindings {
+		hasPort := binding.Port != 0
+		hasRange := binding.PortRange != ""
+		if hasPort == hasRange {
+			return nil, E.New("port_bindings[", index, "] must set exactly one of port or port_range")
+		}
+		transportProtocol, err := mieruTransportProtocol(binding.Protocol)
+		if err != nil {
+			return nil, E.Cause(err, "port_bindings[", index, "].protocol")
+		}
+		portBinding := &mierupb.PortBinding{
+			Protocol: transportProtocol,
+		}
+		if hasPort {
+			if binding.Port < 1 || binding.Port > 65535 {
+				return nil, E.New("port_bindings[", index, "].port out of range: ", binding.Port)
+			}
+			portBinding.Port = proto.Int32(int32(binding.Port))
+		} else {
+			if _, _, err := parseMieruPortRange(binding.PortRange); err != nil {
+				return nil, E.Cause(err, "port_bindings[", index, "].port_range")
+			}
+			portBinding.PortRange = proto.String(binding.PortRange)
+		}
+		portBindings[index] = portBinding
+	}
+	if _, err := mieruappctlcommon.FlatPortBindings(portBindings); err != nil {
+		return nil, E.Cause(err, "port_bindings")
+	}
+	return portBindings, nil
 }
 
 func addrSpecToSocksaddr(addr mierumodel.AddrSpec) M.Socksaddr {

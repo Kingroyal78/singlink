@@ -15,10 +15,18 @@ type MieruOutboundOptions struct {
 
 type MieruInboundOptions struct {
 	ListenOptions
-	Users               []MieruUser `json:"users,omitempty"`
-	Transport           string      `json:"transport,omitempty"`
-	TrafficPattern      string      `json:"traffic_pattern,omitempty"`
-	UserHintIsMandatory bool        `json:"user_hint_is_mandatory,omitempty"`
+	Users               []MieruUser        `json:"users,omitempty"`
+	PortBindings        []MieruPortBinding `json:"port_bindings,omitempty"`
+	Transport           string             `json:"transport,omitempty"`
+	TrafficPattern      string             `json:"traffic_pattern,omitempty"`
+	MTU                 int                `json:"mtu,omitempty"`
+	UserHintIsMandatory bool               `json:"user_hint_is_mandatory,omitempty"`
+}
+
+type MieruPortBinding struct {
+	Port      int    `json:"port,omitempty"`
+	PortRange string `json:"port_range,omitempty"`
+	Protocol  string `json:"protocol,omitempty"`
 }
 
 type MieruUser struct {

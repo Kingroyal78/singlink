@@ -374,7 +374,7 @@ func (n *nodeTraffic) speedLimiter(user string) *rateLimiter {
 
 func userTrackerKey(nodeType string, user UserInfo) string {
 	switch normalizeNodeType(nodeType) {
-	case C.TypeNaive:
+	case C.TypeMieru, C.TypeNaive:
 		if user.Username != "" {
 			return user.Username
 		}
@@ -757,6 +757,10 @@ func (c *trackedConn) Close() error {
 	return err
 }
 
+func (c *trackedConn) Upstream() any {
+	return c.Conn
+}
+
 type trackedPacketConn struct {
 	N.PacketConn
 	counter *userCounter
@@ -769,6 +773,10 @@ func (c *trackedPacketConn) Close() error {
 		c.counter.active.Add(-1)
 	})
 	return err
+}
+
+func (c *trackedPacketConn) Upstream() any {
+	return c.PacketConn
 }
 
 func cloneAliveList(alive map[int]int) map[int]int {

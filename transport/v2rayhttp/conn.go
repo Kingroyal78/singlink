@@ -261,6 +261,7 @@ func (w *HTTP2ConnWrapper) WriteBuffer(buffer *buf.Buffer) error {
 	w.access.Lock()
 	defer w.access.Unlock()
 	if w.closed {
+		buffer.Release()
 		return net.ErrClosed
 	}
 	return w.ExtendedConn.WriteBuffer(buffer)

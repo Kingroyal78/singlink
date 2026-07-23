@@ -122,6 +122,9 @@ func indexTLSServerNameFromExtensions(exs []byte) *MyServerName {
 			}
 			sniLen := uint16(sex[3])<<8 | uint16(sex[4])
 			sex = sex[sniExtensionHeaderLen:]
+			if sniLen == 0 || len(sex) != int(sniLen) {
+				return nil
+			}
 
 			return &MyServerName{
 				Index:      currentIndex + extensionHeaderLen + sniExtensionHeaderLen,

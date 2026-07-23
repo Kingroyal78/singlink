@@ -66,12 +66,21 @@ func (c *Conn) Write(b []byte) (n int, err error) {
 			}
 			var splitIndexes []int
 			for i, split := range splits {
+				if len(split) == 0 {
+					if i != len(splits)-1 {
+						currentIndex++
+					}
+					continue
+				}
 				splitAt := rand.Intn(len(split))
 				splitIndexes = append(splitIndexes, currentIndex+splitAt)
 				currentIndex += len(split)
 				if i != len(splits)-1 {
 					currentIndex++
 				}
+			}
+			if len(splitIndexes) == 0 {
+				return c.Conn.Write(b)
 			}
 			var buffer bytes.Buffer
 			for i := 0; i <= len(splitIndexes); i++ {

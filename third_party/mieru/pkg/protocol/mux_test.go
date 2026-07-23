@@ -18,10 +18,12 @@ package protocol
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	mrand "math/rand"
 	"net"
 	"reflect"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -218,6 +220,232 @@ func TestIPv6UDPUnderlay(t *testing.T) {
 	if err := serverMux.Close(); err != nil {
 		t.Errorf("Server mux close failed: %v", err)
 	}
+}
+
+func TestStartReturnsErrorAndClosesStartedListeners(t *testing.T) {
+	listener := newBlockingListener()
+	listenErr := errors.New("listen failed")
+	streamListenerFactory := &scriptedStreamListenerFactory{
+		listeners: []net.Listener{listener},
+		err:       listenErr,
+	}
+	serverMux := NewMux(false).
+		SetServerUsers(users).
+		SetStreamListenerFactory(streamListenerFactory).
+		SetEndpoints([]UnderlayProperties{
+			NewUnderlayProperties(1400, common.StreamTransport, &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 10001}, nil),
+			NewUnderlayProperties(1400, common.StreamTransport, &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 10002}, nil),
+		})
+
+	err := serverMux.Start()
+	if err == nil || !strings.Contains(err.Error(), listenErr.Error()) {
+		t.Fatalf("Start() error = %v, want %v", err, listenErr)
+	}
+	select {
+	case <-listener.closed:
+	case <-time.After(time.Second):
+		t.Fatal("started listener was not closed after Start() failure")
+	}
+}
+
+func TestSetEndpointsRollsBackStartedListenersOnFailure(t *testing.T) {
+	initialListener := newBlockingListener()
+	addedListener := newBlockingListener()
+	listenErr := errors.New("listen failed")
+	streamListenerFactory := &scriptedStreamListenerFactory{
+		listeners: []net.Listener{initialListener, addedListener},
+		err:       listenErr,
+	}
+	initialEndpoint := NewUnderlayProperties(1400, common.StreamTransport, &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 10001}, nil)
+	serverMux := NewMux(false).
+		SetServerUsers(users).
+		SetStreamListenerFactory(streamListenerFactory).
+		SetEndpoints([]UnderlayProperties{initialEndpoint})
+	if err := serverMux.Start(); err != nil {
+		t.Fatalf("Start() failed: %v", err)
+	}
+	defer serverMux.Close()
+
+	serverMux.SetEndpoints([]UnderlayProperties{
+		initialEndpoint,
+		NewUnderlayProperties(1400, common.StreamTransport, &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 10002}, nil),
+		NewUnderlayProperties(1400, common.StreamTransport, &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 10003}, nil),
+	})
+	select {
+	case <-addedListener.closed:
+	case <-time.After(time.Second):
+		t.Fatal("added listener was not closed after SetEndpoints() failure")
+	}
+	select {
+	case <-initialListener.closed:
+		t.Fatal("existing listener was closed after SetEndpoints() failure")
+	case <-time.After(100 * time.Millisecond):
+	}
+}
+
+func TestSetEndpointsRollsBackStartedPacketListenersOnFailure(t *testing.T) {
+	initialConn := newBlockingPacketConn(10001)
+	addedConn := newBlockingPacketConn(10002)
+	listenErr := errors.New("listen failed")
+	packetListenerFactory := &scriptedPacketListenerFactory{
+		conns: []net.PacketConn{initialConn, addedConn},
+		err:   listenErr,
+	}
+	initialEndpoint := NewUnderlayProperties(1400, common.PacketTransport, &net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 10001}, nil)
+	serverMux := NewMux(false).
+		SetServerUsers(users).
+		SetPacketListenerFactory(packetListenerFactory).
+		SetEndpoints([]UnderlayProperties{initialEndpoint})
+	if err := serverMux.Start(); err != nil {
+		t.Fatalf("Start() failed: %v", err)
+	}
+	defer serverMux.Close()
+
+	serverMux.SetEndpoints([]UnderlayProperties{
+		initialEndpoint,
+		NewUnderlayProperties(1400, common.PacketTransport, &net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 10002}, nil),
+		NewUnderlayProperties(1400, common.PacketTransport, &net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 10003}, nil),
+	})
+	select {
+	case <-addedConn.closed:
+	case <-time.After(time.Second):
+		t.Fatal("added packet listener was not closed after SetEndpoints() failure")
+	}
+	select {
+	case <-initialConn.closed:
+		t.Fatal("existing packet listener was closed after SetEndpoints() failure")
+	case <-time.After(100 * time.Millisecond):
+	}
+}
+
+type scriptedStreamListenerFactory struct {
+	mu        sync.Mutex
+	listeners []net.Listener
+	err       error
+}
+
+func (f *scriptedStreamListenerFactory) Listen(ctx context.Context, network string, address string) (net.Listener, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if len(f.listeners) > 0 {
+		listener := f.listeners[0]
+		f.listeners = f.listeners[1:]
+		return listener, nil
+	}
+	return nil, f.err
+}
+
+type scriptedPacketListenerFactory struct {
+	mu    sync.Mutex
+	conns []net.PacketConn
+	err   error
+}
+
+func (f *scriptedPacketListenerFactory) ListenPacket(ctx context.Context, network string, address string) (net.PacketConn, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if len(f.conns) > 0 {
+		conn := f.conns[0]
+		f.conns = f.conns[1:]
+		return conn, nil
+	}
+	return nil, f.err
+}
+
+type blockingListener struct {
+	closed chan struct{}
+	once   sync.Once
+}
+
+func newBlockingListener() *blockingListener {
+	return &blockingListener{closed: make(chan struct{})}
+}
+
+func (l *blockingListener) Accept() (net.Conn, error) {
+	<-l.closed
+	return nil, net.ErrClosed
+}
+
+func (l *blockingListener) Close() error {
+	l.once.Do(func() {
+		close(l.closed)
+	})
+	return nil
+}
+
+func (l *blockingListener) Addr() net.Addr {
+	return &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 10001}
+}
+
+type blockingPacketConn struct {
+	port             int
+	closed           chan struct{}
+	readDeadline     chan struct{}
+	closeOnce        sync.Once
+	readDeadlineOnce sync.Once
+}
+
+func newBlockingPacketConn(port int) *blockingPacketConn {
+	return &blockingPacketConn{
+		port:         port,
+		closed:       make(chan struct{}),
+		readDeadline: make(chan struct{}),
+	}
+}
+
+func (c *blockingPacketConn) ReadFrom(p []byte) (int, net.Addr, error) {
+	select {
+	case <-c.closed:
+		return 0, nil, net.ErrClosed
+	case <-c.readDeadline:
+		return 0, nil, packetTimeoutError{}
+	}
+}
+
+func (c *blockingPacketConn) WriteTo(p []byte, addr net.Addr) (int, error) {
+	return len(p), nil
+}
+
+func (c *blockingPacketConn) Close() error {
+	c.closeOnce.Do(func() {
+		close(c.closed)
+	})
+	return nil
+}
+
+func (c *blockingPacketConn) LocalAddr() net.Addr {
+	return &net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: c.port}
+}
+
+func (c *blockingPacketConn) SetDeadline(t time.Time) error {
+	return c.SetReadDeadline(t)
+}
+
+func (c *blockingPacketConn) SetReadDeadline(t time.Time) error {
+	if !t.IsZero() && !t.After(time.Now()) {
+		c.readDeadlineOnce.Do(func() {
+			close(c.readDeadline)
+		})
+	}
+	return nil
+}
+
+func (c *blockingPacketConn) SetWriteDeadline(t time.Time) error {
+	return nil
+}
+
+type packetTimeoutError struct{}
+
+func (packetTimeoutError) Error() string {
+	return "i/o timeout"
+}
+
+func (packetTimeoutError) Timeout() bool {
+	return true
+}
+
+func (packetTimeoutError) Temporary() bool {
+	return true
 }
 
 func TestNewEndpoints(t *testing.T) {

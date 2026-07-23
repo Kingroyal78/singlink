@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/singlink/singlink/option"
 )
@@ -384,6 +385,59 @@ func TestMapUniProxyInboundHysteriaVersion2UsesHysteria2(t *testing.T) {
 	}
 }
 
+func TestMapUniProxyInboundMieru(t *testing.T) {
+	users := []UserInfo{{
+		ID:       7,
+		UUID:     "00000000-0000-0000-0000-000000000007",
+		Username: "user-7",
+		Password: strings.Repeat("a", 64),
+	}}
+	inbound, err := MapUniProxyInbound("mieru", []byte(`{
+		"protocol": "mieru",
+		"server_port": "8964",
+		"port_bindings": [
+			{"port": "8964", "protocol": "UDP"},
+			{"port_range": "9000-9001", "protocol": "TCP"}
+		],
+		"traffic_pattern": "GgQIARAK",
+		"mtu": 1280
+	}`), users, MapperOptions{Tag: "panel-mieru"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if inbound.Type != "mieru" || inbound.Tag != "panel-mieru" {
+		t.Fatalf("unexpected inbound identity: %#v", inbound)
+	}
+	options := inbound.Options.(*option.MieruInboundOptions)
+	if options.ListenPort != 8964 || options.Transport != "" {
+		t.Fatalf("unexpected mieru listen options: %#v", options)
+	}
+	if len(options.PortBindings) != 2 {
+		t.Fatalf("unexpected mieru port bindings: %#v", options.PortBindings)
+	}
+	if options.PortBindings[0].Port != 8964 || options.PortBindings[0].Protocol != "UDP" {
+		t.Fatalf("unexpected first mieru port binding: %#v", options.PortBindings[0])
+	}
+	if options.PortBindings[1].PortRange != "9000-9001" || options.PortBindings[1].Protocol != "TCP" {
+		t.Fatalf("unexpected second mieru port binding: %#v", options.PortBindings[1])
+	}
+	if options.TrafficPattern != "GgQIARAK" || options.MTU != 1280 {
+		t.Fatalf("unexpected mieru advanced options: %#v", options)
+	}
+	if len(options.Users) != 1 || options.Users[0].Name != "user-7" || options.Users[0].Password != strings.Repeat("a", 64) {
+		t.Fatalf("unexpected mieru users: %#v", options.Users)
+	}
+
+	state := &nodeTraffic{}
+	state.updateUsersWithAliveStateForNodeType("mieru", 23, users, nil, time.Now(), defaultAliveListTTL, nodeRules{})
+	if counter := state.counter("user-7"); counter == nil {
+		t.Fatal("expected tracker to match mieru username")
+	}
+	if counter := state.counter("00000000-0000-0000-0000-000000000007"); counter != nil {
+		t.Fatal("expected tracker to prefer mieru username over uuid")
+	}
+}
+
 func TestMapUniProxyInboundNaive(t *testing.T) {
 	users := []UserInfo{{
 		ID:       7,
@@ -467,6 +521,38 @@ func TestMapUniProxyInboundNaiveRequiresTLS(t *testing.T) {
 	}}, MapperOptions{})
 	if err == nil || !strings.Contains(err.Error(), "naive tls") {
 		t.Fatalf("expected naive TLS error, got %v", err)
+	}
+}
+
+func TestMapUniProxyInboundMieruAcceptsMultiplePortBindings(t *testing.T) {
+	inbound, err := MapUniProxyInbound("mieru", []byte(`{
+		"protocol": "mieru",
+		"server_port": "9000-9010",
+		"transport": "TCP",
+		"port_bindings": [
+			{"port_range": "9000-9010"},
+			{"port": "9011", "transport": "UDP"}
+		]
+	}`), []UserInfo{{
+		ID:       7,
+		Username: "user-7",
+		Password: strings.Repeat("a", 64),
+	}}, MapperOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	options := inbound.Options.(*option.MieruInboundOptions)
+	if options.ListenPort != 9000 {
+		t.Fatalf("unexpected listen port: %d", options.ListenPort)
+	}
+	if len(options.PortBindings) != 2 {
+		t.Fatalf("unexpected port bindings: %#v", options.PortBindings)
+	}
+	if options.PortBindings[0].PortRange != "9000-9010" || options.PortBindings[0].Protocol != "TCP" {
+		t.Fatalf("unexpected first port binding: %#v", options.PortBindings[0])
+	}
+	if options.PortBindings[1].Port != 9011 || options.PortBindings[1].Protocol != "UDP" {
+		t.Fatalf("unexpected second port binding: %#v", options.PortBindings[1])
 	}
 }
 

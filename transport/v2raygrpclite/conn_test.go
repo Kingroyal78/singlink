@@ -1,9 +1,12 @@
 package v2raygrpclite
 
 import (
+	"bytes"
+	"encoding/binary"
 	"errors"
 	"io"
 	"net"
+	"strings"
 	"testing"
 	"time"
 )
@@ -44,5 +47,20 @@ func TestLateGunConnCloseCallsCancel(t *testing.T) {
 	case <-canceled:
 	case <-time.After(time.Second):
 		t.Fatal("Close did not call cancel")
+	}
+}
+
+func TestGunConnReadRejectsOversizedMessageLength(t *testing.T) {
+	maxInt := int(^uint(0) >> 1)
+	var frame bytes.Buffer
+	frame.Write(make([]byte, 6))
+	var encodedLen [binary.MaxVarintLen64]byte
+	n := binary.PutUvarint(encodedLen[:], uint64(maxInt)+1)
+	frame.Write(encodedLen[:n])
+	conn := newGunConn(bytes.NewReader(frame.Bytes()), io.Discard, nil)
+
+	_, err := conn.Read(make([]byte, 1))
+	if err == nil || !strings.Contains(err.Error(), "message length overflow") {
+		t.Fatalf("Read error = %v, want message length overflow", err)
 	}
 }

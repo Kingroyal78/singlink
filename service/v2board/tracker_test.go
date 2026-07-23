@@ -3,12 +3,14 @@ package v2board
 import (
 	"context"
 	"net"
+	"strconv"
 	"testing"
 	"time"
 
 	"github.com/sagernet/sing/common/buf"
 	"github.com/sagernet/sing/common/bufio"
 	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/singlink/singlink/adapter"
 	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/route"
@@ -100,7 +102,7 @@ func TestUserTrackerKeyFallsBackToPanelLabel(t *testing.T) {
 	}
 }
 
-func TestUserTrackerKeyKeepsUUIDForNonNaiveWhenUsernameIsPresent(t *testing.T) {
+func TestUserTrackerKeyKeepsUUIDForNonMieruWhenUsernameIsPresent(t *testing.T) {
 	const uuid = "00000000-0000-0000-0000-000000000007"
 	state := &nodeTraffic{}
 	state.updateUsersWithAliveStateForNodeType(C.TypeVMess, 23, []UserInfo{{
@@ -110,10 +112,28 @@ func TestUserTrackerKeyKeepsUUIDForNonNaiveWhenUsernameIsPresent(t *testing.T) {
 	}}, nil, time.Now(), defaultAliveListTTL, nodeRules{})
 
 	if counter := state.counter(uuid); counter == nil {
-		t.Fatal("expected uuid based counter for non-naive user")
+		t.Fatal("expected uuid based counter for non-mieru user")
 	}
 	if counter := state.counter("user-7"); counter != nil {
-		t.Fatal("non-naive tracker must not prefer username over uuid")
+		t.Fatal("non-mieru tracker must not prefer username over uuid")
+	}
+}
+
+func TestUserTrackerKeyUsesUsernameForMieru(t *testing.T) {
+	const uuid = "00000000-0000-0000-0000-000000000007"
+	state := &nodeTraffic{}
+	state.updateUsersWithAliveStateForNodeType(C.TypeMieru, 23, []UserInfo{{
+		ID:       7,
+		UUID:     uuid,
+		Username: "user-7",
+		Password: "password",
+	}}, nil, time.Now(), defaultAliveListTTL, nodeRules{})
+
+	if counter := state.counter("user-7"); counter == nil {
+		t.Fatal("expected username based counter for mieru user")
+	}
+	if counter := state.counter(uuid); counter != nil {
+		t.Fatal("mieru tracker must prefer username over uuid")
 	}
 }
 
@@ -375,6 +395,38 @@ func TestRoutedConnectionRejectsDeviceLimit(t *testing.T) {
 	}
 }
 
+func TestRoutedConnectionPreservesHeadroom(t *testing.T) {
+	const user = "00000000-0000-0000-0000-000000000007"
+	for _, speedLimit := range []int{0, 8} {
+		t.Run("speed_limit_"+strconv.Itoa(speedLimit), func(t *testing.T) {
+			tracker := &TrafficTracker{nodes: map[string]*nodeTraffic{"node": {}}}
+			tracker.nodes["node"].updateUsers(23, []UserInfo{{
+				ID:         7,
+				UUID:       user,
+				SpeedLimit: speedLimit,
+			}}, nil, nodeRules{})
+			client, server := net.Pipe()
+			defer client.Close()
+			defer server.Close()
+
+			conn := tracker.RoutedConnection(context.Background(), &headroomConn{
+				Conn: client,
+			}, adapter.InboundContext{
+				Inbound:     "node",
+				User:        user,
+				Source:      M.ParseSocksaddrHostPort("192.0.2.1", 12345),
+				Destination: M.ParseSocksaddrHostPort("example.com", 443),
+			}, nil, nil)
+			if got := N.CalculateFrontHeadroom(conn); got != 16 {
+				t.Fatalf("front headroom = %d, want 16", got)
+			}
+			if got := N.CalculateRearHeadroom(conn); got != 8 {
+				t.Fatalf("rear headroom = %d, want 8", got)
+			}
+		})
+	}
+}
+
 func TestRoutedPacketConnectionAppliesSpeedLimiter(t *testing.T) {
 	const user = "00000000-0000-0000-0000-000000000007"
 	tracker := &TrafficTracker{nodes: map[string]*nodeTraffic{"node": {}}}
@@ -396,6 +448,32 @@ func TestRoutedPacketConnectionAppliesSpeedLimiter(t *testing.T) {
 	}
 	if _, ok = counter.Upstream().(*rateLimitedPacketConn); !ok {
 		t.Fatalf("expected rate limited packet upstream, got %T", counter.Upstream())
+	}
+}
+
+func TestRoutedPacketConnectionPreservesFrontHeadroom(t *testing.T) {
+	const user = "00000000-0000-0000-0000-000000000007"
+	for _, speedLimit := range []int{0, 8} {
+		t.Run("speed_limit_"+strconv.Itoa(speedLimit), func(t *testing.T) {
+			tracker := &TrafficTracker{nodes: map[string]*nodeTraffic{"node": {}}}
+			tracker.nodes["node"].updateUsers(23, []UserInfo{{
+				ID:         7,
+				UUID:       user,
+				SpeedLimit: speedLimit,
+			}}, nil, nodeRules{})
+
+			conn := tracker.RoutedPacketConnection(context.Background(), &headroomPacketConn{
+				PacketConn: &fakePacketConn{},
+			}, adapter.InboundContext{
+				Inbound:     "node",
+				User:        user,
+				Source:      M.ParseSocksaddrHostPort("192.0.2.1", 12345),
+				Destination: M.ParseSocksaddrHostPort("example.com", 443),
+			}, nil, nil)
+			if got := N.CalculateFrontHeadroom(conn); got != 16 {
+				t.Fatalf("front headroom = %d, want 16", got)
+			}
+		})
 	}
 }
 
@@ -519,6 +597,26 @@ func TestBuildNodeRulesRejectsInvalidRegexp(t *testing.T) {
 }
 
 type fakePacketConn struct{}
+
+type headroomConn struct {
+	net.Conn
+}
+
+func (c *headroomConn) FrontHeadroom() int {
+	return 16
+}
+
+func (c *headroomConn) RearHeadroom() int {
+	return 8
+}
+
+type headroomPacketConn struct {
+	N.PacketConn
+}
+
+func (c *headroomPacketConn) FrontHeadroom() int {
+	return 16
+}
 
 func (c *fakePacketConn) ReadPacket(buffer *buf.Buffer) (M.Socksaddr, error) {
 	return M.Socksaddr{}, nil

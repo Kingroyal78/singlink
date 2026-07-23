@@ -8,6 +8,7 @@ import (
 	"time"
 
 	mieruconstant "github.com/enfein/mieru/v3/apis/constant"
+	mierupb "github.com/enfein/mieru/v3/pkg/appctl/appctlpb"
 	mierucipher "github.com/enfein/mieru/v3/pkg/cipher"
 	"github.com/sagernet/sing/common/buf"
 	M "github.com/sagernet/sing/common/metadata"
@@ -108,6 +109,68 @@ func TestBuildMieruServerConfigForcesMandatoryHintAndHashesUsers(t *testing.T) {
 	wantHash := hex.EncodeToString(mierucipher.HashPassword([]byte("password"), []byte("user")))
 	if users[0].GetHashedPassword() != wantHash {
 		t.Fatalf("hashed password = %q, want %q", users[0].GetHashedPassword(), wantHash)
+	}
+}
+
+func TestBuildMieruServerConfigUsesPortBindings(t *testing.T) {
+	config, err := buildMieruServerConfig(log.NewNOPFactory().Logger(), option.MieruInboundOptions{
+		PortBindings: []option.MieruPortBinding{
+			{Port: 8964, Protocol: "udp"},
+			{PortRange: "9000-9001", Protocol: "TCP"},
+		},
+		Users: []option.MieruUser{
+			{Name: "user", Password: "password"},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	bindings := config.Config.GetPortBindings()
+	if len(bindings) != 2 {
+		t.Fatalf("len(port_bindings) = %d, want 2", len(bindings))
+	}
+	if bindings[0].GetPort() != 8964 || bindings[0].GetProtocol() != mierupb.TransportProtocol_UDP {
+		t.Fatalf("unexpected first port binding: %#v", bindings[0])
+	}
+	if bindings[1].GetPortRange() != "9000-9001" || bindings[1].GetProtocol() != mierupb.TransportProtocol_TCP {
+		t.Fatalf("unexpected second port binding: %#v", bindings[1])
+	}
+}
+
+func TestValidateMieruInboundOptionsRejectsInvalidPortBindings(t *testing.T) {
+	for _, testCase := range []struct {
+		name     string
+		bindings []option.MieruPortBinding
+	}{
+		{
+			name:     "missing port and range",
+			bindings: []option.MieruPortBinding{{Protocol: "TCP"}},
+		},
+		{
+			name:     "both port and range",
+			bindings: []option.MieruPortBinding{{Port: 8964, PortRange: "9000-9001", Protocol: "TCP"}},
+		},
+		{
+			name:     "missing protocol",
+			bindings: []option.MieruPortBinding{{Port: 8964}},
+		},
+		{
+			name:     "invalid range",
+			bindings: []option.MieruPortBinding{{PortRange: "9001-9000", Protocol: "TCP"}},
+		},
+	} {
+		t.Run(testCase.name, func(t *testing.T) {
+			err := validateMieruInboundOptions(option.MieruInboundOptions{
+				PortBindings: testCase.bindings,
+				Users: []option.MieruUser{
+					{Name: "user", Password: "password"},
+				},
+			})
+			if err == nil {
+				t.Fatal("expected error")
+			}
+		})
 	}
 }
 

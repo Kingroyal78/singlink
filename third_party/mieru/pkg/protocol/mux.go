@@ -132,27 +132,55 @@ func NewMux(isClinet bool) *Mux {
 // are not impacted.
 func (m *Mux) SetEndpoints(endpoints []UnderlayProperties) *Mux {
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	new := m.newEndpoints(m.endpoints, endpoints)
-	if len(new) > 0 {
-		if m.used {
-			select {
-			case <-m.done:
-				log.Infof("Unable to add new endpoint after multiplexer is closed")
-			default:
-				var wg sync.WaitGroup
-				for _, p := range new {
-					wg.Add(1)
-					go m.acceptUnderlayLoop(m.ctx, p, &wg)
-				}
-				wg.Wait()
-				m.endpoints = endpoints
-			}
-		} else {
-			m.endpoints = new
+	if len(new) == 0 {
+		endpointCount := len(m.endpoints)
+		m.mu.Unlock()
+		log.Infof("Mux now has %d endpoints", endpointCount)
+		return m
+	}
+	if !m.used {
+		m.endpoints = new
+		endpointCount := len(m.endpoints)
+		m.mu.Unlock()
+		log.Infof("Mux now has %d endpoints", endpointCount)
+		return m
+	}
+	select {
+	case <-m.done:
+		endpointCount := len(m.endpoints)
+		m.mu.Unlock()
+		log.Infof("Unable to add new endpoint after multiplexer is closed")
+		log.Infof("Mux now has %d endpoints", endpointCount)
+		return m
+	default:
+	}
+	m.mu.Unlock()
+
+	addCtx, cancelAdd := context.WithCancel(m.ctx)
+	startup := make(chan error, len(new))
+	for _, p := range new {
+		go m.acceptUnderlayLoop(addCtx, p, startup)
+	}
+	var startErr error
+	for range new {
+		if err := <-startup; err != nil && startErr == nil {
+			startErr = err
 		}
 	}
-	log.Infof("Mux now has %d endpoints", len(m.endpoints))
+	if startErr != nil {
+		cancelAdd()
+	}
+
+	m.mu.Lock()
+	if startErr == nil {
+		m.endpoints = endpoints
+	} else {
+		log.Errorf("Unable to add new endpoint: %v", startErr)
+	}
+	endpointCount := len(m.endpoints)
+	m.mu.Unlock()
+	log.Infof("Mux now has %d endpoints", endpointCount)
 	return m
 }
 
@@ -348,14 +376,24 @@ func (m *Mux) Start() error {
 	}
 
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	m.used = true
-	var wg sync.WaitGroup
-	for _, p := range m.endpoints {
-		wg.Add(1)
-		go m.acceptUnderlayLoop(m.ctx, p, &wg)
+	endpoints := append([]UnderlayProperties(nil), m.endpoints...)
+	m.mu.Unlock()
+
+	startup := make(chan error, len(endpoints))
+	for _, p := range endpoints {
+		go m.acceptUnderlayLoop(m.ctx, p, startup)
 	}
-	wg.Wait()
+	var startErr error
+	for range endpoints {
+		if err := <-startup; err != nil && startErr == nil {
+			startErr = err
+		}
+	}
+	if startErr != nil {
+		_ = m.Close()
+		return startErr
+	}
 	return nil
 }
 
@@ -445,14 +483,10 @@ func (m *Mux) newEndpoints(old, new []UnderlayProperties) []UnderlayProperties {
 	return newEndpoints
 }
 
-func (m *Mux) acceptUnderlayLoop(ctx context.Context, properties UnderlayProperties, wg *sync.WaitGroup) {
+func (m *Mux) acceptUnderlayLoop(ctx context.Context, properties UnderlayProperties, startup chan<- error) {
 	laddr := properties.LocalAddr().String()
 	if laddr == "" {
-		log.Errorf("Underlay local address is empty")
-		if m.acceptHasErr.CompareAndSwap(false, true) {
-			close(m.acceptErr)
-		}
-		wg.Done()
+		m.reportAcceptUnderlayStartupError(startup, fmt.Errorf("underlay local address is empty"))
 		return
 	}
 
@@ -461,23 +495,14 @@ func (m *Mux) acceptUnderlayLoop(ctx context.Context, properties UnderlayPropert
 	case "tcp", "tcp4", "tcp6":
 		tcpAddr, err := apicommon.ResolveTCPAddr(ctx, m.resolver, "tcp", laddr)
 		if err != nil {
-			log.Errorf("ResolveTCPAddr() failed: %v", err)
-			if m.acceptHasErr.CompareAndSwap(false, true) {
-				close(m.acceptErr)
-			}
-			wg.Done()
+			m.reportAcceptUnderlayStartupError(startup, fmt.Errorf("ResolveTCPAddr() failed: %w", err))
 			return
 		}
 		rawListener, err := m.streamListenerFactory.Listen(ctx, tcpAddr.Network(), tcpAddr.String())
 		if err != nil {
-			log.Errorf("Listen() failed: %v", err)
-			if m.acceptHasErr.CompareAndSwap(false, true) {
-				close(m.acceptErr)
-			}
-			wg.Done()
+			m.reportAcceptUnderlayStartupError(startup, fmt.Errorf("Listen() failed: %w", err))
 			return
 		}
-		wg.Done()
 		log.Infof("Mux is listening to endpoint %s %s", network, laddr)
 
 		// Close the rawListener if the master context is canceled.
@@ -487,6 +512,7 @@ func (m *Mux) acceptUnderlayLoop(ctx context.Context, properties UnderlayPropert
 			log.Infof("Closing TCPListener %v", rawListener.Addr())
 			rawListener.Close()
 		}(ctx, rawListener)
+		startup <- nil
 
 		for {
 			// A new underlay should be established.
@@ -537,23 +563,14 @@ func (m *Mux) acceptUnderlayLoop(ctx context.Context, properties UnderlayPropert
 	case "udp", "udp4", "udp6":
 		udpAddr, err := apicommon.ResolveUDPAddr(ctx, m.resolver, "udp", laddr)
 		if err != nil {
-			log.Errorf("ResolveUDPAddr() failed: %v", err)
-			if m.acceptHasErr.CompareAndSwap(false, true) {
-				close(m.acceptErr)
-			}
-			wg.Done()
+			m.reportAcceptUnderlayStartupError(startup, fmt.Errorf("ResolveUDPAddr() failed: %w", err))
 			return
 		}
 		conn, err := m.packetListenerFactory.ListenPacket(ctx, udpAddr.Network(), udpAddr.String())
 		if err != nil {
-			log.Errorf("ListenPacket() failed: %v", err)
-			if m.acceptHasErr.CompareAndSwap(false, true) {
-				close(m.acceptErr)
-			}
-			wg.Done()
+			m.reportAcceptUnderlayStartupError(startup, fmt.Errorf("ListenPacket() failed: %w", err))
 			return
 		}
-		wg.Done()
 		log.Infof("Mux is listening to endpoint %s %s", network, laddr)
 
 		var trafficPattern *appctlpb.TrafficPattern
@@ -581,6 +598,13 @@ func (m *Mux) acceptUnderlayLoop(ctx context.Context, properties UnderlayPropert
 			UnderlayMaxConn.Store(currEst)
 		}
 
+		// Close the underlay if the master context is canceled.
+		// This unblocks the packet read loop immediately.
+		go func(ctx context.Context, underlay Underlay) {
+			<-ctx.Done()
+			underlay.Close()
+		}(ctx, underlay)
+
 		// Run underlay event loop.
 		go func(ctx context.Context, underlay Underlay) {
 			err := underlay.RunEventLoop(ctx)
@@ -607,13 +631,18 @@ func (m *Mux) acceptUnderlayLoop(ctx context.Context, properties UnderlayPropert
 				}
 			}
 		}(ctx, underlay)
+		startup <- nil
 	default:
-		log.Errorf("Unsupported underlay network type %q", network)
-		if m.acceptHasErr.CompareAndSwap(false, true) {
-			close(m.acceptErr)
-		}
-		wg.Done()
+		m.reportAcceptUnderlayStartupError(startup, fmt.Errorf("unsupported underlay network type %q", network))
 	}
+}
+
+func (m *Mux) reportAcceptUnderlayStartupError(startup chan<- error, err error) {
+	log.Errorf("%v", err)
+	if m.acceptHasErr.CompareAndSwap(false, true) {
+		close(m.acceptErr)
+	}
+	startup <- err
 }
 
 func (m *Mux) acceptTCPUnderlay(rawListener net.Listener, properties UnderlayProperties) (Underlay, error) {

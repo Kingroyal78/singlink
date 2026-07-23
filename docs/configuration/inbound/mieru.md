@@ -15,6 +15,16 @@ icon: material/new-box
   ... // Other Listen Fields
 
   "transport": "TCP",
+  "port_bindings": [
+    {
+      "port": 8964,
+      "protocol": "TCP"
+    },
+    {
+      "port_range": "9000-9010",
+      "protocol": "UDP"
+    }
+  ],
   "users": [
     {
       "name": "user",
@@ -32,15 +42,41 @@ icon: material/new-box
 
 ### Listen Fields
 
-See [Listen Fields](/configuration/shared/listen/) for details.
+See [Listen Fields](/configuration/shared/listen/) for details. `listen_port` is only used when `port_bindings` is omitted.
 
-The Mieru inbound requires a single `listen_port`. singlink does not expose Mieru inbound port ranges or multiple port bindings.
+When `port_bindings` is set, Mieru listens on every configured binding. The shared listen address and socket options still come from Listen Fields.
 
 ### Fields
 
-#### transport
+#### port_bindings
+
+A list of Mieru port bindings.
+
+If omitted, singlink uses the compatibility path of `listen_port` plus `transport`.
+
+#### port_bindings.port
+
+A single listening port.
+
+Exactly one of `port` and `port_range` must be set.
+
+#### port_bindings.port_range
+
+A listening port range in `begin-end` form, for example `9000-9010`.
+
+Exactly one of `port` and `port_range` must be set.
+
+#### port_bindings.protocol
 
 ==Required==
+
+Transport protocol for this port binding.
+
+Supported values are `TCP` and `UDP`. Values are parsed case-insensitively, but the canonical form is uppercase.
+
+#### transport
+
+Required when `port_bindings` is omitted.
 
 Transport protocol.
 
@@ -71,6 +107,10 @@ Must be non-empty and no more than 64 bytes.
 #### traffic_pattern
 
 Base64 encoding of a Mieru `TrafficPattern` protobuf message.
+
+#### mtu
+
+Mieru underlay MTU. When set, the value must be between `1280` and `1400`.
 
 #### user_hint_is_mandatory
 

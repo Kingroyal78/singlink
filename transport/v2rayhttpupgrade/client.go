@@ -112,8 +112,9 @@ func (c *Client) DialContext(ctx context.Context) (net.Conn, error) {
 		return nil, E.New("v2ray-http-upgrade: unexpected status: ", response.Status)
 	}
 	if bufReader.Buffered() > 0 {
-		buffer := buf.NewSize(bufReader.Buffered())
-		_, err = buffer.ReadFullFrom(bufReader, buffer.Len())
+		cachedLen := bufReader.Buffered()
+		buffer := buf.NewSize(cachedLen)
+		_, err = buffer.ReadFullFrom(bufReader, cachedLen)
 		if err != nil {
 			return nil, err
 		}

@@ -236,12 +236,14 @@ func (c *EarlyWebsocketConn) WriteBuffer(buffer *buf.Buffer) error {
 	c.access.Lock()
 	defer c.access.Unlock()
 	if c.err != nil {
+		buffer.Release()
 		return c.err
 	}
 	conn = c.conn.Load()
 	if conn != nil {
 		return wrapWsError(conn.WriteBuffer(buffer))
 	}
+	defer buffer.Release()
 	err := c.writeRequest(buffer.Bytes())
 	c.finishCreate(err)
 	return err

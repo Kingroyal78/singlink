@@ -77,7 +77,7 @@ func MapInbound(node *NodeInfo, users []UserInfo, mapperOptions MapperOptions) (
 	if !supportedNodeType(nodeType) {
 		return option.Inbound{}, fmt.Errorf("unsupported node type %q by singlink", nodeType)
 	}
-	if config.ServerPort <= 0 || config.ServerPort > 65535 {
+	if nodeType != C.TypeMieru && (config.ServerPort <= 0 || config.ServerPort > 65535) {
 		return option.Inbound{}, fmt.Errorf("invalid server_port %d", config.ServerPort)
 	}
 	if len(users) == 0 {
@@ -220,6 +220,12 @@ func MapInbound(node *NodeInfo, users []UserInfo, mapperOptions MapperOptions) (
 			return option.Inbound{}, err
 		}
 		inbound.Options = options
+	case C.TypeMieru:
+		options, err := mieruOptions(config, users, mapperOptions)
+		if err != nil {
+			return option.Inbound{}, err
+		}
+		inbound.Options = options
 	default:
 		return option.Inbound{}, fmt.Errorf("unsupported node type %q", nodeType)
 	}
@@ -236,7 +242,8 @@ func supportedNodeType(nodeType string) bool {
 		C.TypeAnyTLS,
 		C.TypeHysteria,
 		C.TypeHysteria2,
-		C.TypeNaive:
+		C.TypeNaive,
+		C.TypeMieru:
 		return true
 	default:
 		return false
@@ -791,9 +798,108 @@ func naiveNetwork(network string) (option.NetworkList, error) {
 	}
 }
 
+func mieruOptions(config *ServerConfig, users []UserInfo, mapperOptions MapperOptions) (*option.MieruInboundOptions, error) {
+	listenPort, err := mieruListenPort(config)
+	if err != nil {
+		return nil, err
+	}
+	configCopy := *config
+	configCopy.ServerPort = listenPort
+	listen, err := listenOptions(&configCopy, mapperOptions)
+	if err != nil {
+		return nil, err
+	}
+	options := &option.MieruInboundOptions{
+		ListenOptions:  listen,
+		Users:          mieruUsers(users),
+		TrafficPattern: config.TrafficPattern,
+		MTU:            config.MTU,
+	}
+	if len(config.PortBindings) > 0 {
+		portBindings, err := mieruPortBindings(config)
+		if err != nil {
+			return nil, err
+		}
+		options.PortBindings = portBindings
+	} else {
+		options.Transport = mieruDefaultTransport(config.Transport)
+	}
+	return options, nil
+}
+
+func mieruListenPort(config *ServerConfig) (int, error) {
+	if len(config.PortBindings) == 0 {
+		if config.ServerPort <= 0 || config.ServerPort > 65535 {
+			return 0, fmt.Errorf("mieru: invalid server_port %d", config.ServerPort)
+		}
+		return config.ServerPort, nil
+	}
+	for _, binding := range config.PortBindings {
+		if binding.Port > 0 && binding.Port <= 65535 {
+			return binding.Port, nil
+		}
+		if begin, ok := firstPortFromMieruRange(binding.PortRange); ok {
+			return begin, nil
+		}
+	}
+	return 0, nil
+}
+
+func mieruPortBindings(config *ServerConfig) ([]option.MieruPortBinding, error) {
+	result := make([]option.MieruPortBinding, len(config.PortBindings))
+	for i, binding := range config.PortBindings {
+		portRange := strings.TrimSpace(binding.PortRange)
+		hasPort := binding.Port != 0
+		hasRange := portRange != ""
+		if hasPort == hasRange {
+			return nil, fmt.Errorf("mieru: port_bindings[%d] must set exactly one of port or port_range", i)
+		}
+		if hasPort && (binding.Port < 1 || binding.Port > 65535) {
+			return nil, fmt.Errorf("mieru: port_bindings[%d].port %d is invalid", i, binding.Port)
+		}
+		if hasRange {
+			if _, ok := firstPortFromMieruRange(portRange); !ok {
+				return nil, fmt.Errorf("mieru: port_bindings[%d].port_range %q is invalid", i, binding.PortRange)
+			}
+		}
+		protocol := mieruDefaultTransport(firstNonEmpty(binding.Protocol, config.Transport))
+		switch protocol {
+		case "TCP", "UDP":
+		default:
+			return nil, fmt.Errorf("mieru: port_bindings[%d].protocol %q is invalid", i, binding.Protocol)
+		}
+		result[i] = option.MieruPortBinding{
+			Port:      binding.Port,
+			PortRange: portRange,
+			Protocol:  protocol,
+		}
+	}
+	return result, nil
+}
+
+func mieruDefaultTransport(transport string) string {
+	return strings.ToUpper(firstNonEmpty(strings.TrimSpace(transport), "TCP"))
+}
+
+func firstPortFromMieruRange(portRange string) (int, bool) {
+	beginString, endString, found := strings.Cut(strings.TrimSpace(portRange), "-")
+	if !found || beginString == "" || endString == "" {
+		return 0, false
+	}
+	begin, err := strconv.Atoi(beginString)
+	if err != nil || begin < 1 || begin > 65535 {
+		return 0, false
+	}
+	end, err := strconv.Atoi(endString)
+	if err != nil || end < begin || end > 65535 {
+		return 0, false
+	}
+	return begin, true
+}
+
 func validateUsers(nodeType string, users []UserInfo) error {
 	for i, user := range users {
-		if nodeType == C.TypeNaive {
+		if nodeType == C.TypeMieru || nodeType == C.TypeNaive {
 			if strings.TrimSpace(user.Username) == "" {
 				return fmt.Errorf("%s: user at index %d has empty username", nodeType, i)
 			}
@@ -861,6 +967,14 @@ func hysteria2Users(users []UserInfo) []option.Hysteria2User {
 	result := make([]option.Hysteria2User, len(users))
 	for i, user := range users {
 		result[i] = option.Hysteria2User{Name: user.UUID, Password: user.UUID}
+	}
+	return result
+}
+
+func mieruUsers(users []UserInfo) []option.MieruUser {
+	result := make([]option.MieruUser, len(users))
+	for i, user := range users {
+		result[i] = option.MieruUser{Name: user.Username, Password: user.Password}
 	}
 	return result
 }

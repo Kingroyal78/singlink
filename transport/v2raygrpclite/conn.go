@@ -13,6 +13,7 @@ import (
 	"github.com/sagernet/sing/common"
 	"github.com/sagernet/sing/common/baderror"
 	"github.com/sagernet/sing/common/buf"
+	E "github.com/sagernet/sing/common/exceptions"
 	M "github.com/sagernet/sing/common/metadata"
 	"github.com/sagernet/sing/common/varbin"
 )
@@ -105,6 +106,10 @@ func (c *GunConn) read(b []byte) (n int, err error) {
 		return
 	}
 
+	if dataLen > uint64(^uint(0)>>1) {
+		err = E.New("v2ray-grpc-lite: message length overflow")
+		return
+	}
 	readLen := int(dataLen)
 	c.readRemaining = readLen
 	if len(b) > readLen {
@@ -119,6 +124,7 @@ func (c *GunConn) read(b []byte) (n int, err error) {
 func (c *GunConn) Write(b []byte) (n int, err error) {
 	varLen := varbin.UvarintLen(uint64(len(b)))
 	buffer := buf.NewSize(6 + varLen + len(b))
+	defer buffer.Release()
 	header := buffer.Extend(6 + varLen)
 	header[0] = 0x00
 	binary.BigEndian.PutUint32(header[1:5], uint32(1+varLen+len(b)))

@@ -89,6 +89,10 @@ func (c *rateLimitedConn) Close() error {
 	return c.ExtendedConn.Close()
 }
 
+func (c *rateLimitedConn) Upstream() any {
+	return c.ExtendedConn
+}
+
 type rateLimitedPacketConn struct {
 	N.PacketConn
 	ctx    context.Context
@@ -126,6 +130,10 @@ func (c *rateLimitedPacketConn) WritePacket(buffer *buf.Buffer, destination M.So
 func (c *rateLimitedPacketConn) Close() error {
 	c.cancel()
 	return c.PacketConn.Close()
+}
+
+func (c *rateLimitedPacketConn) Upstream() any {
+	return c.PacketConn
 }
 
 func waitRate(ctx context.Context, limiter *rateLimiter, bytes int) error {

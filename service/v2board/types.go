@@ -44,46 +44,53 @@ type Options struct {
 }
 
 type ServerConfig struct {
-	Protocol              string            `json:"protocol"`
-	ListenIP              string            `json:"listen_ip"`
-	ServerPort            int               `json:"server_port"`
-	Routes                []ServerRoute     `json:"routes"`
-	BaseConfig            *ServerBaseConfig `json:"base_config"`
-	TLS                   int               `json:"tls"`
-	TLSSettings           ServerTLSSettings `json:"tls_settings"`
-	CertInfo              *CertInfo         `json:"-"`
-	Network               string            `json:"network"`
-	NetworkSettings       json.RawMessage   `json:"network_settings"`
-	Encryption            string            `json:"encryption"`
-	EncryptionSettings    ServerEncSettings `json:"encryption_settings"`
-	ServerName            string            `json:"server_name"`
-	Flow                  string            `json:"flow"`
-	RealityConfig         RealityConfig     `json:"reality_config"`
-	Cipher                string            `json:"cipher"`
-	ServerKey             string            `json:"server_key"`
-	CongestionControl     string            `json:"congestion_control"`
-	QUICCongestionControl string            `json:"quic_congestion_control"`
-	ZeroRTTHandshake      bool              `json:"zero_rtt_handshake"`
-	PaddingScheme         []string          `json:"padding_scheme,omitempty"`
-	Version               int               `json:"version"`
-	UpMbps                int               `json:"up_mbps"`
-	DownMbps              int               `json:"down_mbps"`
-	Obfs                  string            `json:"obfs"`
-	ObfsPassword          string            `json:"obfs_password"`
-	ObfsSettings          json.RawMessage   `json:"obfs_settings"`
-	IgnoreClientBandwidth bool              `json:"ignore_client_bandwidth"`
-	Host                  string            `json:"host"`
-	Port                  int               `json:"port"`
-	SecretMode            string            `json:"secret_mode"`
-	TLSDomain             string            `json:"tls_domain"`
-	AllowAdTag            bool              `json:"allow_ad_tag"`
-	Settings              map[string]any    `json:"settings"`
+	Protocol              string             `json:"protocol"`
+	ListenIP              string             `json:"listen_ip"`
+	ServerPort            int                `json:"server_port"`
+	PortBindings          []MieruPortBinding `json:"port_bindings"`
+	Routes                []ServerRoute      `json:"routes"`
+	BaseConfig            *ServerBaseConfig  `json:"base_config"`
+	TLS                   int                `json:"tls"`
+	TLSSettings           ServerTLSSettings  `json:"tls_settings"`
+	CertInfo              *CertInfo          `json:"-"`
+	Network               string             `json:"network"`
+	NetworkSettings       json.RawMessage    `json:"network_settings"`
+	Encryption            string             `json:"encryption"`
+	EncryptionSettings    ServerEncSettings  `json:"encryption_settings"`
+	ServerName            string             `json:"server_name"`
+	Flow                  string             `json:"flow"`
+	RealityConfig         RealityConfig      `json:"reality_config"`
+	Cipher                string             `json:"cipher"`
+	ServerKey             string             `json:"server_key"`
+	CongestionControl     string             `json:"congestion_control"`
+	QUICCongestionControl string             `json:"quic_congestion_control"`
+	ZeroRTTHandshake      bool               `json:"zero_rtt_handshake"`
+	PaddingScheme         []string           `json:"padding_scheme,omitempty"`
+	Version               int                `json:"version"`
+	UpMbps                int                `json:"up_mbps"`
+	DownMbps              int                `json:"down_mbps"`
+	Obfs                  string             `json:"obfs"`
+	ObfsPassword          string             `json:"obfs_password"`
+	ObfsSettings          json.RawMessage    `json:"obfs_settings"`
+	IgnoreClientBandwidth bool               `json:"ignore_client_bandwidth"`
+	Transport             string             `json:"transport"`
+	Multiplexing          string             `json:"multiplexing"`
+	HandshakeMode         string             `json:"handshake_mode"`
+	TrafficPattern        string             `json:"traffic_pattern"`
+	MTU                   int                `json:"mtu"`
+	Host                  string             `json:"host"`
+	Port                  int                `json:"port"`
+	SecretMode            string             `json:"secret_mode"`
+	TLSDomain             string             `json:"tls_domain"`
+	AllowAdTag            bool               `json:"allow_ad_tag"`
+	Settings              map[string]any     `json:"settings"`
 }
 
 func (c *ServerConfig) UnmarshalJSON(data []byte) error {
 	type serverConfig ServerConfig
 	aux := struct {
 		*serverConfig
+		ServerPortRaw        json.RawMessage    `json:"server_port"`
 		NetworkSettingsCamel json.RawMessage    `json:"networkSettings"`
 		TLSSettingsCamel     *ServerTLSSettings `json:"tlsSettings"`
 		ObfsPasswordHyphen   string             `json:"obfs-password"`
@@ -93,6 +100,13 @@ func (c *ServerConfig) UnmarshalJSON(data []byte) error {
 	}
 	if err := json.Unmarshal(data, &aux); err != nil {
 		return err
+	}
+	if rawJSONHasValue(aux.ServerPortRaw) {
+		serverPort, err := parseFlexiblePort(aux.ServerPortRaw, "server_port")
+		if err != nil {
+			return err
+		}
+		c.ServerPort = serverPort
 	}
 	if len(c.NetworkSettings) == 0 || bytes.Equal(c.NetworkSettings, []byte("null")) {
 		if len(aux.NetworkSettingsCamel) > 0 {
@@ -113,6 +127,67 @@ func (c *ServerConfig) UnmarshalJSON(data []byte) error {
 		}
 	}
 	return nil
+}
+
+type MieruPortBinding struct {
+	Port      int    `json:"port,omitempty"`
+	PortRange string `json:"port_range,omitempty"`
+	Protocol  string `json:"protocol,omitempty"`
+}
+
+func (b *MieruPortBinding) UnmarshalJSON(data []byte) error {
+	aux := struct {
+		PortRaw      json.RawMessage `json:"port"`
+		PortRange    string          `json:"port_range"`
+		PortRangeAlt string          `json:"portRange"`
+		Protocol     string          `json:"protocol"`
+		Transport    string          `json:"transport"`
+	}{}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	var portRangeFromPort string
+	if rawJSONHasValue(aux.PortRaw) {
+		var portText string
+		if err := json.Unmarshal(aux.PortRaw, &portText); err == nil {
+			portText = strings.TrimSpace(portText)
+			if strings.Contains(portText, "-") {
+				portRangeFromPort = portText
+			}
+		}
+		if portRangeFromPort != "" {
+			b.Port = 0
+		} else {
+			port, err := parseFlexiblePort(aux.PortRaw, "port")
+			if err != nil {
+				return err
+			}
+			b.Port = port
+		}
+	}
+	b.PortRange = firstNonEmpty(aux.PortRange, aux.PortRangeAlt, portRangeFromPort)
+	b.Protocol = firstNonEmpty(aux.Protocol, aux.Transport)
+	return nil
+}
+
+func parseFlexiblePort(data json.RawMessage, field string) (int, error) {
+	var port int
+	if err := json.Unmarshal(data, &port); err == nil {
+		return port, nil
+	}
+	var text string
+	if err := json.Unmarshal(data, &text); err != nil {
+		return 0, fmt.Errorf("%s must be a port number: %w", field, err)
+	}
+	text = strings.TrimSpace(text)
+	if text == "" || strings.Contains(text, "-") {
+		return 0, nil
+	}
+	parsed, err := strconv.Atoi(text)
+	if err != nil {
+		return 0, fmt.Errorf("%s must be a port number: %w", field, err)
+	}
+	return parsed, nil
 }
 
 type ServerNodeInfo struct {

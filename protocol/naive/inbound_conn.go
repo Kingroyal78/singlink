@@ -165,7 +165,7 @@ func (p *paddingConn) writerMTU() int {
 }
 
 func (p *paddingConn) readerReplaceable() bool {
-	return p.readPadding == paddingCount
+	return p.readPadding == paddingCount && p.readRemaining == 0 && p.paddingRemaining == 0
 }
 
 func (p *paddingConn) writerReplaceable() bool {

@@ -64,6 +64,7 @@ func (c *ClientConn) WriteBuffer(buffer *buf.Buffer) error {
 	if c.headerWritten {
 		return c.ExtendedConn.WriteBuffer(buffer)
 	}
+	defer buffer.Release()
 	err := ClientHandshakeBuffer(c.ExtendedConn, c.key, c.destination, buffer)
 	if err != nil {
 		return err
@@ -123,6 +124,7 @@ func (c *ClientPacketConn) WritePacket(buffer *buf.Buffer, destination M.Socksad
 			err := ClientHandshakePacket(c.Conn, c.key, destination, buffer)
 			c.headerWritten = true
 			c.access.Unlock()
+			buffer.Release()
 			return err
 		}
 	}
@@ -227,11 +229,15 @@ func ClientHandshake(conn net.Conn, key [KeyLength]byte, destination M.Socksaddr
 }
 
 func ClientHandshakeBuffer(conn net.Conn, key [KeyLength]byte, destination M.Socksaddr, payload *buf.Buffer) error {
-	header := buf.With(payload.ExtendHeader(KeyLength + M.SocksaddrSerializer.AddrPortLen(destination) + 5))
+	destinationLen, err := socksaddrLen(destination)
+	if err != nil {
+		return err
+	}
+	header := buf.With(payload.ExtendHeader(KeyLength + destinationLen + 5))
 	common.Must1(header.Write(key[:]))
 	common.Must1(header.Write(CRLF))
 	common.Must(header.WriteByte(CommandTCP))
-	err := M.SocksaddrSerializer.WriteAddrPort(header, destination)
+	err = M.SocksaddrSerializer.WriteAddrPort(header, destination)
 	if err != nil {
 		return err
 	}
@@ -245,7 +251,11 @@ func ClientHandshakeBuffer(conn net.Conn, key [KeyLength]byte, destination M.Soc
 }
 
 func ClientHandshakePacket(conn net.Conn, key [KeyLength]byte, destination M.Socksaddr, payload *buf.Buffer) error {
-	headerLen := KeyLength + 2*M.SocksaddrSerializer.AddrPortLen(destination) + 9
+	destinationLen, err := socksaddrLen(destination)
+	if err != nil {
+		return err
+	}
+	headerLen := KeyLength + 2*destinationLen + 9
 	payloadLen := payload.Len()
 	var header *buf.Buffer
 	var writeHeader bool
@@ -259,7 +269,7 @@ func ClientHandshakePacket(conn net.Conn, key [KeyLength]byte, destination M.Soc
 	common.Must1(header.Write(key[:]))
 	common.Must1(header.Write(CRLF))
 	common.Must(header.WriteByte(CommandUDP))
-	err := M.SocksaddrSerializer.WriteAddrPort(header, destination)
+	err = M.SocksaddrSerializer.WriteAddrPort(header, destination)
 	if err != nil {
 		return err
 	}
@@ -306,8 +316,12 @@ func ReadPacket(conn net.Conn, buffer *buf.Buffer) (M.Socksaddr, error) {
 func WritePacket(conn net.Conn, buffer *buf.Buffer, destination M.Socksaddr) error {
 	defer buffer.Release()
 	bufferLen := buffer.Len()
-	header := buf.With(buffer.ExtendHeader(M.SocksaddrSerializer.AddrPortLen(destination) + 4))
-	err := M.SocksaddrSerializer.WriteAddrPort(header, destination)
+	destinationLen, err := socksaddrLen(destination)
+	if err != nil {
+		return err
+	}
+	header := buf.With(buffer.ExtendHeader(destinationLen + 4))
+	err = M.SocksaddrSerializer.WriteAddrPort(header, destination)
 	if err != nil {
 		return err
 	}
@@ -318,4 +332,12 @@ func WritePacket(conn net.Conn, buffer *buf.Buffer, destination M.Socksaddr) err
 		return E.Cause(err, "write packet")
 	}
 	return nil
+}
+
+func socksaddrLen(destination M.Socksaddr) (int, error) {
+	destinationLen := M.SocksaddrSerializer.AddrPortLen(destination)
+	if destinationLen > M.MaxSocksaddrLength {
+		return 0, E.New("destination address too long")
+	}
+	return destinationLen, nil
 }

@@ -43,6 +43,16 @@ func TestMieruInboundOptionsUnmarshal(t *testing.T) {
 		"listen": "127.0.0.1",
 		"listen_port": 8964,
 		"transport": "TCP",
+		"port_bindings": [
+			{
+				"port": 8964,
+				"protocol": "TCP"
+			},
+			{
+				"port_range": "9000-9001",
+				"protocol": "UDP"
+			}
+		],
 		"users": [
 			{
 				"name": "user",
@@ -57,6 +67,10 @@ func TestMieruInboundOptionsUnmarshal(t *testing.T) {
 	options := inbound.Options.(*MieruInboundOptions)
 	require.Equal(t, uint16(8964), options.ListenOptions.ListenPort)
 	require.Equal(t, "TCP", options.Transport)
+	require.Equal(t, []MieruPortBinding{
+		{Port: 8964, Protocol: "TCP"},
+		{PortRange: "9000-9001", Protocol: "UDP"},
+	}, options.PortBindings)
 	require.Len(t, options.Users, 1)
 	require.Equal(t, "user", options.Users[0].Name)
 	require.Equal(t, "password", options.Users[0].Password)
