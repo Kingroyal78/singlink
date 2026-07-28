@@ -259,7 +259,7 @@ func (c *Client) GetServerConfig(ctx context.Context) (*ServerConfig, error) {
 	}
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, sanitizeRequestError(request, err)
 	}
 	defer response.Body.Close()
 
@@ -323,7 +323,7 @@ func (c *Client) GetUserList(ctx context.Context) ([]UserInfo, error) {
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, sanitizeRequestError(request, err)
 	}
 	defer response.Body.Close()
 
@@ -359,7 +359,7 @@ func (c *Client) GetAliveList(ctx context.Context) (map[int]int, error) {
 	}
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, sanitizeRequestError(request, err)
 	}
 	defer response.Body.Close()
 
@@ -421,6 +421,10 @@ func (c *Client) ReportNodeOnlineUsers(ctx context.Context, users *map[int][]str
 	return c.PushAlive(ctx, *users)
 }
 
+func (c *Client) ReportNodeStatus(ctx context.Context, status NodeStatus) error {
+	return c.postJSON(ctx, "status", status)
+}
+
 func (c *Client) ReportOnlineUsers(ctx context.Context, users []OnlineUser) error {
 	return c.PushAlive(ctx, onlineUsersMap(users, c.nodeConfig.NodeID))
 }
@@ -453,7 +457,7 @@ func (c *Client) postJSON(ctx context.Context, resource string, payload any) err
 	request.Header.Set("Content-Type", "application/json")
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return err
+		return sanitizeRequestError(request, err)
 	}
 	defer response.Body.Close()
 
@@ -593,7 +597,7 @@ func (c *Client) getShadowsocksTidalabServerConfig(ctx context.Context) (*Server
 	}
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, sanitizeRequestError(request, err)
 	}
 	defer response.Body.Close()
 	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
@@ -682,6 +686,26 @@ func (c *Client) responseError(response *http.Response) error {
 		return fmt.Errorf("v2board: unexpected status %s", response.Status)
 	}
 	return fmt.Errorf("v2board: unexpected status %s: %s", response.Status, string(body))
+}
+
+func sanitizeRequestError(request *http.Request, err error) error {
+	if err == nil {
+		return nil
+	}
+	cause := err
+	var urlError *url.Error
+	if errors.As(err, &urlError) && urlError.Err != nil {
+		cause = urlError.Err
+	}
+	path := "/"
+	method := "request"
+	if request != nil {
+		method = request.Method
+		if request.URL != nil && request.URL.EscapedPath() != "" {
+			path = request.URL.EscapedPath()
+		}
+	}
+	return fmt.Errorf("v2board: %s %s: %w", method, path, cause)
 }
 
 func (c *Client) readUserListBody(response *http.Response, name string) ([]byte, error) {

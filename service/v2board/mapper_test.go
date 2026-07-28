@@ -2,6 +2,7 @@ package v2board
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -690,6 +691,96 @@ func TestMapInboundRejectsShadowsocks2022ChachaMultiUser(t *testing.T) {
 	}`), []UserInfo{{ID: 1, UUID: testUUID(1)}}, MapperOptions{})
 	if err == nil || !strings.Contains(err.Error(), "unsupported multi-user cipher") {
 		t.Fatalf("expected unsupported chacha 2022 rejection, got %v", err)
+	}
+}
+
+func TestMapInboundPanelMultiplexOverridesLocalThreeState(t *testing.T) {
+	localMultiplex := &option.InboundMultiplexOptions{
+		Enabled: true,
+		Padding: true,
+	}
+	testCases := []struct {
+		name        string
+		panelJSON   string
+		wantEnabled bool
+		wantPadding bool
+	}{
+		{
+			name:        "missing falls back to local",
+			wantEnabled: true,
+			wantPadding: true,
+		},
+		{
+			name:        "null falls back to local",
+			panelJSON:   `,"multiplex":null`,
+			wantEnabled: true,
+			wantPadding: true,
+		},
+		{
+			name:        "explicit disabled overrides local",
+			panelJSON:   `,"multiplex":{"enabled":false}`,
+			wantEnabled: false,
+			wantPadding: false,
+		},
+		{
+			name:        "explicit enabled overrides local",
+			panelJSON:   `,"multiplex":{"enabled":true}`,
+			wantEnabled: true,
+			wantPadding: false,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			inbound, err := MapUniProxyInbound("shadowsocks", []byte(`{
+				"protocol": "shadowsocks",
+				"server_port": 10000,
+				"cipher": "aes-128-gcm"
+			`+testCase.panelJSON+`
+			}`), []UserInfo{{
+				ID:   1,
+				UUID: "00000000-0000-0000-0000-000000000001",
+			}}, MapperOptions{Multiplex: localMultiplex})
+			if err != nil {
+				t.Fatal(err)
+			}
+			options := inbound.Options.(*option.ShadowsocksInboundOptions)
+			if options.Multiplex == nil {
+				t.Fatal("expected multiplex options")
+			}
+			if options.Multiplex.Enabled != testCase.wantEnabled || options.Multiplex.Padding != testCase.wantPadding {
+				t.Fatalf("unexpected multiplex options: %#v", options.Multiplex)
+			}
+		})
+	}
+}
+
+func TestMapInboundRejectsShadowsocksBrutalWhenKernelCapabilityIsUnavailable(t *testing.T) {
+	previousCheck := checkTCPBrutalCapability
+	checkTCPBrutalCapability = func() error {
+		return errors.New("tcp-brutal kernel module is unavailable")
+	}
+	defer func() {
+		checkTCPBrutalCapability = previousCheck
+	}()
+
+	_, err := MapUniProxyInbound("shadowsocks", []byte(`{
+		"protocol": "shadowsocks",
+		"server_port": 10000,
+		"cipher": "aes-128-gcm",
+		"multiplex": {
+			"enabled": true,
+			"brutal": {
+				"enabled": true,
+				"up_mbps": 100,
+				"down_mbps": 50
+			}
+		}
+	}`), []UserInfo{{
+		ID:   1,
+		UUID: "00000000-0000-0000-0000-000000000001",
+	}}, MapperOptions{})
+	if err == nil || !strings.Contains(err.Error(), "tcp-brutal kernel module is unavailable") {
+		t.Fatalf("expected TCP Brutal preflight error, got %v", err)
 	}
 }
 

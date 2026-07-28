@@ -15,53 +15,98 @@ import (
 
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/singlink/singlink/adapter"
+	C "github.com/singlink/singlink/constant"
 	"github.com/singlink/singlink/log"
 	"github.com/singlink/singlink/option"
 )
 
-const maxControllerBackoff = 5 * time.Minute
+const (
+	maxControllerBackoff  = 5 * time.Minute
+	statusShutdownTimeout = 5 * time.Second
+)
+
+var shadowsocksAppliedFeatures = []string{
+	"shadowsocks-uot-v1",
+	"shadowsocks-uot-v2",
+	"shadowsocks-sing-mux-v1",
+}
 
 type Controller struct {
-	ctx          context.Context
-	logger       log.ContextLogger
-	inbound      adapter.InboundManager
-	router       adapter.Router
-	tracker      *TrafficTracker
-	client       *Client
-	options      effectiveNodeOptions
-	node         *NodeInfo
-	users        []UserInfo
-	activeUsers  []UserInfo
-	aliveList    map[int]int
-	aliveUpdated time.Time
-	nodeHash     [32]byte
-	userHash     [32]byte
-	current      option.Inbound
-	inboundReady bool
-	pendingBuild bool
-	lifecycle    sync.Mutex
-	closed       bool
+	ctx             context.Context
+	logger          log.ContextLogger
+	inbound         adapter.InboundManager
+	router          adapter.Router
+	tracker         *TrafficTracker
+	client          *Client
+	options         effectiveNodeOptions
+	node            *NodeInfo
+	users           []UserInfo
+	activeUsers     []UserInfo
+	aliveList       map[int]int
+	aliveUpdated    time.Time
+	nodeHash        [32]byte
+	userHash        [32]byte
+	current         option.Inbound
+	inboundReady    bool
+	pendingBuild    bool
+	statusSupported bool
+	statusReady     bool
+	appliedRevision string
+	appliedFeatures []string
+	statusReset     chan struct{}
+	statusWake      chan struct{}
+	statusRunning   bool
+	lifecycle       sync.Mutex
+	closed          bool
 }
 
 func NewController(ctx context.Context, logger log.ContextLogger, inbound adapter.InboundManager, router adapter.Router, tracker *TrafficTracker, client *Client, options effectiveNodeOptions) *Controller {
 	return &Controller{
-		ctx:     ctx,
-		logger:  logger,
-		inbound: inbound,
-		router:  router,
-		tracker: tracker,
-		client:  client,
-		options: options,
+		ctx:         ctx,
+		logger:      logger,
+		inbound:     inbound,
+		router:      router,
+		tracker:     tracker,
+		client:      client,
+		options:     options,
+		statusReset: make(chan struct{}, 1),
+		statusWake:  make(chan struct{}, 1),
 	}
 }
 
 func (c *Controller) Run() {
+	c.lifecycle.Lock()
+	if c.statusReset == nil {
+		c.statusReset = make(chan struct{}, 1)
+	}
+	if c.statusWake == nil {
+		c.statusWake = make(chan struct{}, 1)
+	}
+	if c.statusRunning {
+		c.lifecycle.Unlock()
+		return
+	}
+	c.statusRunning = true
+	c.lifecycle.Unlock()
+
+	statusDone := make(chan struct{})
+	go func() {
+		defer close(statusDone)
+		c.runStatusLoop()
+	}()
+
 	pullTimer := time.NewTimer(0)
 	pushTimer := time.NewTimer(c.options.PushInterval)
 	var pullBackoff controllerBackoff
 	var pushBackoff controllerBackoff
-	defer stopTimer(pullTimer)
-	defer stopTimer(pushTimer)
+	defer func() {
+		stopTimer(pullTimer)
+		stopTimer(pushTimer)
+		<-statusDone
+		c.lifecycle.Lock()
+		c.statusRunning = false
+		c.lifecycle.Unlock()
+	}()
 	for {
 		select {
 		case <-c.ctx.Done():
@@ -82,13 +127,52 @@ func (c *Controller) Run() {
 	}
 }
 
+func (c *Controller) runStatusLoop() {
+	statusTimer := time.NewTimer(c.statusInterval())
+	var statusBackoff controllerBackoff
+	defer stopTimer(statusTimer)
+
+	report := func() {
+		err := c.reportStatus()
+		if err != nil && !errors.Is(err, context.Canceled) {
+			c.warn(E.Cause(err, "v2board status ", c.options.Tag))
+		}
+		resetTimer(
+			statusTimer,
+			statusBackoff.Next(c.statusInterval(), err, c.options.Tag+"/status"),
+		)
+	}
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-statusTimer.C:
+			report()
+		case <-c.statusWake:
+			report()
+		case <-c.statusReset:
+			statusBackoff = controllerBackoff{}
+			resetTimer(statusTimer, c.statusInterval())
+		}
+	}
+}
+
 func (c *Controller) Close() error {
 	c.lifecycle.Lock()
-	defer c.lifecycle.Unlock()
 	if c.closed {
+		c.lifecycle.Unlock()
 		return nil
 	}
 	c.closed = true
+	c.updateAppliedStatusLocked(false)
+	_, reportStatus := shadowsocksStatusRevision(c.node)
+	status := NodeStatus{
+		Ready:           false,
+		AppliedRevision: "",
+		AppliedFeatures: []string{},
+		Version:         C.Version,
+	}
 	var result error
 	err := c.inbound.Remove(c.options.Tag)
 	if err != nil && !errors.Is(err, os.ErrInvalid) {
@@ -96,12 +180,22 @@ func (c *Controller) Close() error {
 			return err
 		})
 	}
-	if c.client != nil {
-		result = E.Append(result, c.client.Close(), func(err error) error {
+	c.tracker.DeleteNode(c.options.Tag)
+	client := c.client
+	c.lifecycle.Unlock()
+
+	if reportStatus && client != nil {
+		statusContext, cancel := context.WithTimeout(context.Background(), statusShutdownTimeout)
+		if err := client.ReportNodeStatus(statusContext, status); err != nil {
+			c.warn(E.Cause(err, "v2board final status ", c.options.Tag))
+		}
+		cancel()
+	}
+	if client != nil {
+		result = E.Append(result, client.Close(), func(err error) error {
 			return err
 		})
 	}
-	c.tracker.DeleteNode(c.options.Tag)
 	return result
 }
 
@@ -122,7 +216,10 @@ func (c *Controller) sync() error {
 	nodeChanged := false
 	if node != nil {
 		hash := digestNode(node)
+		c.lifecycle.Lock()
 		c.node = node
+		_, c.statusSupported = shadowsocksStatusRevision(node)
+		c.lifecycle.Unlock()
 		c.applyPanelIntervals(node)
 		if hash != c.nodeHash {
 			c.nodeHash = hash
@@ -133,6 +230,7 @@ func (c *Controller) sync() error {
 		users, err = c.client.GetUserList(c.ctx)
 		if err != nil {
 			if !errors.Is(err, ErrNotModified) {
+				c.reportUnavailableStatusBestEffort()
 				return err
 			}
 			users = nil
@@ -183,6 +281,7 @@ func (c *Controller) sync() error {
 func (c *Controller) rebuildInbound() error {
 	rules, err := buildNodeRules(c.node.Common.Routes)
 	if err != nil {
+		c.reportUnavailableStatusBestEffort()
 		return err
 	}
 	if len(c.activeUsers) == 0 {
@@ -195,6 +294,7 @@ func (c *Controller) rebuildInbound() error {
 		Multiplex:   c.options.Multiplex,
 	})
 	if err != nil {
+		c.reportUnavailableStatusBestEffort()
 		return err
 	}
 	if err := c.applyInbound(inbound); err != nil {
@@ -207,14 +307,22 @@ func (c *Controller) rebuildInbound() error {
 	}
 	c.tracker.updateNode(c.options.Tag, inbound.Type, c.options.NodeID, c.activeUsers, c.aliveList, c.aliveUpdated, c.options.PullInterval, rules)
 	c.inboundReady = true
+	c.updateAppliedStatusLocked(true)
 	c.lifecycle.Unlock()
+	c.reportStatusBestEffort()
 	c.logger.Info("v2board node ", c.options.Tag, " loaded with ", len(c.activeUsers), " users")
 	return nil
 }
 
 func (c *Controller) applyInbound(inbound option.Inbound) error {
 	c.lifecycle.Lock()
-	defer c.lifecycle.Unlock()
+	reportNotReady := false
+	defer func() {
+		c.lifecycle.Unlock()
+		if reportNotReady {
+			c.reportStatusBestEffort()
+		}
+	}()
 	if c.closed {
 		return context.Canceled
 	}
@@ -224,10 +332,29 @@ func (c *Controller) applyInbound(inbound option.Inbound) error {
 		return nil
 	}
 	if !c.inboundReady || c.current.Type == "" || !isLikelyListenConflict(err) {
+		if !c.inboundReady || c.current.Type == "" {
+			c.inboundReady = false
+			c.updateAppliedStatusLocked(false)
+			reportNotReady = true
+		}
 		return err
 	}
 
 	if removeErr := c.inbound.Remove(c.options.Tag); removeErr != nil && !errors.Is(removeErr, os.ErrInvalid) {
+		if _, loaded := c.inbound.Get(c.options.Tag); loaded {
+			return E.Errors(err, E.Cause(removeErr, "remove previous inbound"))
+		}
+		if restoreErr := c.restoreCurrentInbound(); restoreErr != nil {
+			c.current = option.Inbound{}
+			c.inboundReady = false
+			c.updateAppliedStatusLocked(false)
+			reportNotReady = true
+			return E.Errors(
+				err,
+				E.Cause(removeErr, "remove previous inbound"),
+				E.Cause(restoreErr, "restore previous inbound after failed removal"),
+			)
+		}
 		return E.Errors(err, E.Cause(removeErr, "remove previous inbound"))
 	}
 	replaceErr := c.inbound.Create(c.ctx, c.router, c.logger, c.options.Tag, inbound.Type, inbound.Options)
@@ -236,6 +363,10 @@ func (c *Controller) applyInbound(inbound option.Inbound) error {
 		return nil
 	}
 	if restoreErr := c.restoreCurrentInbound(); restoreErr != nil {
+		c.current = option.Inbound{}
+		c.inboundReady = false
+		c.updateAppliedStatusLocked(false)
+		reportNotReady = true
 		return E.Errors(replaceErr, E.Cause(restoreErr, "restore previous inbound after failed replacement"))
 	}
 	return replaceErr
@@ -250,18 +381,32 @@ func (c *Controller) restoreCurrentInbound() error {
 
 func (c *Controller) clearInbound(rules nodeRules) error {
 	c.lifecycle.Lock()
-	defer c.lifecycle.Unlock()
 	if c.closed {
+		c.lifecycle.Unlock()
 		return context.Canceled
 	}
 	err := c.inbound.Remove(c.options.Tag)
 	if err != nil && !errors.Is(err, os.ErrInvalid) {
+		if _, loaded := c.inbound.Get(c.options.Tag); loaded {
+			c.lifecycle.Unlock()
+			return err
+		}
+		nodeType := c.current.Type
+		c.current = option.Inbound{}
+		c.tracker.updateNode(c.options.Tag, nodeType, c.options.NodeID, nil, c.aliveList, c.aliveUpdated, c.options.PullInterval, rules)
+		c.inboundReady = false
+		c.updateAppliedStatusLocked(false)
+		c.lifecycle.Unlock()
+		c.reportStatusBestEffort()
 		return err
 	}
 	nodeType := c.current.Type
 	c.current = option.Inbound{}
 	c.tracker.updateNode(c.options.Tag, nodeType, c.options.NodeID, nil, c.aliveList, c.aliveUpdated, c.options.PullInterval, rules)
 	c.inboundReady = true
+	c.updateAppliedStatusLocked(false)
+	c.lifecycle.Unlock()
+	c.reportStatusBestEffort()
 	return nil
 }
 
@@ -301,17 +446,118 @@ func (c *Controller) push() error {
 	return nil
 }
 
+func (c *Controller) updateAppliedStatusLocked(ready bool) {
+	revision, supported := shadowsocksStatusRevision(c.node)
+	c.statusSupported = supported
+	c.statusReady = supported && ready
+	c.appliedRevision = ""
+	c.appliedFeatures = nil
+	if c.statusReady {
+		c.appliedRevision = revision
+		c.appliedFeatures = append([]string(nil), shadowsocksAppliedFeatures...)
+	}
+}
+
+func shadowsocksStatusRevision(node *NodeInfo) (string, bool) {
+	if node == nil || node.Common == nil || normalizeNodeType(firstNonEmpty(node.Type, node.Common.Protocol)) != C.TypeShadowsocks {
+		return "", false
+	}
+	revision := strings.TrimSpace(node.Common.ConfigRevision)
+	return revision, revision != ""
+}
+
+func (c *Controller) reportStatusBestEffort() {
+	c.lifecycle.Lock()
+	statusRunning := c.statusRunning && !c.closed
+	c.lifecycle.Unlock()
+	if statusRunning {
+		c.requestStatusReport()
+		return
+	}
+
+	if err := c.reportStatus(); err != nil {
+		c.warn(E.Cause(err, "v2board status ", c.options.Tag))
+		return
+	}
+	c.resetStatusSchedule()
+}
+
+func (c *Controller) reportUnavailableStatusBestEffort() {
+	c.lifecycle.Lock()
+	if c.closed || (c.inboundReady && c.current.Type != "") {
+		c.lifecycle.Unlock()
+		return
+	}
+	c.inboundReady = false
+	c.updateAppliedStatusLocked(false)
+	c.lifecycle.Unlock()
+	c.reportStatusBestEffort()
+}
+
+func (c *Controller) requestStatusReport() {
+	select {
+	case c.statusWake <- struct{}{}:
+	default:
+	}
+}
+
+func (c *Controller) resetStatusSchedule() {
+	select {
+	case c.statusReset <- struct{}{}:
+	default:
+	}
+}
+
+func (c *Controller) reportStatus() error {
+	if c.client == nil {
+		return nil
+	}
+	c.lifecycle.Lock()
+	supported := c.statusSupported
+	if !supported {
+		_, supported = shadowsocksStatusRevision(c.node)
+	}
+	if !supported || c.closed {
+		c.lifecycle.Unlock()
+		return nil
+	}
+	status := NodeStatus{
+		Ready:           c.statusReady,
+		AppliedRevision: c.appliedRevision,
+		AppliedFeatures: append([]string{}, c.appliedFeatures...),
+		Version:         C.Version,
+	}
+	c.lifecycle.Unlock()
+	return c.client.ReportNodeStatus(c.ctx, status)
+}
+
 func (c *Controller) applyPanelIntervals(node *NodeInfo) {
+	c.lifecycle.Lock()
+	previousPushInterval := c.options.PushInterval
 	if node.PullInterval > 0 {
 		c.options.PullInterval = normalizeInterval(node.PullInterval)
 	}
 	if node.PushInterval > 0 {
 		c.options.PushInterval = normalizeInterval(node.PushInterval)
 	}
+	if c.options.PushInterval != previousPushInterval {
+		c.resetStatusSchedule()
+	}
 	if node.Common != nil && node.Common.BaseConfig != nil {
 		c.options.NodeReportMinTraffic = node.NodeReportMinTraffic
 		c.options.DeviceOnlineMinTraffic = node.DeviceOnlineMinTraffic
 	}
+	c.lifecycle.Unlock()
+}
+
+func (c *Controller) statusInterval() time.Duration {
+	c.lifecycle.Lock()
+	interval := c.options.PushInterval
+	c.lifecycle.Unlock()
+	if interval <= 0 {
+		return time.Minute
+	}
+	return interval
 }
 
 func (c *Controller) warn(args ...any) {
@@ -539,6 +785,12 @@ func jitterInterval(duration time.Duration, key string, attempt int) time.Durati
 func resetTimer(timer *time.Timer, duration time.Duration) {
 	if duration <= 0 {
 		duration = time.Minute
+	}
+	if !timer.Stop() {
+		select {
+		case <-timer.C:
+		default:
+		}
 	}
 	timer.Reset(duration)
 }

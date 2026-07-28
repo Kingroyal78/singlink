@@ -2,6 +2,8 @@ package v2board
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -147,6 +149,61 @@ func TestResolveNodeOptionsInheritsAndOverridesBodyLimits(t *testing.T) {
 	}
 	if effective.ErrorBodyLimit != 4096 || effective.UserListBodyLimit != 8192 {
 		t.Fatalf("node body limits did not override service limits: %#v", effective)
+	}
+}
+
+func TestServiceCloseWaitsForControllerRunBeforeFinalNotReady(t *testing.T) {
+	statusCalled := make(chan struct{}, 1)
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		statusCalled <- struct{}{}
+	}))
+	defer server.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	controller := &Controller{
+		ctx:             ctx,
+		inbound:         &fakeInboundManager{},
+		tracker:         &TrafficTracker{nodes: make(map[string]*nodeTraffic)},
+		client:          newTestClientWithStyle(t, server.URL, APIStyleUniProxy, "shadowsocks"),
+		options:         effectiveNodeOptions{Tag: "node"},
+		node:            &NodeInfo{Type: "shadowsocks", Common: &ServerConfig{ConfigRevision: "sha256:abcdef"}},
+		inboundReady:    true,
+		statusReady:     true,
+		appliedRevision: "sha256:abcdef",
+		appliedFeatures: append([]string(nil), shadowsocksAppliedFeatures...),
+	}
+	service := &Service{
+		ctx:         ctx,
+		cancel:      cancel,
+		controllers: []*Controller{controller},
+	}
+	runDone := make(chan struct{})
+	service.wg.Add(1)
+	go func() {
+		defer service.wg.Done()
+		<-runDone
+	}()
+
+	closeDone := make(chan error, 1)
+	go func() {
+		closeDone <- service.Close()
+	}()
+	<-ctx.Done()
+
+	select {
+	case <-statusCalled:
+		t.Fatal("final not-ready status was sent before the controller run exited")
+	case <-time.After(50 * time.Millisecond):
+	}
+
+	close(runDone)
+	if err := <-closeDone; err != nil {
+		t.Fatal(err)
+	}
+	select {
+	case <-statusCalled:
+	case <-time.After(time.Second):
+		t.Fatal("final not-ready status was not sent after the controller run exited")
 	}
 }
 

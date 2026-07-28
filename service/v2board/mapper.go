@@ -21,6 +21,8 @@ import (
 
 const maxLegacyShadowsocksUsers = 10_000
 
+var checkTCPBrutalCapability = detectTCPBrutalCapability
+
 type MapperOptions struct {
 	Tag           string
 	Listen        *badoption.Addr
@@ -91,7 +93,20 @@ func MapInbound(node *NodeInfo, users []UserInfo, mapperOptions MapperOptions) (
 	if err != nil {
 		return option.Inbound{}, err
 	}
-	multiplex := cloneMultiplex(mapperOptions.Multiplex)
+	multiplexConfig := mapperOptions.Multiplex
+	if config.Multiplex != nil {
+		multiplexConfig = config.Multiplex
+	}
+	multiplex := cloneMultiplex(multiplexConfig)
+	if nodeType == C.TypeShadowsocks &&
+		multiplex != nil &&
+		multiplex.Enabled &&
+		multiplex.Brutal != nil &&
+		multiplex.Brutal.Enabled {
+		if err := checkTCPBrutalCapability(); err != nil {
+			return option.Inbound{}, fmt.Errorf("shadowsocks multiplex brutal preflight: %w", err)
+		}
+	}
 	tag := firstNonEmpty(mapperOptions.Tag, node.Tag)
 	inbound := option.Inbound{Type: nodeType, Tag: tag}
 

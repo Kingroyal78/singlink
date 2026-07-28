@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/singlink/singlink/option"
 )
 
 const (
@@ -44,46 +46,55 @@ type Options struct {
 }
 
 type ServerConfig struct {
-	Protocol              string             `json:"protocol"`
-	ListenIP              string             `json:"listen_ip"`
-	ServerPort            int                `json:"server_port"`
-	PortBindings          []MieruPortBinding `json:"port_bindings"`
-	Routes                []ServerRoute      `json:"routes"`
-	BaseConfig            *ServerBaseConfig  `json:"base_config"`
-	TLS                   int                `json:"tls"`
-	TLSSettings           ServerTLSSettings  `json:"tls_settings"`
-	CertInfo              *CertInfo          `json:"-"`
-	Network               string             `json:"network"`
-	NetworkSettings       json.RawMessage    `json:"network_settings"`
-	Encryption            string             `json:"encryption"`
-	EncryptionSettings    ServerEncSettings  `json:"encryption_settings"`
-	ServerName            string             `json:"server_name"`
-	Flow                  string             `json:"flow"`
-	RealityConfig         RealityConfig      `json:"reality_config"`
-	Cipher                string             `json:"cipher"`
-	ServerKey             string             `json:"server_key"`
-	CongestionControl     string             `json:"congestion_control"`
-	QUICCongestionControl string             `json:"quic_congestion_control"`
-	ZeroRTTHandshake      bool               `json:"zero_rtt_handshake"`
-	PaddingScheme         []string           `json:"padding_scheme,omitempty"`
-	Version               int                `json:"version"`
-	UpMbps                int                `json:"up_mbps"`
-	DownMbps              int                `json:"down_mbps"`
-	Obfs                  string             `json:"obfs"`
-	ObfsPassword          string             `json:"obfs_password"`
-	ObfsSettings          json.RawMessage    `json:"obfs_settings"`
-	IgnoreClientBandwidth bool               `json:"ignore_client_bandwidth"`
-	Transport             string             `json:"transport"`
-	Multiplexing          string             `json:"multiplexing"`
-	HandshakeMode         string             `json:"handshake_mode"`
-	TrafficPattern        string             `json:"traffic_pattern"`
-	MTU                   int                `json:"mtu"`
-	Host                  string             `json:"host"`
-	Port                  int                `json:"port"`
-	SecretMode            string             `json:"secret_mode"`
-	TLSDomain             string             `json:"tls_domain"`
-	AllowAdTag            bool               `json:"allow_ad_tag"`
-	Settings              map[string]any     `json:"settings"`
+	Protocol              string                          `json:"protocol"`
+	ConfigRevision        string                          `json:"config_revision"`
+	ListenIP              string                          `json:"listen_ip"`
+	ServerPort            int                             `json:"server_port"`
+	PortBindings          []MieruPortBinding              `json:"port_bindings"`
+	Routes                []ServerRoute                   `json:"routes"`
+	BaseConfig            *ServerBaseConfig               `json:"base_config"`
+	TLS                   int                             `json:"tls"`
+	TLSSettings           ServerTLSSettings               `json:"tls_settings"`
+	CertInfo              *CertInfo                       `json:"-"`
+	Network               string                          `json:"network"`
+	NetworkSettings       json.RawMessage                 `json:"network_settings"`
+	Encryption            string                          `json:"encryption"`
+	EncryptionSettings    ServerEncSettings               `json:"encryption_settings"`
+	ServerName            string                          `json:"server_name"`
+	Flow                  string                          `json:"flow"`
+	RealityConfig         RealityConfig                   `json:"reality_config"`
+	Cipher                string                          `json:"cipher"`
+	ServerKey             string                          `json:"server_key"`
+	CongestionControl     string                          `json:"congestion_control"`
+	QUICCongestionControl string                          `json:"quic_congestion_control"`
+	ZeroRTTHandshake      bool                            `json:"zero_rtt_handshake"`
+	PaddingScheme         []string                        `json:"padding_scheme,omitempty"`
+	Version               int                             `json:"version"`
+	UpMbps                int                             `json:"up_mbps"`
+	DownMbps              int                             `json:"down_mbps"`
+	Obfs                  string                          `json:"obfs"`
+	ObfsPassword          string                          `json:"obfs_password"`
+	ObfsSettings          json.RawMessage                 `json:"obfs_settings"`
+	IgnoreClientBandwidth bool                            `json:"ignore_client_bandwidth"`
+	Transport             string                          `json:"transport"`
+	Multiplexing          string                          `json:"multiplexing"`
+	Multiplex             *option.InboundMultiplexOptions `json:"multiplex"`
+	HandshakeMode         string                          `json:"handshake_mode"`
+	TrafficPattern        string                          `json:"traffic_pattern"`
+	MTU                   int                             `json:"mtu"`
+	Host                  string                          `json:"host"`
+	Port                  int                             `json:"port"`
+	SecretMode            string                          `json:"secret_mode"`
+	TLSDomain             string                          `json:"tls_domain"`
+	AllowAdTag            bool                            `json:"allow_ad_tag"`
+	Settings              map[string]any                  `json:"settings"`
+}
+
+type NodeStatus struct {
+	Ready           bool     `json:"ready"`
+	AppliedRevision string   `json:"applied_revision"`
+	AppliedFeatures []string `json:"applied_features"`
+	Version         string   `json:"version"`
 }
 
 func (c *ServerConfig) UnmarshalJSON(data []byte) error {

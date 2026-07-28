@@ -127,13 +127,13 @@ func (s *Service) Close() error {
 	if s.cancel != nil {
 		s.cancel()
 	}
+	s.wg.Wait()
 	var err error
 	for _, controller := range s.controllers {
 		err = E.Append(err, controller.Close(), func(err error) error {
 			return err
 		})
 	}
-	s.wg.Wait()
 	s.releaseTracker()
 	return err
 }

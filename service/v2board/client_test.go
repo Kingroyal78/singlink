@@ -25,6 +25,7 @@ func TestGetServerConfigUsesQueryAndETag(t *testing.T) {
 			writer.Header().Set("ETag", `"config-etag"`)
 			_, _ = writer.Write([]byte(`{
 				"protocol":"vless",
+				"config_revision":"sha256:abcdef",
 				"server_port":443,
 				"tls":2,
 				"base_config":{"push_interval":60,"pull_interval":"120"}
@@ -45,6 +46,9 @@ func TestGetServerConfigUsesQueryAndETag(t *testing.T) {
 	}
 	if node.Type != "vless" || node.Security != SecurityREALITY {
 		t.Fatalf("unexpected node info: %#v", node)
+	}
+	if node.Common.ConfigRevision != "sha256:abcdef" {
+		t.Fatalf("unexpected config revision: %q", node.Common.ConfigRevision)
 	}
 	if node.PushInterval != time.Minute || node.PullInterval != 2*time.Minute {
 		t.Fatalf("unexpected intervals: %s %s", node.PushInterval, node.PullInterval)
@@ -386,6 +390,52 @@ func TestEmptyReportsSendEmptyJSONObjects(t *testing.T) {
 	}
 }
 
+func TestReportNodeStatusPayload(t *testing.T) {
+	var payload NodeStatus
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/api/v1/server/UniProxy/status" {
+			t.Fatalf("unexpected path: %s", request.URL.Path)
+		}
+		assertUniProxyQuery(t, request)
+		if request.Method != http.MethodPost {
+			t.Fatalf("unexpected method: %s", request.Method)
+		}
+		if request.Header.Get("Content-Type") != "application/json" {
+			t.Fatalf("missing content type")
+		}
+		if err := json.NewDecoder(request.Body).Decode(&payload); err != nil {
+			t.Fatal(err)
+		}
+	}))
+	defer server.Close()
+
+	client := newTestClient(t, server.URL)
+	status := NodeStatus{
+		Ready:           true,
+		AppliedRevision: "sha256:abcdef",
+		AppliedFeatures: []string{
+			"shadowsocks-uot-v1",
+			"shadowsocks-uot-v2",
+			"shadowsocks-sing-mux-v1",
+		},
+		Version: "1.2.3",
+	}
+	if err := client.ReportNodeStatus(context.Background(), status); err != nil {
+		t.Fatal(err)
+	}
+	if !payload.Ready || payload.AppliedRevision != status.AppliedRevision || payload.Version != status.Version {
+		t.Fatalf("unexpected status payload: %#v", payload)
+	}
+	if len(payload.AppliedFeatures) != len(status.AppliedFeatures) {
+		t.Fatalf("unexpected applied features: %#v", payload.AppliedFeatures)
+	}
+	for index := range status.AppliedFeatures {
+		if payload.AppliedFeatures[index] != status.AppliedFeatures[index] {
+			t.Fatalf("unexpected applied features: %#v", payload.AppliedFeatures)
+		}
+	}
+}
+
 func TestLegacyDeepbworkConfigUsersAndSubmit(t *testing.T) {
 	seen := map[string]bool{}
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -590,6 +640,31 @@ func TestErrorBodyIsLimited(t *testing.T) {
 	}
 	if strings.Contains(err.Error(), "89abcdef") {
 		t.Fatalf("error body was not limited: %v", err)
+	}
+}
+
+func TestRequestErrorsDoNotExposeUniProxyToken(t *testing.T) {
+	networkErr := errors.New("connection refused")
+	client := newTestClientWithHTTPClient(t, "https://panel.example", &http.Client{
+		Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
+			return nil, networkErr
+		}),
+	})
+	client.nodeConfig.Token = "super-secret-panel-token"
+	client.nodeConfig.NodeType = "shadowsocks"
+
+	err := client.ReportNodeStatus(context.Background(), NodeStatus{Ready: true})
+	if err == nil {
+		t.Fatal("expected request error")
+	}
+	if !errors.Is(err, networkErr) {
+		t.Fatalf("sanitized request error lost its cause: %v", err)
+	}
+	if strings.Contains(err.Error(), "super-secret-panel-token") || strings.Contains(err.Error(), "token=") {
+		t.Fatalf("request error exposed the UniProxy token: %v", err)
+	}
+	if !strings.Contains(err.Error(), "POST /api/v1/server/UniProxy/status") {
+		t.Fatalf("request error lost safe endpoint context: %v", err)
 	}
 }
 
